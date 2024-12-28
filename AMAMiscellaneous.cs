@@ -7,13 +7,14 @@
 
 using UnityEngine;
 using System.Collections;
+using static AMA.AMACurves;
 using static AMA.AMAMain;
-using static AMACurves;
 
 namespace AMA
 {
     public static class AMAMiscellaneous
     {
+
         #region Methods
         /// <summary>
         /// Execute given function when MA starts.
@@ -61,7 +62,18 @@ namespace AMA
         /// <param name="_curve">Curve to use.</param>
         public static MA SetCurve(this MA _ma, Curves _curve)
         {
-            _ma.curveDelegate = AMACurves.GetCurveFunction(_curve);
+            _ma.curveDelegate = GetCurveFunction(_curve);
+            return _ma;
+        }
+
+        /// <summary>
+        /// Set curve to moderate MA's movement.
+        /// </summary>
+        /// <param name="_curve">Curve to use.</param>
+        public static MA SetCurve(this MA _ma, AnimationCurve _curve)
+        {
+            _ma.curveDelegate = GetCurveFunction(Curves.CUSTOM);
+            _ma.animationCurve = _curve;
             return _ma;
         }
         #endregion

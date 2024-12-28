@@ -57,7 +57,7 @@ namespace AMA
 
                 duration = 1.0f,
                 delay = 0.0f,
-                curveDelegate = AMACurves.GetCurveFunction(AMACurves.Curves.Linear),
+                curveDelegate = AMACurves.GetCurveFunction(Curves.Linear),
                 animationCurve = null,
             };
 

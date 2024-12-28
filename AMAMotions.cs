@@ -14,7 +14,6 @@ namespace AMA
     public static class AMAMotions
     {
         #region Movements
-
         /// <summary>
         /// Moves Game Object to a specific X position.
         /// </summary>
