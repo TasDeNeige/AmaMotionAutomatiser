@@ -92,7 +92,7 @@ namespace AMA
                 }
 
                 // Set position
-                _ma.transform.position = Vector3.Lerp(initialPosition, targetPosition, easedTime);
+                _ma.transform.position = Vector3.LerpUnclamped(initialPosition, targetPosition, easedTime);
 
                 yield return null;
             }
