@@ -1,6 +1,6 @@
 //
-// Ama Motion Automatizer
-// [ Coroutine Runner ]
+// • Ama Motion Automatizer
+// • [ Coroutine Runner ]
 // • By Amaryne Bréand
 // • Last updated: 21/12/2024
 //

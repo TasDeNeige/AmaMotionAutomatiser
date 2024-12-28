@@ -1,8 +1,8 @@
 //
-// Ama Motion Automatizer
-// [ Main file ]
+// • Ama Motion Automatizer
+// • [ Curves Methods ]
 // • By Amaryne Bréand
-// • Last updated: 21/12/2024
+// • Last updated: 28/12/2024
 //
 // Easing code taken from https://gist.github.com/xanathar/735e17ac129a72a277ee
 //
