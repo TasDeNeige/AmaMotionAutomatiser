@@ -15,7 +15,7 @@ namespace AMA
     {
         #region Movements
         /// <summary>
-        /// Moves Game Object to a specific position.
+        /// Move Game Object to a specific position.
         /// </summary>
         /// <param name="_selectedAxis">Axis on which to apply motion</param>
         /// <param name="_endPos">Final position</param>
