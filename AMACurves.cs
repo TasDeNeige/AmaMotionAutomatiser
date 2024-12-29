@@ -12,6 +12,9 @@ using UnityEngine;
 namespace AMA
 {
     #region Enum
+    /// <summary>
+    /// Robert Penner's curves. Visual representation available at https://easings.net.
+    /// </summary>
     public enum Curves
     {
         Linear,
