@@ -72,7 +72,7 @@ namespace AMA
         /// <param name="_curve">Curve to use.</param>
         public static MA SetCurve(this MA _ma, AnimationCurve _curve)
         {
-            _ma.curveDelegate = GetCurveFunction(Curves.CUSTOM);
+            //_ma.curveDelegate = GetCurveFunction(Curves.CUSTOM); // may be used someday?
             _ma.animationCurve = _curve;
             return _ma;
         }
