@@ -13,6 +13,13 @@ namespace AMA
     public delegate void MAfunction();
     public delegate float CurveDelegate(float currentTimeInSeconds, float startValue, float endValue, float duration);
 
+    public enum Axis
+    {
+        x,
+        y,
+        z,
+        All
+    }
 
     public static class AMAMain
     {
@@ -29,6 +36,8 @@ namespace AMA
 
             // Miscellaneous
             public bool isActive;
+            public bool snapToEndValue;
+            public Axis selectedAxis;
             public float duration;
             public float delay;
             // Curves Miscellaneous
@@ -57,6 +66,7 @@ namespace AMA
 
                 duration = 1.0f,
                 delay = 0.0f,
+                snapToEndValue = true,
                 curveDelegate = AMACurves.GetCurveFunction(Curves.Linear),
                 animationCurve = null,
             };
