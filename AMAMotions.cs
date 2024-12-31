@@ -2,7 +2,7 @@
 // • Ama Motion Automatizer
 // • [ Motions Methods ]
 // • By Amaryne Bréand
-// • Last updated: 29/12/2024
+// • Last updated: 31/12/2024
 //
 
 using UnityEngine;
@@ -82,14 +82,15 @@ namespace AMA
 
         public static IEnumerator MoveToPos(this MA _ma)
         {
-            // Do a first yield return in order to execute in last
-            yield return null;
-
-            // Execute function when MA starts its journey (if there is one)
-            if (_ma.onStartFunc != null) { _ma.onStartFunc(); }
+            /// PLACEHOLDER SOLUTION
+            // Sacrifices first frame in order to get every settings applied first
+            yield return null; // so long little frame o7
 
             // Wait for delay (if there is one)
             if (_ma.delay > 0) { yield return new WaitForSeconds(_ma.delay); }
+
+            // Execute function when MA starts its journey (if there is one)
+            if (_ma.onStartFunc != null) { _ma.onStartFunc(); }
 
             // Set up calculations (big brain timeee)
             Vector3 initialPosition = _ma.startPos;
@@ -122,24 +123,10 @@ namespace AMA
                 // Set position according to axis
                 switch (_ma.selectedAxis)
                 {
-                    case Axis.x:
-                        _ma.transform.position = new Vector3(interpolatedPosition.x + externalOffset.x,
-                                                             _ma.transform.position.y,
-                                                             _ma.transform.position.z);
-                        break;
-                    case Axis.y:
-                        _ma.transform.position = new Vector3(_ma.transform.position.x,
-                                                             interpolatedPosition.y + externalOffset.y,
-                                                             _ma.transform.position.z);
-                        break;
-                    case Axis.z:
-                        _ma.transform.position = new Vector3(_ma.transform.position.x,
-                                                             _ma.transform.position.y,
-                                                             interpolatedPosition.z + externalOffset.z);
-                        break;
-                    case Axis.All:
-                        _ma.transform.position = interpolatedPosition + externalOffset;
-                        break;
+                    case Axis.x: _ma.transform.position = new Vector3(interpolatedPosition.x + externalOffset.x, _ma.transform.position.y, _ma.transform.position.z); break;
+                    case Axis.y: _ma.transform.position = new Vector3(_ma.transform.position.x, interpolatedPosition.y + externalOffset.y, _ma.transform.position.z); break;
+                    case Axis.z: _ma.transform.position = new Vector3(_ma.transform.position.x, _ma.transform.position.y, interpolatedPosition.z + externalOffset.z); break;
+                    case Axis.All: _ma.transform.position = interpolatedPosition + externalOffset; break;
                 }
 
                 // Track any external movement since the last frame

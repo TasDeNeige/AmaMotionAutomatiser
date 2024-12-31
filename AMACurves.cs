@@ -590,7 +590,7 @@ namespace AMA
                 case Curves.Bounce_OutIn: return BounceEaseOutIn;
 
                 default:
-                    Debug.Assert(false, $"{(int)_curve} is not one of the available equations");
+                    Debug.Assert(false, $"{(int)_curve} is not one of the available equations.");
                     return Linear;
             }
         }
