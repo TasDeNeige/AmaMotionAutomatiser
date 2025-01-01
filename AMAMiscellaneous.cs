@@ -16,6 +16,7 @@ namespace AMA
     {
 
         #region Methods
+        #region On Start/End
         /// <summary>
         /// Execute given function when MA starts.
         /// </summary>
@@ -45,6 +46,7 @@ namespace AMA
             _ma.onCompleteFunc = _action;
             return _ma;
         }
+        #endregion
 
         /// <summary>
         /// Set delay before executing MA.
@@ -56,6 +58,7 @@ namespace AMA
             return _ma;
         }
 
+        #region Set Curves
         /// <summary>
         /// Set curve to moderate MA's movement.
         /// </summary>
@@ -76,6 +79,7 @@ namespace AMA
             _ma.animationCurve = _curve;
             return _ma;
         }
+        #endregion
         #endregion
     }
 }

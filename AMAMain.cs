@@ -7,6 +7,7 @@
 
 using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
 
 namespace AMA
 {
@@ -47,6 +48,9 @@ namespace AMA
             // Functions
             public MAfunction onStartFunc;
             public MAfunction onCompleteFunc;
+
+            // Destructor
+            ~MA() { this.INTERNAL_Destroy(); }
         }
         #endregion
 
@@ -54,7 +58,7 @@ namespace AMA
         /// <summary>
         /// Creates a MA with basic parameters. Not intended to be used by user.
         /// </summary>
-        public static MA CreateMA(Transform _transform = null)
+        public static MA INTERNAL_CreateMA(Transform _transform = null)
         {
             MA ma = new MA()
             {
@@ -72,6 +76,35 @@ namespace AMA
             };
 
             return ma;
+        }
+        #endregion
+
+        #region Destructor
+        /// <summary>
+        /// Destroys MA. Not intended to be used by user.
+        /// </summary>
+        public static void INTERNAL_Destroy(this MA _ma)
+        {
+            // Ensures coroutine is stopped (if still running)
+            if (_ma.coroutine != null) { AMACoroutineRunner.Instance.StopCoroutine(_ma.coroutine); }
+
+            // Nullify references to free resources
+            _ma.coroutine = null;
+            _ma.transform = null;
+            _ma.startPos = Vector3.zero;
+            _ma.endPos = Vector3.zero;
+            _ma.isActive = false;
+            _ma.snapToEndValue = false;
+            _ma.duration = 0;
+            _ma.delay = 0;
+            _ma.selectedAxis = default(Axis);
+            _ma.curveDelegate = null;
+            _ma.animationCurve = null;
+            _ma.onStartFunc = null;
+            _ma.onCompleteFunc = null;
+
+            _ma = null;
+            Debug.LogError("MA object has been destroyed. ob");
         }
         #endregion
     }

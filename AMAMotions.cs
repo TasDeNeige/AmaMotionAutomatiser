@@ -24,7 +24,7 @@ namespace AMA
         public static MA AMAmove(this Transform _transform, Axis _selectedAxis, float _endPos, float _duration, bool _snapToEndValue = true)
         {
             // Set up MA
-            MA ma = CreateMA(_transform);
+            MA ma = INTERNAL_CreateMA(_transform);
             ma.startPos = _transform.position;
             ma.duration = _duration;
             ma.selectedAxis = _selectedAxis;
@@ -57,7 +57,7 @@ namespace AMA
         public static MA AMAmove(this Transform _transform, Axis _selectedAxis, Vector3 _endPos, float _duration, bool _snapToEndValue = true)
         {
             // Set up MA
-            MA ma = CreateMA(_transform);
+            MA ma = INTERNAL_CreateMA(_transform);
             ma.startPos = _transform.position;
             ma.duration = _duration;
             ma.selectedAxis = _selectedAxis;
@@ -148,8 +148,11 @@ namespace AMA
             }
 
             // Execute function when MA has finished its journey (if there is one)
-            if (_ma.onCompleteFunc != null) { _ma.onCompleteFunc(); } // ok goodnight
-        }
+            if (_ma.onCompleteFunc != null) { _ma.onCompleteFunc(); }
+
+            // Destroy MA
+            _ma.INTERNAL_Destroy();
+        } // ok goodnight
         #endregion
     }
 
