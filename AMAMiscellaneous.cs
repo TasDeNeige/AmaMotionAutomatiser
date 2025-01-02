@@ -2,11 +2,10 @@
 // • Ama Motion Automatizer
 // • [ Miscellaneous Methods ]
 // • By Amaryne Bréand
-// • Last updated: 29/12/2024
+// • Last updated: 03/01/2025
 //
 
 using UnityEngine;
-using System.Collections;
 using static AMA.AMACurves;
 using static AMA.AMAMain;
 

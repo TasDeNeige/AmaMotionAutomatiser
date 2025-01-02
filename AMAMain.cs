@@ -2,12 +2,11 @@
 // • Ama Motion Automatizer
 // • [ Main file ]
 // • By Amaryne Bréand
-// • Last updated: 29/12/2024
+// • Last updated: 03/01/2025
 //
 
 using UnityEngine;
 using System.Collections;
-using Unity.VisualScripting;
 
 namespace AMA
 {
@@ -24,6 +23,8 @@ namespace AMA
 
     public static class AMAMain
     {
+        private static bool debug = true;
+
         #region Class
         public class MA
         {
@@ -104,7 +105,10 @@ namespace AMA
             _ma.onCompleteFunc = null;
 
             _ma = null;
-            Debug.LogError("MA object has been destroyed. ob");
+
+            #if UNITY_EDITOR
+            if (debug) Debug.Log($"<color=#00C7AC>MA object has been destroyed.</color>");
+            #endif
         }
         #endregion
     }
