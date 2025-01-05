@@ -2,7 +2,7 @@
 // • Ama Motion Automatizer
 // • [ Main file ]
 // • By Amaryne Bréand
-// • Last updated: 03/01/2025
+// • Last updated: 05/01/2025
 //
 
 using UnityEngine;
@@ -25,12 +25,11 @@ namespace AMA
     {
         private static bool debug = true;
 
-        #region Class
-        public class MA
+        #region Main class
+        abstract public class MA
         {
-            // Objects
+            // Main
             public IEnumerator coroutine;
-            public Transform transform;
 
             // Positions
             public Vector3 startPos;
@@ -52,19 +51,33 @@ namespace AMA
 
             // Destructor
             ~MA() { this.INTERNAL_Destroy(); }
+
+            // Methods
+            public abstract Vector3 GetModifiedValue();
+            public abstract void SetModifiedValue(Vector3 _newValue);
         }
         #endregion
 
-        #region Creator
+        #region Overrides
+        public class MAtransform : MA
+        {
+            public Transform transform;
+
+            public override Vector3 GetModifiedValue() { return transform.position; }
+            public override void SetModifiedValue(Vector3 _newValue) { transform.position = _newValue; }
+        }
+        #endregion
+
+        #region Creators
         /// <summary>
         /// Creates a MA with basic parameters. Not intended to be used by user.
         /// </summary>
-        public static MA INTERNAL_CreateMA(Transform _transform = null)
+        public static MA INTERNAL_CreateTransformMA(Transform _transform, Vector3 _mainValue)
         {
-            MA ma = new MA()
+            MA ma = new MAtransform()
             {
-                isActive = true,
                 transform = _transform,
+                isActive = true,
 
                 startPos = new Vector3(0.0f, 0.0f, 0.0f),
                 endPos = new Vector3(0.0f, 0.0f, 0.0f),
@@ -91,7 +104,6 @@ namespace AMA
 
             // Nullify references to free resources
             _ma.coroutine = null;
-            _ma.transform = null;
             _ma.startPos = Vector3.zero;
             _ma.endPos = Vector3.zero;
             _ma.isActive = false;
@@ -107,6 +119,7 @@ namespace AMA
             _ma = null;
 
             #if UNITY_EDITOR
+            /// Put 'debug' to false to suppress this log.
             if (debug) Debug.Log($"<color=#00C7AC>MA object has been destroyed.</color>");
             #endif
         }

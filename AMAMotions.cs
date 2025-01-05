@@ -2,7 +2,7 @@
 // • Ama Motion Automatizer
 // • [ Motions Methods ]
 // • By Amaryne Bréand
-// • Last updated: 31/12/2024
+// • Last updated: 05/01/2024
 //
 
 using UnityEngine;
@@ -13,7 +13,7 @@ namespace AMA
 {
     public static class AMAMotions
     {
-        #region Movements
+        #region Transform
         /// <summary>
         /// Move Game Object to a specific position.
         /// </summary>
@@ -24,11 +24,7 @@ namespace AMA
         public static MA AMAmove(this Transform _transform, Axis _selectedAxis, float _endPos, float _duration, bool _snapToEndValue = true)
         {
             // Set up MA
-            MA ma = INTERNAL_CreateMA(_transform);
-            ma.startPos = _transform.position;
-            ma.duration = _duration;
-            ma.selectedAxis = _selectedAxis;
-            ma.snapToEndValue = _snapToEndValue;
+            MA ma = INTERNAL_CreateTransformMA(_transform, _transform.position);
 
             // Set position according to axis
             switch (_selectedAxis)
@@ -39,12 +35,8 @@ namespace AMA
                 case Axis.All: ma.endPos = new Vector3(_endPos, _endPos, _endPos); break;
             }
 
-            // Apply MA
-            ma.coroutine = ma.MoveToPos();
-            AMACoroutineRunner.Instance.StartCoroutine(ma.coroutine);
-
             // Return MA for other functions
-            return ma;
+            return INTERNAL_AMAmoveTransform(ma, _transform, _selectedAxis, _duration, _snapToEndValue);
         }
 
         /// <summary>
@@ -57,11 +49,7 @@ namespace AMA
         public static MA AMAmove(this Transform _transform, Axis _selectedAxis, Vector3 _endPos, float _duration, bool _snapToEndValue = true)
         {
             // Set up MA
-            MA ma = INTERNAL_CreateMA(_transform);
-            ma.startPos = _transform.position;
-            ma.duration = _duration;
-            ma.selectedAxis = _selectedAxis;
-            ma.snapToEndValue = _snapToEndValue;
+            MA ma = INTERNAL_CreateTransformMA(_transform, _transform.position);
 
             // Set position according to axis
             switch (_selectedAxis)
@@ -72,14 +60,27 @@ namespace AMA
                 case Axis.All: ma.endPos = _endPos; break;
             }
 
-            // Apply MA
-            ma.coroutine = ma.MoveToPos();
-            AMACoroutineRunner.Instance.StartCoroutine(ma.coroutine);
-
             // Return MA for other functions
-            return ma;
+            return INTERNAL_AMAmoveTransform(ma, _transform, _selectedAxis, _duration, _snapToEndValue);
         }
 
+        private static MA INTERNAL_AMAmoveTransform(MA _ma, Transform _transform, Axis _selectedAxis, float _duration, bool _snapToEndValue = true)
+        {
+            // Set up MA
+            _ma.startPos = _transform.position;
+            _ma.duration = _duration;
+            _ma.selectedAxis = _selectedAxis;
+            _ma.snapToEndValue = _snapToEndValue;
+            
+            // Apply MA
+            _ma.coroutine = _ma.MoveToPos();
+            AMACoroutineRunner.Instance.StartCoroutine(_ma.coroutine);
+
+            return _ma;
+        }
+        #endregion
+
+        #region Motion Coroutines
         public static IEnumerator MoveToPos(this MA _ma)
         {
             /// PLACEHOLDER SOLUTION
@@ -123,14 +124,14 @@ namespace AMA
                 // Set position according to axis
                 switch (_ma.selectedAxis)
                 {
-                    case Axis.x: _ma.transform.position = new Vector3(interpolatedPosition.x + externalOffset.x, _ma.transform.position.y, _ma.transform.position.z); break;
-                    case Axis.y: _ma.transform.position = new Vector3(_ma.transform.position.x, interpolatedPosition.y + externalOffset.y, _ma.transform.position.z); break;
-                    case Axis.z: _ma.transform.position = new Vector3(_ma.transform.position.x, _ma.transform.position.y, interpolatedPosition.z + externalOffset.z); break;
-                    case Axis.All: _ma.transform.position = interpolatedPosition + externalOffset; break;
+                    case Axis.x: _ma.SetModifiedValue(new Vector3(interpolatedPosition.x + externalOffset.x, _ma.GetModifiedValue().y, _ma.GetModifiedValue().z)); break;
+                    case Axis.y: _ma.SetModifiedValue(new Vector3(_ma.GetModifiedValue().x, interpolatedPosition.y + externalOffset.y, _ma.GetModifiedValue().z)); break;
+                    case Axis.z: _ma.SetModifiedValue(new Vector3(_ma.GetModifiedValue().x, _ma.GetModifiedValue().y, interpolatedPosition.z + externalOffset.z)); break;
+                    case Axis.All: _ma.SetModifiedValue(interpolatedPosition + externalOffset); break;
                 }
 
                 // Track any external movement since the last frame
-                externalOffset += _ma.transform.position - (interpolatedPosition + externalOffset);
+                externalOffset += _ma.GetModifiedValue() - (interpolatedPosition + externalOffset);
 
                 yield return null;
             }
@@ -140,10 +141,10 @@ namespace AMA
             {
                 switch (_ma.selectedAxis)
                 {
-                    case Axis.x: _ma.transform.position = new Vector3(targetPosition.x, _ma.transform.position.y, _ma.transform.position.z); break;
-                    case Axis.y: _ma.transform.position = new Vector3(_ma.transform.position.x, targetPosition.y, _ma.transform.position.z); break;
-                    case Axis.z: _ma.transform.position = new Vector3(_ma.transform.position.x, _ma.transform.position.y, targetPosition.z); break;
-                    case Axis.All: _ma.transform.position = targetPosition; break;
+                    case Axis.x: _ma.SetModifiedValue(new Vector3(targetPosition.x, _ma.GetModifiedValue().y, _ma.GetModifiedValue().z)); break;
+                    case Axis.y: _ma.SetModifiedValue(new Vector3(_ma.GetModifiedValue().x, targetPosition.y, _ma.GetModifiedValue().z)); break;
+                    case Axis.z: _ma.SetModifiedValue(new Vector3(_ma.GetModifiedValue().x, _ma.GetModifiedValue().y, targetPosition.z)); break;
+                    case Axis.All: _ma.SetModifiedValue(targetPosition); break;
                 }
             }
 
