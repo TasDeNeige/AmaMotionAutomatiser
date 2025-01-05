@@ -66,15 +66,46 @@ namespace AMA
             public override Vector3 GetModifiedValue() { return transform.position; }
             public override void SetModifiedValue(Vector3 _newValue) { transform.position = _newValue; }
         }
+
+        public class MAlocalTransform : MA
+        {
+            public Transform transform;
+
+            public override Vector3 GetModifiedValue() { return transform.localPosition; }
+            public override void SetModifiedValue(Vector3 _newValue) { transform.localPosition = _newValue; }
+        }
         #endregion
 
         #region Creators
         /// <summary>
-        /// Creates a MA with basic parameters. Not intended to be used by user.
+        /// Creates a MA with basic parameters for transform position. Not intended to be used by user.
         /// </summary>
-        public static MA INTERNAL_CreateTransformMA(Transform _transform, Vector3 _mainValue)
+        public static MA INTERNAL_CreateTransformMA(Transform _transform)
         {
             MA ma = new MAtransform()
+            {
+                transform = _transform,
+                isActive = true,
+
+                startPos = new Vector3(0.0f, 0.0f, 0.0f),
+                endPos = new Vector3(0.0f, 0.0f, 0.0f),
+
+                duration = 1.0f,
+                delay = 0.0f,
+                snapToEndValue = true,
+                curveDelegate = AMACurves.GetCurveFunction(Curves.Linear),
+                animationCurve = null,
+            };
+
+            return ma;
+        }
+
+        /// <summary>
+        /// Creates a MA with basic parameters for transform local position. Not intended to be used by user.
+        /// </summary>
+        public static MA INTERNAL_CreateLocalTransformMA(Transform _transform)
+        {
+            MA ma = new MAlocalTransform()
             {
                 transform = _transform,
                 isActive = true,

@@ -14,6 +14,8 @@ namespace AMA
     public static class AMAMotions
     {
         #region Transform
+        #region Move
+        // Using float as End pos
         /// <summary>
         /// Move Game Object to a specific position.
         /// </summary>
@@ -24,7 +26,7 @@ namespace AMA
         public static MA AMAmove(this Transform _transform, Axis _selectedAxis, float _endPos, float _duration, bool _snapToEndValue = true)
         {
             // Set up MA
-            MA ma = INTERNAL_CreateTransformMA(_transform, _transform.position);
+            MA ma = INTERNAL_CreateTransformMA(_transform);
 
             // Set position according to axis
             switch (_selectedAxis)
@@ -39,6 +41,7 @@ namespace AMA
             return INTERNAL_AMAmoveTransform(ma, _transform, _selectedAxis, _duration, _snapToEndValue);
         }
 
+        // Using Vector3 as End pos
         /// <summary>
         /// Moves Game Object to a specific position.
         /// </summary>
@@ -49,7 +52,7 @@ namespace AMA
         public static MA AMAmove(this Transform _transform, Axis _selectedAxis, Vector3 _endPos, float _duration, bool _snapToEndValue = true)
         {
             // Set up MA
-            MA ma = INTERNAL_CreateTransformMA(_transform, _transform.position);
+            MA ma = INTERNAL_CreateTransformMA(_transform);
 
             // Set position according to axis
             switch (_selectedAxis)
@@ -78,6 +81,76 @@ namespace AMA
 
             return _ma;
         }
+        #endregion
+
+        #region Local move
+        // Using float as End pos
+        /// <summary>
+        /// Move Game Object to a specific local position.
+        /// </summary>
+        /// <param name="_selectedAxis">Axis on which to apply motion</param>
+        /// <param name="_endPos">Final position</param>
+        /// <param name="_duration">Time taken to move to given position</param>
+        /// <param name="_snapToEndValue">Snaps object to end position once motion is finished. Defaulted to "True"</param>
+        public static MA AMAlocalMove(this Transform _transform, Axis _selectedAxis, float _endPos, float _duration, bool _snapToEndValue = true)
+        {
+            // Set up MA
+            MA ma = INTERNAL_CreateLocalTransformMA(_transform);
+
+            // Set position according to axis
+            switch (_selectedAxis)
+            {
+                case Axis.x: ma.endPos = new Vector3(_endPos, _transform.localPosition.y, _transform.localPosition.z); break;
+                case Axis.y: ma.endPos = new Vector3(_transform.localPosition.x, _endPos, _transform.localPosition.z); break;
+                case Axis.z: ma.endPos = new Vector3(_transform.localPosition.x, _transform.localPosition.y, _endPos); break;
+                case Axis.All: ma.endPos = new Vector3(_endPos, _endPos, _endPos); break;
+            }
+
+            // Return MA for other functions
+            return INTERNAL_AMAlocalMoveTransform(ma, _transform, _selectedAxis, _duration, _snapToEndValue);
+        }
+
+        // Using Vector3 as End pos
+        /// <summary>
+        /// Move Game Object to a specific local position.
+        /// </summary>
+        /// <param name="_selectedAxis">Axis on which to apply motion</param>
+        /// <param name="_endPos">Final position</param>
+        /// <param name="_duration">Time taken to move to given position</param>
+        /// <param name="_snapToEndValue">Snaps object to end position once motion is finished. Defaulted to "True"</param>
+        public static MA AMAlocalMove(this Transform _transform, Axis _selectedAxis, Vector3 _endPos, float _duration, bool _snapToEndValue = true)
+        {
+            // Set up MA
+            MA ma = INTERNAL_CreateLocalTransformMA(_transform);
+
+            // Set position according to axis
+            switch (_selectedAxis)
+            {
+                case Axis.x: ma.endPos = new Vector3(_endPos.x, _transform.localPosition.y, _transform.localPosition.z); break;
+                case Axis.y: ma.endPos = new Vector3(_transform.localPosition.x, _endPos.y, _transform.localPosition.z); break;
+                case Axis.z: ma.endPos = new Vector3(_transform.localPosition.x, _transform.localPosition.y, _endPos.z); break;
+                case Axis.All: ma.endPos = _endPos; break;
+            }
+
+            // Return MA for other functions
+            return INTERNAL_AMAlocalMoveTransform(ma, _transform, _selectedAxis, _duration, _snapToEndValue);
+        }
+
+        private static MA INTERNAL_AMAlocalMoveTransform(MA _ma, Transform _transform, Axis _selectedAxis, float _duration, bool _snapToEndValue = true)
+        {
+            // Set up MA
+            _ma.startPos = _transform.localPosition;
+            _ma.duration = _duration;
+            _ma.selectedAxis = _selectedAxis;
+            _ma.snapToEndValue = _snapToEndValue;
+
+            // Apply MA
+            _ma.coroutine = _ma.MoveToPos();
+            AMACoroutineRunner.Instance.StartCoroutine(_ma.coroutine);
+
+            return _ma;
+        }
+        #endregion
         #endregion
 
         #region Motion Coroutines
