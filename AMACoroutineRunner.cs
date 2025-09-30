@@ -14,6 +14,8 @@ namespace AMA
     public class AMACoroutineRunner : MonoBehaviour
     {
         private List<IEnumerator> coroutinesToStart = new List<IEnumerator>();
+        private Dictionary<object, List<IEnumerator>> ongoingCoroutines = new Dictionary<object, List<IEnumerator>>();
+
 
         private static AMACoroutineRunner instance;
 
@@ -31,12 +33,7 @@ namespace AMA
             }
         }
 
-        // Start coroutine in late update
-        public void INTERNAL_StartCoroutine(IEnumerator _coroutine)
-        {
-            coroutinesToStart.Add(_coroutine);
-        }
-
+        #region Monobehaviour
         private void LateUpdate()
         {
             // If there are coroutines to start
@@ -52,5 +49,49 @@ namespace AMA
                 coroutinesToStart.Clear();
             }
         }
+        #endregion
+
+        #region Methods
+        // Start coroutine in late update
+        public void INTERNAL_StartCoroutine(object _object, IEnumerator _coroutine)
+        {
+            // Add Coroutine to ongoingMAs
+            if (!ongoingCoroutines.ContainsKey(_object))
+            {
+                // Create list if needed
+                ongoingCoroutines.Add(_object, new List<IEnumerator>());
+            }
+
+            // Add MA to list
+            ongoingCoroutines[_object].Add(_coroutine);
+
+            coroutinesToStart.Add(_coroutine);
+        }
+
+        // Stop Coroutine (from user input)
+        public void INTERNAL_StopCoroutine(object _object)
+        {
+            // Get out if object doesn't have coroutines
+            if (!ongoingCoroutines.ContainsKey(_object)) return;
+
+            // Stop all MAs
+            for (int i = 0; i < ongoingCoroutines[_object].Count; i++)
+            {
+                StopCoroutine(ongoingCoroutines[_object][i]);
+            }
+
+            ongoingCoroutines.Remove(_object);
+        }
+
+        // Delete Coroutine from dict (e.g. used when MA is destroyed)
+        public void INTERNAL_DeleteCoroutine(object _object, IEnumerator _coroutine)
+        {
+            // Get out if object doesn't have coroutines
+            if (!ongoingCoroutines.ContainsKey(_object)) return;
+
+            // Delete Coroutine
+            ongoingCoroutines[_object].Remove(_coroutine);
+        }
+        #endregion
     }
 }

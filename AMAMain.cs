@@ -2,298 +2,414 @@
 // • Ama Motion Automatizer
 // • [ Main file ]
 // • By Amaryne Bréand
-// • Last updated: 31/01/2025
+// • Last updated: 30/03/2025
 //
 
 using UnityEngine;
 using System.Collections;
+using System;
+using TMPro;
 
 namespace AMA
 {
     public delegate void MAfunction();
     public delegate float CurveDelegate(float currentTimeInSeconds, float startValue, float endValue, float duration);
 
-    public enum Axis
-    {
-        x,
-        y,
-        z,
-        All
-    }
+    public enum Axis { x, y, z, All }
 
     public static class AMAMain
     {
-        private static bool debug = true;
+        private static bool debug = false;
+        private static string debugAlertString = $"<b><color=#00C7AC>AMA • </color><color=#F5715D>Debug • </color></b> ";
 
         #region Main class
-        abstract public class MA
+        abstract public class MA<T>
         {
             // Main
             public IEnumerator coroutine;
+            public object unityObject;
 
             // Values
-            public Vector3 startValue;
-            public Vector3 endValue;
+            public T startValue;
+            public T endValue;
 
             // Miscellaneous
             public bool isActive;
+            public bool isStopNeeded;
             public bool snapToEndValue;
             public Axis selectedAxis;
             public float duration;
             public float delay;
-            // Curves Miscellaneous
-            public CurveDelegate curveDelegate;
-            public AnimationCurve animationCurve;
+            public CurveDelegate curveDelegate = AMACurves.GetCurveFunction(Curves.Linear);
+            public AnimationCurve animationCurve = null;
 
             // Functions
             public MAfunction onStartFunc;
+            public MAfunction onLateStartFunc;
             public MAfunction onCompleteFunc;
+
+            // Creators
+            public MA() { }
+            public MA(T _start, T _end, float _duration = 1.0f, float _delay = 0.0f, bool _snapToEnd = true)
+            {
+                startValue = _start;
+                endValue = _end;
+                duration = _duration;
+                delay = _delay;
+                snapToEndValue = _snapToEnd;
+                isActive = true;
+
+                curveDelegate = AMACurves.GetCurveFunction(Curves.Linear);
+                animationCurve = null;
+            }
 
             // Destructor
             ~MA() { this.INTERNAL_Destroy(); }
 
-            // Methods
-            public abstract Vector3 GetModifiedValue();
-            public abstract void SetModifiedValue(Vector3 _newValue);
+            #region Methods
+            public abstract bool GetAvailability();
+            public abstract T GetModifiedValue();
+            public abstract void SetModifiedValue(T _newValue);
+
+            // Generic interpolation
+            public T Lerp(T startValue, T endValue, float t)
+            {
+                switch (typeof(T))
+                {
+                    case Type T when T == typeof(float):
+                        return (T)(object)Mathf.Lerp((float)(object)startValue, (float)(object)endValue, t);
+
+                    case Type T when T == typeof(Vector3):
+                        return (T)(object)Vector3.LerpUnclamped((Vector3)(object)startValue, (Vector3)(object)endValue, t);
+
+                    case Type T when T == typeof(Quaternion):
+                        return (T)(object)Quaternion.LerpUnclamped((Quaternion)(object)startValue, (Quaternion)(object)endValue, t);
+
+                    case Type T when T == typeof(Color):
+                        return (T)(object)Color.LerpUnclamped((Color)(object)startValue, (Color)(object)endValue, t);
+
+                    default:
+                        Debug.LogError(debugAlertString + $"Lerp not implemented for type {typeof(T)}");
+                        return startValue;
+                }
+            }
+
+            // Neutral value for each type
+            public T ZeroValue()
+            {
+                switch (typeof(T))
+                {
+                    case Type T when T == typeof(float):
+                        return (T)(object)0f;
+
+                    case Type T when T == typeof(Vector3):
+                        return (T)(object)Vector3.zero;
+
+                    case Type T when T == typeof(Quaternion):
+                        return (T)(object)Quaternion.identity;
+
+                    case Type T when T == typeof(Color):
+                        return (T)(object)Color.clear;
+
+                    default:
+                        Debug.LogError(debugAlertString + $"ZeroValue not implemented for type {typeof(T)}");
+                        return default;
+                }
+            }
+
+            public T ApplyAxisMask(Axis selectedAxis, T changedValue)
+            {
+                // Vector 3
+                if (typeof(T) == typeof(Vector3))
+                {
+                    Vector3 _changedValue = (Vector3)(object)changedValue;
+                    Vector3 _unchangedValue = (Vector3)(object)GetModifiedValue();
+
+                    switch (selectedAxis)
+                    {
+                        case Axis.x: return (T)(object)new Vector3(_changedValue.x, _unchangedValue.y, _unchangedValue.z);
+                        case Axis.y: return (T)(object)new Vector3(_unchangedValue.x, _changedValue.y, _unchangedValue.z);
+                        case Axis.z: return (T)(object)new Vector3(_unchangedValue.x, _unchangedValue.y, _changedValue.z);
+                        case Axis.All: return changedValue;
+                    }
+                }
+
+                // Color
+                else if (typeof(T) == typeof(Color))
+                {
+                    return changedValue;
+                }
+
+                // Quaternion
+                else if (typeof(T) == typeof(Quaternion))
+                {
+                    Quaternion _changedValue = (Quaternion)(object)changedValue;
+                    Quaternion _unchangedValue = (Quaternion)(object)GetModifiedValue();
+
+                    switch (selectedAxis)
+                    {
+                        case Axis.x: return (T)(object)new Quaternion(_changedValue.x, _unchangedValue.y, _unchangedValue.z, _unchangedValue.w);
+                        case Axis.y: return (T)(object)new Quaternion(_unchangedValue.x, _changedValue.y, _unchangedValue.z, _unchangedValue.w);
+                        case Axis.z: return (T)(object)new Quaternion(_unchangedValue.x, _unchangedValue.y, _changedValue.z, _unchangedValue.w);
+                        case Axis.All: return changedValue;
+                    }
+                }
+
+                Debug.LogError(debugAlertString + $"ApplyAxisMask not implemented for type {typeof(T)}");
+                return changedValue;
+            }
+
+            public T ValueAccordingToAxis(Axis selectedAxis, T value, T offset)
+            {
+                // Vector 3
+                if (typeof(T) == typeof(Vector3))
+                {
+                    Vector3 _value = (Vector3)(object)value;
+                    Vector3 _offset = (Vector3)(object)offset;
+                    Vector3 _unchangedValue = (Vector3)(object)GetModifiedValue();
+
+                    switch (selectedAxis)
+                    {
+                        case Axis.x: return (T)(object)new Vector3(_value.x + _offset.x, _unchangedValue.y, _unchangedValue.z);
+                        case Axis.y: return (T)(object)new Vector3(_unchangedValue.x, _value.y + _offset.y, _unchangedValue.z);
+                        case Axis.z: return (T)(object)new Vector3(_unchangedValue.x, _unchangedValue.y, _value.z + _offset.z);
+                        case Axis.All: return (T)(object)(_value + _offset);
+                    }
+                }
+
+                // Color
+                else if (typeof(T) == typeof(Color))
+                {
+                    Color _value = (Color)(object)value;
+                    Color _offset = (Color)(object)offset;
+                    return (T)(object)(_value + _offset);
+                }
+
+                // Quaternion
+                else if (typeof(T) == typeof(Quaternion))
+                {
+                    Quaternion _value = (Quaternion)(object)value;
+                    Quaternion _offset = (Quaternion)(object)offset;
+                    Quaternion _unchangedValue = (Quaternion)(object)GetModifiedValue();
+
+                    switch (selectedAxis)
+                    {
+                        case Axis.x: return (T)(object)new Quaternion(_value.x + _offset.x, _unchangedValue.y, _unchangedValue.z, _unchangedValue.w);
+                        case Axis.y: return (T)(object)new Quaternion(_unchangedValue.x, _value.y + _offset.y, _unchangedValue.z, _unchangedValue.w);
+                        case Axis.z: return (T)(object)new Quaternion(_unchangedValue.x, _unchangedValue.y, _value.z + _offset.z, _unchangedValue.w);
+                        case Axis.All: return (T)(object)(_value * _offset);
+                    }
+                }
+
+                Debug.LogError(debugAlertString + $"ValueAccordingToAxis not implemented for type {typeof(T)}");
+                return offset;
+            }
+
+            // Calculate external offset
+            public T GetExternalOffset(T interpolatedValue, T previousOffset)
+            {
+                // Vector 3
+                if (typeof(T) == typeof(Vector3))
+                {
+                    Vector3 interp = (Vector3)(object)interpolatedValue;
+                    Vector3 prevOff = (Vector3)(object)previousOffset;
+                    Vector3 modified = (Vector3)(object)GetModifiedValue();
+
+                    return (T)(object)(modified - (interp + prevOff));
+                }
+
+                // Color
+                else if (typeof(T) == typeof(Color))
+                {
+                    Color interp = (Color)(object)interpolatedValue;
+                    Color prevOff = (Color)(object)previousOffset;
+                    Color modified = (Color)(object)GetModifiedValue();
+
+                    return (T)(object)(modified - (interp + prevOff));
+                }
+
+                // Quaternion
+                if (typeof(T) == typeof(Quaternion))
+                {
+                    Quaternion interp = (Quaternion)(object)interpolatedValue;
+                    Quaternion prevOff = (Quaternion)(object)previousOffset;
+                    Quaternion modified = (Quaternion)(object)GetModifiedValue();
+
+                    return (T)(object)(Quaternion.Inverse(interp * prevOff) * modified);
+                }
+
+                Debug.LogError(debugAlertString + $"GetExternalOffset not implemented for type {typeof(T)}");
+                return ZeroValue();
+            }
+
+            #endregion
         }
         #endregion
 
         #region Overriders
         #region Move
         #region Transform
-        public class MAMoveTransform : MA
+        public class MAMoveTransform : MA<Vector3>
         {
             public Transform transform;
 
-            public override Vector3 GetModifiedValue() { return transform.position; }
-            public override void SetModifiedValue(Vector3 _newValue) { transform.position = _newValue; }
+            public override bool GetAvailability() => !(transform == null);
+            public override Vector3 GetModifiedValue() => transform.position;
+            public override void SetModifiedValue(Vector3 _newValue) => transform.position = _newValue;
         }
 
-        public class MAMovelocalTransform : MA
+        public class MAMoveLocalTransform : MA<Vector3>
         {
             public Transform transform;
 
-            public override Vector3 GetModifiedValue() { return transform.localPosition; }
-            public override void SetModifiedValue(Vector3 _newValue) { transform.localPosition = _newValue; }
+            public override bool GetAvailability() => !(transform == null);
+            public override Vector3 GetModifiedValue() => transform.localPosition;
+            public override void SetModifiedValue(Vector3 _newValue) => transform.localPosition = _newValue;
         }
         #endregion
 
         #region Rect Transform
-        public class MAMoveRectTransform : MA
+        public class MAMoveRectTransform : MA<Vector3>
         {
             public RectTransform rectTransform;
 
-            public override Vector3 GetModifiedValue() { return rectTransform.position; }
-            public override void SetModifiedValue(Vector3 _newValue) { rectTransform.position = _newValue; }
+            public override bool GetAvailability() => !(rectTransform == null);
+            public override Vector3 GetModifiedValue() => rectTransform.position;
+            public override void SetModifiedValue(Vector3 _newValue) => rectTransform.position = _newValue;
         }
 
-        public class MAMoveLocalRectTransform : MA
+        public class MAMoveLocalRectTransform : MA<Vector3>
         {
             public RectTransform rectTransform;
 
-            public override Vector3 GetModifiedValue() { return rectTransform.localPosition; }
-            public override void SetModifiedValue(Vector3 _newValue) { rectTransform.localPosition = _newValue; }
+            public override bool GetAvailability() => !(rectTransform == null);
+            public override Vector3 GetModifiedValue() => rectTransform.localPosition;
+            public override void SetModifiedValue(Vector3 _newValue) => rectTransform.localPosition = _newValue;
         }
 
-        public class MAMoveAnchoredPositionRectTransform : MA
+        public class MAMoveAnchoredPositionRectTransform : MA<Vector3>
         {
             public RectTransform rectTransform;
 
-            public override Vector3 GetModifiedValue() { return rectTransform.anchoredPosition; }
-            public override void SetModifiedValue(Vector3 _newValue) { rectTransform.anchoredPosition = _newValue; }
+            public override bool GetAvailability() => !(rectTransform == null);
+            public override Vector3 GetModifiedValue() => rectTransform.anchoredPosition;
+            public override void SetModifiedValue(Vector3 _newValue) => rectTransform.anchoredPosition = _newValue;
         }
 
-        public class MAMoveAnchoredPosition3dRectTransform : MA
+        public class MAMoveAnchoredPosition3DRectTransform : MA<Vector3>
         {
             public RectTransform rectTransform;
 
-            public override Vector3 GetModifiedValue() { return rectTransform.anchoredPosition3D; }
-            public override void SetModifiedValue(Vector3 _newValue) { rectTransform.anchoredPosition3D = _newValue; }
+            public override bool GetAvailability() => !(rectTransform == null);
+            public override Vector3 GetModifiedValue() => rectTransform.anchoredPosition3D;
+            public override void SetModifiedValue(Vector3 _newValue) => rectTransform.anchoredPosition3D = _newValue;
         }
-
         #endregion
         #endregion
 
         #region Scale
         #region Transform
-        public class MAScaleTransform : MA
+        public class MAScaleTransform : MA<Vector3>
         {
             public Transform transform;
 
-            public override Vector3 GetModifiedValue() { return transform.localScale; }
-            public override void SetModifiedValue(Vector3 _newValue) { transform.localScale = _newValue; }
+            public override bool GetAvailability() => !(transform == null);
+            public override Vector3 GetModifiedValue() => transform.localScale;
+            public override void SetModifiedValue(Vector3 _newValue) => transform.localScale = _newValue;
         }
         #endregion
+
         #region RectTransform
-        public class MAScaleRectTransform : MA
+        public class MAScaleRectTransform : MA<Vector3>
         {
             public RectTransform rectTransform;
 
-            public override Vector3 GetModifiedValue() { return rectTransform.localScale; }
-            public override void SetModifiedValue(Vector3 _newValue) { rectTransform.localScale = _newValue; }
-        }
-        #endregion
-        #endregion
-        #endregion
-
-        #region Creators
-        /// <summary>
-        /// Principal MA setup function. Not intended to be used by user.
-        /// </summary>
-        private static MA INTERNAL_SetUpMA(MA _ma)
-        {
-            _ma.isActive = true;
-
-            _ma.startValue = new Vector3(0.0f, 0.0f, 0.0f);
-            _ma.endValue = new Vector3(0.0f, 0.0f, 0.0f);
-
-            _ma.duration = 1.0f;
-            _ma.delay = 0.0f;
-            _ma.snapToEndValue = true;
-            _ma.curveDelegate = AMACurves.GetCurveFunction(Curves.Linear);
-            _ma.animationCurve = null;
-
-            return _ma;
-        }
-
-        #region Move
-        #region Transform
-        /// <summary>
-        /// Creates a MA with basic parameters for transform position. Not intended to be used by user.
-        /// </summary>
-        public static MA INTERNAL_CreateMoveTransformMA(Transform _transform)
-        {
-            MA ma = new MAMoveTransform()
-            {
-                transform = _transform
-            };
-
-            INTERNAL_SetUpMA(ma);
-            return ma;
-        }
-
-        /// <summary>
-        /// Creates a MA with basic parameters for transform local position. Not intended to be used by user.
-        /// </summary>
-        public static MA INTERNAL_CreateMoveLocalTransformMA(Transform _transform)
-        {
-            MA ma = new MAMovelocalTransform()
-            {
-                transform = _transform
-            };
-
-            INTERNAL_SetUpMA(ma);
-            return ma;
-        }
-        #endregion
-
-        #region RectTransform
-        /// <summary>
-        /// Creates a MA with basic parameters for rect transform position. Not intended to be used by user.
-        /// </summary>
-        public static MA INTERNAL_CreateMoveRectTransformMA(RectTransform _rectTransform)
-        {
-            MA ma = new MAMoveRectTransform()
-            {
-                rectTransform = _rectTransform
-            };
-
-            INTERNAL_SetUpMA(ma);
-            return ma;
-        }
-
-        /// <summary>
-        /// Creates a MA with basic parameters for local rect transform position. Not intended to be used by user.
-        /// </summary>
-        public static MA INTERNAL_CreateMoveLocalRectTransformMA(RectTransform _rectTransform)
-        {
-            MA ma = new MAMoveLocalRectTransform()
-            {
-                rectTransform = _rectTransform
-            };
-
-            INTERNAL_SetUpMA(ma);
-            return ma;
-        }
-        
-        /// <summary>
-        /// Creates a MA with basic parameters for local rect transform position. Not intended to be used by user.
-        /// </summary>
-        public static MA INTERNAL_CreateMoveAnchoredPositionRectTransformMA(RectTransform _rectTransform)
-        {
-            MA ma = new MAMoveAnchoredPositionRectTransform()
-            {
-                rectTransform = _rectTransform
-            };
-
-            INTERNAL_SetUpMA(ma);
-            return ma;
-        }
-
-        /// <summary>
-        /// Creates a MA with basic parameters for local rect transform position. Not intended to be used by user.
-        /// </summary>
-        public static MA INTERNAL_CreateMoveAnchoredPosition3dRectTransformMA(RectTransform _rectTransform)
-        {
-            MA ma = new MAMoveAnchoredPosition3dRectTransform()
-            {
-                rectTransform = _rectTransform
-            };
-
-            INTERNAL_SetUpMA(ma);
-            return ma;
+            public override bool GetAvailability() => !(rectTransform == null);
+            public override Vector3 GetModifiedValue() => rectTransform.localScale;
+            public override void SetModifiedValue(Vector3 _newValue) => rectTransform.localScale = _newValue;
         }
         #endregion
         #endregion
 
-        #region Scale
-        #region Transform
-        /// <summary>
-        /// Creates a MA with basic parameters for transform position. Not intended to be used by user.
-        /// </summary>
-        public static MA INTERNAL_CreateScaleTransformMA(Transform _transform)
+        #region Fade
+        #region Material
+        public class MAFadeMaterial : MA<Color>
         {
-            MA ma = new MAScaleTransform()
-            {
-                transform = _transform
-            };
+            public Material material;
 
-            INTERNAL_SetUpMA(ma);
-            return ma;
+            public override bool GetAvailability() => !(material == null);
+            public override Color GetModifiedValue() => material.color;
+            public override void SetModifiedValue(Color _newValue) => material.color = _newValue;
         }
         #endregion
 
-        #region RectTransform
-        /// <summary>
-        /// Creates a MA with basic parameters for transform position. Not intended to be used by user.
-        /// </summary>
-        public static MA INTERNAL_CreateScaleRectTransformMA(RectTransform _rectTransform)
+        #region Image
+        public class MAFadeImage : MA<Color>
         {
-            MA ma = new MAScaleTransform()
-            {
-                transform = _rectTransform
-            };
+            public UnityEngine.UI.Image image;
 
-            INTERNAL_SetUpMA(ma);
-            return ma;
+            public override bool GetAvailability() => !(image == null);
+            public override Color GetModifiedValue() => image.color;
+            public override void SetModifiedValue(Color _newValue) => image.color = _newValue;
+        }
+        #endregion
+
+        #region Image
+        public class MAFadeTmpText : MA<Color>
+        {
+            public TMP_Text text;
+
+            public override bool GetAvailability() => !(text == null);
+            public override Color GetModifiedValue() => text.color;
+            public override void SetModifiedValue(Color _newValue) => text.color = _newValue;
+        }
+        #endregion
+
+        #region Color
+        public class MAFadeColor : MA<Color>
+        {
+            public Color color;
+
+            public override bool GetAvailability() => !(color == null);
+            public override Color GetModifiedValue() => color;
+            public override void SetModifiedValue(Color _newValue) => color = _newValue;
+        }
+        #endregion
+        #endregion
+
+        #region Rotate
+        #region Quaternion
+        public class MARotateQuaternionTransform : MA<Quaternion>
+        {
+            public Transform transform;
+
+            public override bool GetAvailability() => !(transform == null);
+            public override Quaternion GetModifiedValue() => transform.rotation;
+            public override void SetModifiedValue(Quaternion _newValue) => transform.rotation = _newValue;
+        }
+        #endregion
+
+        #region Euler Angles
+        public class MARotateEulerTransform : MA<Vector3>
+        {
+            public Transform transform;
+
+            public override bool GetAvailability() => !(transform == null);
+            public override Vector3 GetModifiedValue() => transform.rotation.eulerAngles;
+            public override void SetModifiedValue(Vector3 _newValue) => transform.rotation = Quaternion.Euler(_newValue);
         }
         #endregion
         #endregion
         #endregion
 
         #region Destructor
-        /// <summary>
-        /// Destroys MA. Not intended to be used by user.
-        /// </summary>
-        public static void INTERNAL_Destroy(this MA _ma)
+        public static void INTERNAL_Destroy<T>(this MA<T> _ma)
         {
-            // Ensures coroutine is stopped (if still running)
-            if (_ma.coroutine != null) { AMACoroutineRunner.Instance.StopCoroutine(_ma.coroutine); }
+            AMACoroutineRunner.Instance.INTERNAL_DeleteCoroutine(_ma.unityObject, _ma.coroutine);
 
-            // Nullify references to free resources
             _ma.coroutine = null;
-            _ma.startValue = Vector3.zero;
-            _ma.endValue = Vector3.zero;
+            _ma.startValue = default;
+            _ma.endValue = default;
             _ma.isActive = false;
             _ma.snapToEndValue = false;
             _ma.duration = 0;
@@ -304,13 +420,12 @@ namespace AMA
             _ma.onStartFunc = null;
             _ma.onCompleteFunc = null;
 
-            _ma = null;
-
-#if UNITY_EDITOR
-            /// Put 'debug' to false to suppress this log.
-            if (debug) Debug.Log($"<color=#00C7AC>MA object has been destroyed.</color>");
-#endif
+            #if UNITY_EDITOR
+            if (debug) Debug.Log(debugAlertString + "<color=#0CB167>MA object has been destroyed.</color>");
+            #endif
         }
         #endregion
+
+        public static void ToggleDebug(bool _bool) => debug = _bool;
     }
 }

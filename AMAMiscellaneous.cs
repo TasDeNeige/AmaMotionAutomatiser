@@ -2,7 +2,7 @@
 // • Ama Motion Automatizer
 // • [ Miscellaneous Methods ]
 // • By Amaryne Bréand
-// • Last updated: 03/01/2025
+// • Last updated: 30/03/2025
 //
 
 using UnityEngine;
@@ -20,7 +20,7 @@ namespace AMA
         /// Execute given function when MA starts.
         /// </summary>
         /// <param name="_action">Function to execute</param>
-        public static MA OnStart(this MA _ma, MAfunction _action)
+        public static MA<T> OnStart<T>(this MA<T> _ma, MAfunction _action)
         {
             if (_ma == null)
             {
@@ -32,10 +32,25 @@ namespace AMA
         }
 
         /// <summary>
+        /// Execute given function after first MA's first frame.
+        /// </summary>
+        /// <param name="_action">Function to execute</param>
+        public static MA<T> OnLateStart<T>(this MA<T> _ma, MAfunction _action)
+        {
+            if (_ma == null)
+            {
+                return _ma;
+            }
+
+            _ma.onLateStartFunc = _action;
+            return _ma;
+        }
+
+        /// <summary>
         /// Execute given function when MA ends.
         /// </summary>
         /// <param name="_action">Function to execute</param>
-        public static MA OnEnd(this MA _ma, MAfunction _action)
+        public static MA<T> OnEnd<T>(this MA<T> _ma, MAfunction _action)
         {
             if (_ma == null)
             {
@@ -51,10 +66,19 @@ namespace AMA
         /// Set delay before executing MA.
         /// </summary>
         /// <param name="_delay">Delay before execution</param>
-        public static MA SetDelay(this MA _ma, float _delay)
+        public static MA<T> SetDelay<T>(this MA<T> _ma, float _delay)
         {
             _ma.delay = _delay;
             return _ma;
+        }
+
+        /// <summary>
+        /// Stop all Automations on an Object
+        /// </summary>
+        /// <param name="_delay">Delay before execution</param>
+        public static void StopMA(this object _object)
+        {
+            AMACoroutineRunner.Instance.INTERNAL_StopCoroutine(_object);
         }
 
         #region Set Curves
@@ -62,7 +86,7 @@ namespace AMA
         /// Set curve to moderate MA's movement.
         /// </summary>
         /// <param name="_curve">Curve to use.</param>
-        public static MA SetCurve(this MA _ma, Curves _curve)
+        public static MA<T> SetCurve<T>(this MA<T> _ma, Curves _curve)
         {
             _ma.curveDelegate = GetCurveFunction(_curve);
             return _ma;
@@ -72,7 +96,7 @@ namespace AMA
         /// Set curve to moderate MA's movement.
         /// </summary>
         /// <param name="_curve">Curve to use.</param>
-        public static MA SetCurve(this MA _ma, AnimationCurve _curve)
+        public static MA<T> SetCurve<T>(this MA<T> _ma, AnimationCurve _curve)
         {
             //_ma.curveDelegate = GetCurveFunction(Curves.CUSTOM); // may be used someday?
             _ma.animationCurve = _curve;

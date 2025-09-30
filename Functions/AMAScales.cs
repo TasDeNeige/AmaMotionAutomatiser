@@ -2,11 +2,10 @@
 // • Ama Motion Automatizer
 // • [ Scaling Methods ]
 // • By Amaryne Bréand
-// • Last updated: 31/01/2025
+// • Last updated: 30/03/2025
 //
 
 using UnityEngine;
-using System.Collections;
 using static AMA.AMAMain;
 
 namespace AMA
@@ -24,25 +23,27 @@ namespace AMA
         /// <param name="_endValue">Final value</param>
         /// <param name="_duration">Time taken to scale to given value</param>
         /// <param name="_snapToEndValue">Snaps object to end value once motion is finished. Defaulted to "True"</param>
-        public static MA AMAscale(this Transform _transform, Axis _selectedAxis, float _endValue, float _duration, bool _snapToEndValue = true)
+        public static MA<Vector3> AMAscale(this Transform _transform, Axis _selectedAxis, float _endValue, float _duration, bool _snapToEndValue = true)
         {
             // Set up MA
-            MA ma = INTERNAL_CreateScaleTransformMA(_transform);
+            MAScaleTransform _ma = new MAScaleTransform();
+            _ma.unityObject = _transform;
+            _ma.transform = _transform;
+            _ma.selectedAxis = _selectedAxis;
+            _ma.startValue = _ma.transform.localScale;
+            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, new Vector3(_endValue, _endValue, _endValue));
+            _ma.duration = _duration;
+            _ma.snapToEndValue = _snapToEndValue;
 
-            // Set position according to axis
-            switch (_selectedAxis)
-            {
-                case Axis.x: ma.endValue = new Vector3(_endValue, _transform.localScale.y, _transform.localScale.z); break;
-                case Axis.y: ma.endValue = new Vector3(_transform.localScale.x, _endValue, _transform.localScale.z); break;
-                case Axis.z: ma.endValue = new Vector3(_transform.localScale.x, _transform.localScale.y, _endValue); break;
-                case Axis.All: ma.endValue = new Vector3(_endValue, _endValue, _endValue); break;
-            }
+            // Apply MA
+            _ma.coroutine = _ma.MotionToEndValue();
+            AMACoroutineRunner.Instance.INTERNAL_StartCoroutine(_transform, _ma.coroutine);
 
             // Return MA for other functions
-            return INTERNAL_AMAscaleTransform(ma, _transform, _selectedAxis, _duration, _snapToEndValue);
+            return _ma;
         }
 
-        // Using float as End value
+        // Using Vector3 as End value
         /// <summary>
         /// Scale Game Object to a specific value.
         /// </summary>
@@ -50,38 +51,23 @@ namespace AMA
         /// <param name="_endValue">Final value</param>
         /// <param name="_duration">Time taken to scale to given value</param>
         /// <param name="_snapToEndValue">Snaps object to end value once motion is finished. Defaulted to "True"</param>
-        public static MA AMAscale(this Transform _transform, Axis _selectedAxis, Vector3 _endValue, float _duration, bool _snapToEndValue = true)
+        public static MA<Vector3> AMAscale(this Transform _transform, Axis _selectedAxis, Vector3 _endValue, float _duration, bool _snapToEndValue = true)
         {
             // Set up MA
-            MA ma = INTERNAL_CreateScaleTransformMA(_transform);
-
-            // Set position according to axis
-            switch (_selectedAxis)
-            {
-                case Axis.x: ma.endValue = new Vector3(_endValue.x, _transform.localScale.y, _transform.localScale.z); break;
-                case Axis.y: ma.endValue = new Vector3(_transform.localScale.x, _endValue.y, _transform.localScale.z); break;
-                case Axis.z: ma.endValue = new Vector3(_transform.localScale.x, _transform.localScale.y, _endValue.z); break;
-                case Axis.All: ma.endValue = _endValue; break;
-            }
-
-            // Return MA for other functions
-            return INTERNAL_AMAscaleTransform(ma, _transform, _selectedAxis, _duration, _snapToEndValue);
-        }
-
-        // ------------------------------------------ [ INTERNAL FUNCTIONS ] ------------------------------------------ //
-
-        private static MA INTERNAL_AMAscaleTransform(MA _ma, Transform _transform, Axis _selectedAxis, float _duration, bool _snapToEndValue = true)
-        {
-            // Set up MA
-            _ma.startValue = _transform.localScale;
-            _ma.duration = _duration;
+            MAScaleTransform _ma = new MAScaleTransform();
+            _ma.unityObject = _transform;
+            _ma.transform = _transform;
             _ma.selectedAxis = _selectedAxis;
+            _ma.startValue = _ma.transform.localScale;
+            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, _endValue);
+            _ma.duration = _duration;
             _ma.snapToEndValue = _snapToEndValue;
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
-            AMACoroutineRunner.Instance.INTERNAL_StartCoroutine(_ma.coroutine);
+            AMACoroutineRunner.Instance.INTERNAL_StartCoroutine(_transform, _ma.coroutine);
 
+            // Return MA for other functions
             return _ma;
         }
         #endregion
@@ -97,25 +83,27 @@ namespace AMA
         /// <param name="_endValue">Final value</param>
         /// <param name="_duration">Time taken to scale to given value</param>
         /// <param name="_snapToEndValue">Snaps object to end value once motion is finished. Defaulted to "True"</param>
-        public static MA AMAscale(this RectTransform _rectTransform, Axis _selectedAxis, float _endValue, float _duration, bool _snapToEndValue = true)
+        public static MA<Vector3> AMAscale(this RectTransform _rectTransform, Axis _selectedAxis, float _endValue, float _duration, bool _snapToEndValue = true)
         {
             // Set up MA
-            MA ma = INTERNAL_CreateScaleTransformMA(_rectTransform);
+            MAScaleRectTransform _ma = new MAScaleRectTransform();
+            _ma.unityObject = _rectTransform;
+            _ma.rectTransform = _rectTransform;
+            _ma.selectedAxis = _selectedAxis;
+            _ma.startValue = _ma.rectTransform.localScale;
+            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, new Vector3(_endValue, _endValue, _endValue));
+            _ma.duration = _duration;
+            _ma.snapToEndValue = _snapToEndValue;
 
-            // Set position according to axis
-            switch (_selectedAxis)
-            {
-                case Axis.x: ma.endValue = new Vector3(_endValue, _rectTransform.localScale.y, _rectTransform.localScale.z); break;
-                case Axis.y: ma.endValue = new Vector3(_rectTransform.localScale.x, _endValue, _rectTransform.localScale.z); break;
-                case Axis.z: ma.endValue = new Vector3(_rectTransform.localScale.x, _rectTransform.localScale.y, _endValue); break;
-                case Axis.All: ma.endValue = new Vector3(_endValue, _endValue, _endValue); break;
-            }
+            // Apply MA
+            _ma.coroutine = _ma.MotionToEndValue();
+            AMACoroutineRunner.Instance.INTERNAL_StartCoroutine(_rectTransform, _ma.coroutine);
 
             // Return MA for other functions
-            return INTERNAL_AMAscaleTransform(ma, _rectTransform, _selectedAxis, _duration, _snapToEndValue);
+            return _ma;
         }
 
-        // Using float as End value
+        // Using Vector3 as End value
         /// <summary>
         /// Scale Game Object to a specific value.
         /// </summary>
@@ -123,38 +111,23 @@ namespace AMA
         /// <param name="_endValue">Final value</param>
         /// <param name="_duration">Time taken to scale to given value</param>
         /// <param name="_snapToEndValue">Snaps object to end value once motion is finished. Defaulted to "True"</param>
-        public static MA AMAscale(this RectTransform _rectTransform, Axis _selectedAxis, Vector3 _endValue, float _duration, bool _snapToEndValue = true)
+        public static MA<Vector3> AMAscale(this RectTransform _rectTransform, Axis _selectedAxis, Vector3 _endValue, float _duration, bool _snapToEndValue = true)
         {
             // Set up MA
-            MA ma = INTERNAL_CreateScaleTransformMA(_rectTransform);
-
-            // Set position according to axis
-            switch (_selectedAxis)
-            {
-                case Axis.x: ma.endValue = new Vector3(_endValue.x, _rectTransform.localScale.y, _rectTransform.localScale.z); break;
-                case Axis.y: ma.endValue = new Vector3(_rectTransform.localScale.x, _endValue.y, _rectTransform.localScale.z); break;
-                case Axis.z: ma.endValue = new Vector3(_rectTransform.localScale.x, _rectTransform.localScale.y, _endValue.z); break;
-                case Axis.All: ma.endValue = _endValue; break;
-            }
-
-            // Return MA for other functions
-            return INTERNAL_AMAscaleTransform(ma, _rectTransform, _selectedAxis, _duration, _snapToEndValue);
-        }
-
-        // ------------------------------------------ [ INTERNAL FUNCTIONS ] ------------------------------------------ //
-
-        private static MA INTERNAL_AMAscaleRectTransform(MA _ma, RectTransform _rectTransform, Axis _selectedAxis, float _duration, bool _snapToEndValue = true)
-        {
-            // Set up MA
-            _ma.startValue = _rectTransform.localScale;
-            _ma.duration = _duration;
+            MAScaleRectTransform _ma = new MAScaleRectTransform();
+            _ma.unityObject = _rectTransform;
+            _ma.rectTransform = _rectTransform;
             _ma.selectedAxis = _selectedAxis;
+            _ma.startValue = _ma.rectTransform.localScale;
+            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, _endValue);
+            _ma.duration = _duration;
             _ma.snapToEndValue = _snapToEndValue;
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
-            AMACoroutineRunner.Instance.INTERNAL_StartCoroutine(_ma.coroutine);
+            AMACoroutineRunner.Instance.INTERNAL_StartCoroutine(_rectTransform, _ma.coroutine);
 
+            // Return MA for other functions
             return _ma;
         }
         #endregion
