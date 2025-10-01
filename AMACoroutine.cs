@@ -23,6 +23,13 @@ namespace AMA
             // Execute function when MA starts its journey (if there is one)
             if (_ma.onStartFunc != null) { _ma.onStartFunc(); }
 
+            // Set MA to start value (if there is one)
+            if (_ma.hasFromValue)
+            {
+                _ma.SetModifiedValue(_ma.fromValue);
+                _ma.startValue = _ma.fromValue;
+            }
+
             // Set up calculations (big brain timeee)
             T initialPosition = _ma.startValue;
             T targetPosition = _ma.endValue;

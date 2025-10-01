@@ -29,10 +29,12 @@ namespace AMA
             public object unityObject;
 
             // Values
+            public T fromValue;
             public T startValue;
             public T endValue;
 
             // Miscellaneous
+            public bool hasFromValue = false;
             public bool isActive;
             public bool isStopNeeded;
             public bool snapToEndValue;
@@ -407,8 +409,10 @@ namespace AMA
             AMACoroutineRunner.Instance.INTERNAL_DeleteCoroutine(_ma.unityObject, _ma.coroutine);
 
             _ma.coroutine = null;
+            _ma.fromValue = default;
             _ma.startValue = default;
             _ma.endValue = default;
+            _ma.hasFromValue = default;
             _ma.isActive = false;
             _ma.snapToEndValue = false;
             _ma.duration = 0;

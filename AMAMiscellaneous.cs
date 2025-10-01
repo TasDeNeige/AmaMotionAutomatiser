@@ -12,7 +12,6 @@ namespace AMA
 {
     public static class AMAMiscellaneous
     {
-
         #region Methods
         #region On Start/End
         /// <summary>
@@ -61,6 +60,25 @@ namespace AMA
         }
         #endregion
 
+        #region From
+        /// <summary>
+        /// Start animation from a specific value (position, rotation, color...).
+        /// </summary>
+        /// <param name="_action">Function to execute</param>
+        public static MA<T> From<T>(this MA<T> _ma, T _fromValue)
+        {
+            if (_ma == null)
+            {
+                return _ma;
+            }
+
+            _ma.hasFromValue = true;
+            _ma.fromValue = _fromValue;
+            return _ma;
+        }
+        #endregion
+
+        #region Set Delay
         /// <summary>
         /// Set delay before executing MA.
         /// </summary>
@@ -70,7 +88,9 @@ namespace AMA
             _ma.delay = _delay;
             return _ma;
         }
+        #endregion
 
+        #region Stop MA
         /// <summary>
         /// Stop all Automations on an Object
         /// </summary>
@@ -79,6 +99,7 @@ namespace AMA
         {
             AMACoroutineRunner.Instance.INTERNAL_StopCoroutine(_object);
         }
+        #endregion
 
         #region Set Curves
         /// <summary>
