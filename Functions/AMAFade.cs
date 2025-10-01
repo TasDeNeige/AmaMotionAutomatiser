@@ -2,7 +2,6 @@
 // • Ama Motion Automatizer
 // • [ Fading Methods ]
 // • By Amaryne Bréand
-// • Last updated: 02/02/2025
 //
 
 using UnityEngine;

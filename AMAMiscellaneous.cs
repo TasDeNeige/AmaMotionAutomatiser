@@ -2,7 +2,6 @@
 // • Ama Motion Automatizer
 // • [ Miscellaneous Methods ]
 // • By Amaryne Bréand
-// • Last updated: 30/03/2025
 //
 
 using UnityEngine;

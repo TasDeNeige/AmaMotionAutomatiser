@@ -2,7 +2,6 @@
 // • Ama Motion Automatizer
 // • [ Coroutine Runner ]
 // • By Amaryne Bréand
-// • Last updated: 28/01/2025
 //
 
 using System.Collections;

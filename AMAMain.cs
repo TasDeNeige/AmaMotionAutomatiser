@@ -2,7 +2,6 @@
 // • Ama Motion Automatizer
 // • [ Main file ]
 // • By Amaryne Bréand
-// • Last updated: 30/03/2025
 //
 
 using UnityEngine;
