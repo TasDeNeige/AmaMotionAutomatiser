@@ -114,9 +114,11 @@ namespace AMA
             // Set up MA
             MAFadeColor _ma = new MAFadeColor();
             _ma.unityObject = _color;
-            _ma.color = _color;
-            _ma.startValue = _ma.color;
+            _ma.Setter(_color);
+            _ma.startValue = _color;
+            Debug.Log(_ma.startValue);
             _ma.endValue = _endColor;
+            Debug.Log(_ma.endValue);
             _ma.duration = _duration;
             _ma.snapToEndValue = _snapToEndValue;
 
@@ -232,8 +234,8 @@ namespace AMA
             // Set up MA
             MAFadeColor _ma = new MAFadeColor();
             _ma.unityObject = _color;
-            _ma.color = _color;
-            _ma.startValue = _ma.color;
+            _ma.Setter(_color);
+            _ma.startValue = _ma.Getter();
             _ma.endValue = new Color(_ma.startValue.r, _ma.startValue.g, _ma.startValue.b, _endAlpha);
             _ma.duration = _duration;
             _ma.snapToEndValue = _snapToEndValue;

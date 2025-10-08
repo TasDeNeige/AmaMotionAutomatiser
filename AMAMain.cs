@@ -355,7 +355,7 @@ namespace AMA
         }
         #endregion
 
-        #region Image
+        #region TMP Text
         public class MAFadeTmpText : MA<Color>
         {
             public TMP_Text text;
@@ -369,11 +369,18 @@ namespace AMA
         #region Color
         public class MAFadeColor : MA<Color>
         {
-            public Color color;
+            public static Color color;
+
+            //Action<Color> setter = (c) => masuperkolor = c;
+
+            //Action<string> print = (string message) => Debug.Log(message);
+            public Color Getter() => color;
+            public Action<Color> Setter = (Color colorToSet) => color = colorToSet;
+
 
             public override bool GetAvailability() => !(color == null);
             public override Color GetModifiedValue() => color;
-            public override void SetModifiedValue(Color _newValue) => color = _newValue;
+            public override void SetModifiedValue(Color _newValue) => Setter(_newValue);
         }
         #endregion
         #endregion

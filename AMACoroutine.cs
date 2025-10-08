@@ -7,41 +7,136 @@
 using UnityEngine;
 using System.Collections;
 using static AMA.AMAMain;
+using System.Xml.Schema;
 
 namespace AMA
 {
     public static class AMACoroutine
     {
+        //public static IEnumerator MotionToEndValue<T>(this MA<T> _ma)
+        //{
+        //    // Ensure object is still accessible (otherwise get out of coroutine)
+        //    if (!_ma.GetAvailability()) yield break;
+
+        //    // Wait for delay (if there is one)
+        //    if (_ma.delay > 0) { yield return new WaitForSeconds(_ma.delay); }
+
+        //    // Execute function when MA starts its journey (if there is one)
+        //    if (_ma.onStartFunc != null) { _ma.onStartFunc(); }
+
+        //    // Set MA to start value (if there is one)
+        //    if (_ma.hasFromValue)
+        //    {
+        //        _ma.SetModifiedValue(_ma.fromValue);
+        //        _ma.startValue = _ma.fromValue;
+        //    }
+
+        //    // Set up calculations (big brain timeee)
+        //    T initialPosition = _ma.startValue;
+        //    T targetPosition = _ma.endValue;
+        //    T externalOffset = _ma.ZeroValue(); // Tracks external movement
+        //    bool hasWentThroughFirstFrame = false;
+        //    float elapsedTime = 0f;
+
+        //    // While time is cooling down
+        //    while (elapsedTime < _ma.duration)
+        //    {
+        //        // Ensure object is still accessible (otherwise get out of coroutine)
+        //        if (!_ma.GetAvailability()) yield break;
+
+        //        // Call late start function
+        //        if (!hasWentThroughFirstFrame)
+        //        {
+        //            if (elapsedTime > 0f)
+        //            {
+        //                hasWentThroughFirstFrame = true;
+        //                if (_ma.onLateStartFunc != null) { _ma.onLateStartFunc(); }
+        //            }
+        //        }
+
+        //        elapsedTime += Time.deltaTime;
+
+        //        float easedTime = 0;
+
+        //        // If selected curve is a custom one (a.k.a. uses Unity's Animation Curves)
+        //        if (_ma.animationCurve != null)
+        //        {
+        //            float normalizedTime = Mathf.Clamp01(elapsedTime / _ma.duration); // Get progression between 0 & 1
+        //            easedTime = _ma.animationCurve.Evaluate(normalizedTime); // Apply animation curve
+        //        }
+        //        // If selected curve is a regular one
+        //        else
+        //        {
+        //            easedTime = _ma.curveDelegate(elapsedTime, 0, 1, _ma.duration);
+        //        }
+
+        //        // Calculate interpolated position
+        //        T interpolatedValue = _ma.Lerp(initialPosition, targetPosition, easedTime);
+
+        //        // Set position according to axis
+        //        _ma.SetModifiedValue(_ma.ValueAccordingToAxis(_ma.selectedAxis, interpolatedValue, externalOffset));
+
+        //        // Track any external movement since the last frame
+        //        externalOffset = _ma.GetExternalOffset(interpolatedValue, externalOffset);
+
+        //        yield return new WaitForEndOfFrame(); // Make sure to follow Update()
+        //    }
+
+        //    // Ensure object is still accessible (otherwise get out of coroutine)
+        //    if (!_ma.GetAvailability()) yield break;
+
+        //    // Ensures that object has reached its final position
+        //    if (_ma.snapToEndValue) _ma.SetModifiedValue(_ma.ApplyAxisMask(_ma.selectedAxis, targetPosition));
+
+        //    // Execute function when MA has finished its journey (if there is one)
+        //    if (_ma.onCompleteFunc != null) { _ma.onCompleteFunc(); }
+
+        //    // Destroy MA
+        //    _ma.INTERNAL_Destroy();
+        //} // ok goodnight
+
+
         public static IEnumerator MotionToEndValue<T>(this MA<T> _ma)
         {
+            Color testStartColor = Color.white;
+            Color testEndColor = Color.green;
+
+            MAFadeColor testFadeColor = new MAFadeColor();
+            testFadeColor.unityObject = _ma.GetModifiedValue();
+            testFadeColor.Setter(testStartColor);
+            testFadeColor.startValue = testFadeColor.Getter();
+            testFadeColor.endValue = testEndColor;
+            testFadeColor.duration = 5f;
+            testFadeColor.snapToEndValue = true;
+
             // Ensure object is still accessible (otherwise get out of coroutine)
-            if (!_ma.GetAvailability()) yield break;
+            if (!testFadeColor.GetAvailability()) yield break;
 
             // Wait for delay (if there is one)
-            if (_ma.delay > 0) { yield return new WaitForSeconds(_ma.delay); }
+            if (testFadeColor.delay > 0) { yield return new WaitForSeconds(testFadeColor.delay); }
 
             // Execute function when MA starts its journey (if there is one)
-            if (_ma.onStartFunc != null) { _ma.onStartFunc(); }
+            if (testFadeColor.onStartFunc != null) { testFadeColor.onStartFunc(); }
 
             // Set MA to start value (if there is one)
-            if (_ma.hasFromValue)
+            if (testFadeColor.hasFromValue)
             {
-                _ma.SetModifiedValue(_ma.fromValue);
-                _ma.startValue = _ma.fromValue;
+                testFadeColor.SetModifiedValue(testFadeColor.fromValue);
+                testFadeColor.startValue = testFadeColor.fromValue;
             }
 
             // Set up calculations (big brain timeee)
-            T initialPosition = _ma.startValue;
-            T targetPosition = _ma.endValue;
-            T externalOffset = _ma.ZeroValue(); // Tracks external movement
+            Color initialPosition = testFadeColor.startValue;
+            Color targetPosition = testFadeColor.endValue;
+            Color externalOffset = testFadeColor.ZeroValue(); // Tracks external movement
             bool hasWentThroughFirstFrame = false;
             float elapsedTime = 0f;
 
             // While time is cooling down
-            while (elapsedTime < _ma.duration)
+            while (elapsedTime < testFadeColor.duration)
             {
                 // Ensure object is still accessible (otherwise get out of coroutine)
-                if (!_ma.GetAvailability()) yield break;
+                if (!testFadeColor.GetAvailability()) yield break;
 
                 // Call late start function
                 if (!hasWentThroughFirstFrame)
@@ -49,7 +144,7 @@ namespace AMA
                     if (elapsedTime > 0f)
                     {
                         hasWentThroughFirstFrame = true;
-                        if (_ma.onLateStartFunc != null) { _ma.onLateStartFunc(); }
+                        if (testFadeColor.onLateStartFunc != null) { testFadeColor.onLateStartFunc(); }
                     }
                 }
 
@@ -58,40 +153,40 @@ namespace AMA
                 float easedTime = 0;
 
                 // If selected curve is a custom one (a.k.a. uses Unity's Animation Curves)
-                if (_ma.animationCurve != null)
+                if (testFadeColor.animationCurve != null)
                 {
-                    float normalizedTime = Mathf.Clamp01(elapsedTime / _ma.duration); // Get progression between 0 & 1
-                    easedTime = _ma.animationCurve.Evaluate(normalizedTime); // Apply animation curve
+                    float normalizedTime = Mathf.Clamp01(elapsedTime / testFadeColor.duration); // Get progression between 0 & 1
+                    easedTime = testFadeColor.animationCurve.Evaluate(normalizedTime); // Apply animation curve
                 }
                 // If selected curve is a regular one
                 else
                 {
-                    easedTime = _ma.curveDelegate(elapsedTime, 0, 1, _ma.duration);
+                    easedTime = testFadeColor.curveDelegate(elapsedTime, 0, 1, testFadeColor.duration);
                 }
 
                 // Calculate interpolated position
-                T interpolatedValue = _ma.Lerp(initialPosition, targetPosition, easedTime);
+                Color interpolatedValue = testFadeColor.Lerp(initialPosition, targetPosition, easedTime);
 
                 // Set position according to axis
-                _ma.SetModifiedValue(_ma.ValueAccordingToAxis(_ma.selectedAxis, interpolatedValue, externalOffset));
+                testFadeColor.SetModifiedValue(testFadeColor.ValueAccordingToAxis(testFadeColor.selectedAxis, interpolatedValue, externalOffset));
 
                 // Track any external movement since the last frame
-                externalOffset = _ma.GetExternalOffset(interpolatedValue, externalOffset);
+                externalOffset = testFadeColor.GetExternalOffset(interpolatedValue, externalOffset);
 
-                yield return null;
+                yield return new WaitForEndOfFrame(); // Make sure to follow Update()
             }
 
             // Ensure object is still accessible (otherwise get out of coroutine)
-            if (!_ma.GetAvailability()) yield break;
+            if (!testFadeColor.GetAvailability()) yield break;
 
             // Ensures that object has reached its final position
-            if (_ma.snapToEndValue) _ma.SetModifiedValue(_ma.ApplyAxisMask(_ma.selectedAxis, targetPosition));
+            if (testFadeColor.snapToEndValue) testFadeColor.SetModifiedValue(testFadeColor.ApplyAxisMask(testFadeColor.selectedAxis, targetPosition));
 
             // Execute function when MA has finished its journey (if there is one)
-            if (_ma.onCompleteFunc != null) { _ma.onCompleteFunc(); }
+            if (testFadeColor.onCompleteFunc != null) { testFadeColor.onCompleteFunc(); }
 
             // Destroy MA
-            _ma.INTERNAL_Destroy();
+            testFadeColor.INTERNAL_Destroy();
         } // ok goodnight
     }
 }
