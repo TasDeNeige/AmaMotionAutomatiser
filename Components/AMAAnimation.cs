@@ -2,7 +2,6 @@ using AMA;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEditor;
-using System.Runtime.CompilerServices;
 
 public class AMAAnimation : MonoBehaviour
 {
@@ -15,14 +14,14 @@ public class AMAAnimation : MonoBehaviour
 
     [Header("Miscellaneous")]
     [SerializeField] AMA.Curves curve = Curves.Linear;
-    [SerializeField, HideInInspector] public bool addFunctionOnStart;
-    [SerializeField, HideInInspector] public UnityEvent startFunction;
-    [SerializeField, HideInInspector] public bool addFunctionOnEnd;
-    [SerializeField, HideInInspector] public UnityEvent endFunction;
-    [SerializeField, HideInInspector] public bool addFromValue;
-    [SerializeField, HideInInspector] public Vector3 fromValue = Vector3.zero;
-    [SerializeField] public bool addDelay;
-    [SerializeField, Tooltip("In seconds"), HideInInspector] public float delay = 0f;
+    [HideInInspector] public bool addFunctionOnStart;
+    [HideInInspector] public UnityEvent startFunction;
+    [HideInInspector] public bool addFunctionOnEnd;
+    [HideInInspector] public UnityEvent endFunction;
+    [HideInInspector] public bool addFromValue;
+    [HideInInspector] public Vector3 fromValue = Vector3.zero;
+    [HideInInspector] public bool addDelay;
+    [HideInInspector] [Tooltip("In seconds")] public float delay = 0f;
     #endregion
 
     Transform objToTransform;
@@ -60,8 +59,10 @@ class AMAAnimationEditor : Editor
     {
         AMAAnimation script = (AMAAnimation)target;
 
-        script.addFunctionOnStart = EditorGUILayout.Toggle("Add Function on Animation Start", script.addFunctionOnStart);
-        if (script.addFunctionOnStart) script.startFunction = EditorGUILayout.ObjectField("Functions on start: ", script.startFunction, typeof(UnityEvent), true) as UnityEvent;
+        DrawDefaultInspector();
+
+        //script.addFunctionOnStart = EditorGUILayout.Toggle("Add Function on Animation Start", script.addFunctionOnStart);
+        //if (script.addFunctionOnStart) script.startFunction = EditorGUILayout.field("Functions on start: ", script.startFunction, typeof(UnityEvent), true);
 
         script.addDelay = EditorGUILayout.Toggle("Add Delay to Animation", script.addDelay);
         if (script.addDelay) script.delay = EditorGUILayout.FloatField("Delay: ", script.delay);
