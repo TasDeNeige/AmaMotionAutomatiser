@@ -1,16 +1,16 @@
 using AMA;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEditor;
 
 public class AMAAnimation_Move : MonoBehaviour
 {
     #region In inspector
     [Header("Main settings")]
-    [SerializeField] public AMA.Axis axisToAnimate = Axis.All;
-    [SerializeField] public Vector3 endValue = Vector3.one;
-    [SerializeField, Tooltip("In seconds")] public float animationDuration = 1f;
-    [SerializeField] public bool playAnimationOnStart = false;
+    [HideInInspector] public AMA.Axis axisToAnimate = Axis.All;
+    [HideInInspector] public Vector3 endValue = Vector3.one;
+    [HideInInspector, Tooltip("In seconds")] public float animationDuration = 1f;
+    [HideInInspector] public bool playAnimationOnStart = false;
 
     [Header("Miscellaneous")]
     [HideInInspector] public AMA.Curves curve = Curves.Linear;
@@ -25,13 +25,9 @@ public class AMAAnimation_Move : MonoBehaviour
     [HideInInspector][Tooltip("In seconds")] public float delay = 0f;
     #endregion
 
-    Transform objToTransform;
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        objToTransform = transform;
-
         if (playAnimationOnStart) PlayAnimation();
     }
 
@@ -40,29 +36,41 @@ public class AMAAnimation_Move : MonoBehaviour
         // Create animation
         AMAMain.MA<Vector3> newMA = transform.AMAmove(axisToAnimate, endValue, animationDuration);
 
-        /* Add curves */    if (curve != Curves.Linear) { if (curve == Curves.CUSTOM) newMA.SetCurve(customCurve); else newMA.SetCurve(curve); }
-        /* Func On Start */ if (addFunctionOnStart) newMA.OnStart(startFunction.Invoke);
-        /* Func On End */   if (addFunctionOnEnd) newMA.OnEnd(endFunction.Invoke);
-        /* From Value */    if (addFromValue) newMA.From(fromValue);
-        /* Add Delay */     if (addDelay) newMA.SetDelay(delay);
+        // Add curves 
+        if (curve != Curves.Linear) { if (curve == Curves.CUSTOM) newMA.SetCurve(customCurve); else newMA.SetCurve(curve); }
+        // Func On Start
+        if (addFunctionOnStart) newMA.OnStart(startFunction.Invoke);
+        // Func On End
+        if (addFunctionOnEnd) newMA.OnEnd(endFunction.Invoke);
+        // From Value
+        if (addFromValue) newMA.From(fromValue);
+        // Add Delay
+        if (addDelay) newMA.SetDelay(delay);
     }
 
     public void TestFunc()
     {
         Debug.Log("Test func called");
     }
+
+    public Curves GetCurveToUpdate() { return curve; }
 }
 
 [CustomEditor(typeof(AMAAnimation_Move))]
-public class AMAAnimationEditor : Editor
+public class AMAAnimationMoveEditor : AMAComponentEditor
 {
+    SerializedProperty axisToAnimateProp;
     SerializedProperty addFunctionOnStartProp, startFunctionProp;
     SerializedProperty addFunctionOnEndProp, endFunctionProp;
     SerializedProperty useCustomCurveProp, customCurveProp;
+    Texture banner;
+    string bannerPath = "AMA_AnimationComponentBanner";
 
     void OnEnable()
     {
         // Link serialized properties to their names in the target class
+        axisToAnimateProp = serializedObject.FindProperty("axisToAnimate");
+
         useCustomCurveProp = serializedObject.FindProperty("curve");
         customCurveProp = serializedObject.FindProperty("customCurve");
 
@@ -71,14 +79,61 @@ public class AMAAnimationEditor : Editor
 
         addFunctionOnEndProp = serializedObject.FindProperty("addFunctionOnEnd");
         endFunctionProp = serializedObject.FindProperty("endFunction");
+
+        // Load banner
+        banner = (Texture)Resources.Load(bannerPath, typeof(Texture));
     }
 
     public override void OnInspectorGUI()
     {
         AMAAnimation_Move script = (AMAAnimation_Move)target;
 
-        serializedObject.Update();
-        DrawDefaultInspector();
+        // Draw banner
+        if (banner != null)
+        {
+            float imageWidth = EditorGUIUtility.currentViewWidth;
+            float imageHeight = imageWidth * banner.height / banner.width;
+            Rect rect = GUILayoutUtility.GetRect(imageWidth, imageHeight);
+            GUI.DrawTexture(rect, banner, ScaleMode.ScaleToFit);
+        }
+
+        ComponentSetUp(serializedObject);
+
+        #region Components drawing
+        #region Main Settings
+        EditorGUILayout.PropertyField(axisToAnimateProp, new GUIContent("Axis to animate"), true);
+
+        #region End value
+        EditorGUILayout.LabelField("End Value");
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Space(EditorGUIUtility.labelWidth); // Align to right
+        float fieldWidth = (EditorGUIUtility.currentViewWidth - EditorGUIUtility.labelWidth) / 3f - 6;
+
+        // Toggle X
+        GUI.enabled = script.axisToAnimate == Axis.All ? true : script.axisToAnimate == Axis.x ? true : false;
+        script.endValue.x = EditorGUILayout.FloatField(script.endValue.x, GUILayout.Width(fieldWidth));
+        GUI.enabled = true;
+
+        // Toggle Y
+        GUI.enabled = script.axisToAnimate == Axis.All ? true : script.axisToAnimate == Axis.y ? true : false;
+        script.endValue.y = EditorGUILayout.FloatField(script.endValue.y, GUILayout.Width(fieldWidth));
+        GUI.enabled = true;
+
+        // Toggle Z
+        GUI.enabled = script.axisToAnimate == Axis.All ? true : script.axisToAnimate == Axis.z ? true : false;
+        script.endValue.z = EditorGUILayout.FloatField(script.endValue.z, GUILayout.Width(fieldWidth));
+        GUI.enabled = true;
+
+        EditorGUILayout.EndHorizontal();
+        #endregion
+        #endregion
+
+        // Curve selection button
+        if (GUILayout.Button("Select curve"))
+        {
+            AMACurveSelector.OpenCurveSelectionWindow(ref script.curve);
+        }
 
         #region SerializedProperties
         EditorGUILayout.PropertyField(useCustomCurveProp, new GUIContent("Curve"));
@@ -100,6 +155,7 @@ public class AMAAnimationEditor : Editor
 
         script.addFromValue = EditorGUILayout.Toggle("Change Anim. starting point", script.addFromValue);
         if (script.addFromValue) script.fromValue = EditorGUILayout.Vector3Field("From Value", script.fromValue);
+        #endregion
         #endregion
     }
 }
