@@ -84,20 +84,17 @@ public class AMAAnimationMoveEditor : AMAComponentEditor
         banner = (Texture)Resources.Load(bannerPath, typeof(Texture));
     }
 
+    void CurveChange(Curves _curve)
+    {
+        AMAAnimation_Move script = (AMAAnimation_Move)target; // uh
+        script.curve = _curve;
+    }
+
     public override void OnInspectorGUI()
     {
         AMAAnimation_Move script = (AMAAnimation_Move)target;
 
-        // Draw banner
-        if (banner != null)
-        {
-            float imageWidth = EditorGUIUtility.currentViewWidth;
-            float imageHeight = imageWidth * banner.height / banner.width;
-            Rect rect = GUILayoutUtility.GetRect(imageWidth, imageHeight);
-            GUI.DrawTexture(rect, banner, ScaleMode.ScaleToFit);
-        }
-
-        ComponentSetUp(serializedObject);
+        ComponentSetUp(serializedObject, banner);
 
         #region Components drawing
         #region Main Settings
@@ -129,15 +126,16 @@ public class AMAAnimationMoveEditor : AMAComponentEditor
         #endregion
         #endregion
 
-        // Curve selection button
-        if (GUILayout.Button("Select curve"))
-        {
-            AMACurveSelector.OpenCurveSelectionWindow(ref script.curve);
-        }
-
         #region SerializedProperties
         EditorGUILayout.PropertyField(useCustomCurveProp, new GUIContent("Curve"));
         if (useCustomCurveProp.intValue == (int)Curves.CUSTOM) EditorGUILayout.PropertyField(customCurveProp, new GUIContent("Custom curve"), true);
+
+        // Curve selection button
+        if (GUILayout.Button("Select curve"))
+        {
+            AMACurveSelector.OpenCurveSelectionWindow();
+            AMACurveSelector.OnSelect += CurveChange;
+        }
 
         EditorGUILayout.PropertyField(addFunctionOnStartProp, new GUIContent("Add Function on Anim. Start"));
         if (addFunctionOnStartProp.boolValue) EditorGUILayout.PropertyField(startFunctionProp, new GUIContent("Functions on Start"), true);

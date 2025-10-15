@@ -1,5 +1,6 @@
 using AMA;
 using System;
+using Unity.VisualScripting.FullSerializer;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,18 +13,17 @@ public class AMACurveSelector : EditorWindow
     Curves[] allCurves;
     Vector2 scrollPos;
 
-    Curves curveToUpdate;
+    public static event Action<Curves> OnSelect;
 
-    public static void OpenCurveSelectionWindow(ref Curves _curveToUpdate)
+    public static void OpenCurveSelectionWindow()
     {
-        GetWindow<AMACurveSelector>("Curve selection").Init(_curveToUpdate);
+        GetWindow<AMACurveSelector>("Curve selection").Init();
     }
 
-    void Init(Curves _curveToUpdate)
+    void Init()
     {
         // Get all curves
         allCurves = (Curves[])Enum.GetValues(typeof(Curves));
-        curveToUpdate = _curveToUpdate; // Set curve to update
     }
 
     private void OnGUI()
@@ -73,7 +73,9 @@ public class AMACurveSelector : EditorWindow
 
     private void OnCurveSelected(Curves _selectedCurve)
     {
-        Debug.Log($"Selected curve: {_selectedCurve}");
-        curveToUpdate = _selectedCurve;
+        OnSelect?.Invoke(_selectedCurve); // Apply changes
+        OnSelect = null;
+
+        GetWindow<AMACurveSelector>().Close();
     }
 }

@@ -1,5 +1,6 @@
 using System.Linq;
 using UnityEditor;
+using UnityEngine;
 
 public class AMAComponentEditor : Editor
 {
@@ -7,9 +8,18 @@ public class AMAComponentEditor : Editor
     /// Sets up component. Needs to be called in OnInspectorGUI()
     /// </summary>
     /// <param name="_serializedObject"></param>
-    public void ComponentSetUp(SerializedObject _serializedObject)
+    public void ComponentSetUp(SerializedObject _serializedObject, UnityEngine.Texture banner = null)
     {
         _serializedObject.DrawInspectorExcept("m_Script");
+
+        // Draw banner
+        if (banner != null)
+        {
+            float imageWidth = EditorGUIUtility.currentViewWidth;
+            float imageHeight = imageWidth * banner.height / banner.width;
+            Rect rect = GUILayoutUtility.GetRect(imageWidth, imageHeight);
+            GUI.DrawTexture(rect, banner, ScaleMode.ScaleToFit);
+        }
     }
 }
 
