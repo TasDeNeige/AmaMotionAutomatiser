@@ -6,17 +6,17 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace AMA
 {
     public class AMACoroutineRunner : MonoBehaviour
     {
-        private List<IEnumerator> coroutinesToStart = new List<IEnumerator>();
-        private Dictionary<object, List<IEnumerator>> ongoingCoroutines = new Dictionary<object, List<IEnumerator>>();
+        List<IEnumerator> coroutinesToStart = new List<IEnumerator>();
+        Dictionary<object, List<IEnumerator>> ongoingCoroutines = new Dictionary<object, List<IEnumerator>>();
 
-
-        private static AMACoroutineRunner instance;
+        static AMACoroutineRunner instance;
 
         public static AMACoroutineRunner Instance
         {
@@ -33,7 +33,7 @@ namespace AMA
         }
 
         #region Monobehaviour
-        private void LateUpdate()
+        void LateUpdate()
         {
             // If there are coroutines to start
             if (coroutinesToStart.Count > 0)
@@ -93,4 +93,15 @@ namespace AMA
         }
         #endregion
     }
+
+    [CustomEditor(typeof(AMACoroutineRunner))]
+    class AMACoroutineRunnerEditor : AMAComponentEditor
+    {
+        public override void OnInspectorGUI()
+        {
+            GUILayout.Label("Hey :D");
+            GUILayout.Label("Please do not manually add this script to a component.");
+        }
+    }
+
 }
