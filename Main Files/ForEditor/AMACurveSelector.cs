@@ -1,6 +1,11 @@
+//
+// • Ama Motion Automatiser
+// • [ Curve Selector ]
+// • By Amaryne Bréand
+//
+
 using AMA;
 using System;
-using Unity.VisualScripting.FullSerializer;
 using UnityEditor;
 using UnityEngine;
 

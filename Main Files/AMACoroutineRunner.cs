@@ -1,5 +1,5 @@
 //
-// • Ama Motion Automatizer
+// • Ama Motion Automatiser
 // • [ Coroutine Runner ]
 // • By Amaryne Bréand
 //

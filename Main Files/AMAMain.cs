@@ -1,5 +1,5 @@
 //
-// • Ama Motion Automatizer
+// • Ama Motion Automatiser
 // • [ Main file ]
 // • By Amaryne Bréand
 //

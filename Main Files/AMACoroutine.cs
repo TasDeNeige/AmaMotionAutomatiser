@@ -1,5 +1,5 @@
 //
-// • Ama Motion Automatizer
+// • Ama Motion Automatiser
 // • [ Main Coroutine ]
 // • By Amaryne Bréand
 //

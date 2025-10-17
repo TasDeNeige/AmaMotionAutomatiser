@@ -1,3 +1,9 @@
+//
+// • Ama Motion Automatiser
+// • [ Component-Specific code ]
+// • By Amaryne Bréand
+//
+
 using System.Linq;
 using UnityEditor;
 using UnityEngine;

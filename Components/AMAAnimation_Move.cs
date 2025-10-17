@@ -1,5 +1,5 @@
 //
-// • Ama Motion Automatizer
+// • Ama Motion Automatiser
 // • [ Animation Move Component ]
 // • By Amaryne Bréand
 //

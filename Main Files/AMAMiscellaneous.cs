@@ -1,5 +1,5 @@
 //
-// • Ama Motion Automatizer
+// • Ama Motion Automatiser
 // • [ Miscellaneous Methods ]
 // • By Amaryne Bréand
 //

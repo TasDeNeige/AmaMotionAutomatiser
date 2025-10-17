@@ -1,5 +1,5 @@
 //
-// • Ama Motion Automatizer
+// • Ama Motion Automatiser
 // • [ Scaling Methods ]
 // • By Amaryne Bréand
 //

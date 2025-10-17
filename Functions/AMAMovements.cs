@@ -1,5 +1,5 @@
 //
-// • Ama Motion Automatizer
+// • Ama Motion Automatiser
 // • [ Movements Methods ]
 // • By Amaryne Bréand
 //
