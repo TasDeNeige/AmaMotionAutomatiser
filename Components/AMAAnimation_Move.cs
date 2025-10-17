@@ -1,3 +1,9 @@
+//
+// • Ama Motion Automatizer
+// • [ Animation Move Component ]
+// • By Amaryne Bréand
+//
+
 using AMA;
 using UnityEditor;
 using UnityEngine;
@@ -7,7 +13,7 @@ public class AMAAnimation_Move : MonoBehaviour
 {
     #region In inspector
     [Header("Main settings")]
-    [HideInInspector] public AMA.Axis axisToAnimate = Axis.All;
+    [HideInInspector] public AMA.Axis axisToAnimate = AMA.Axis.All;
     [HideInInspector] public Vector3 endValue = Vector3.one;
     [HideInInspector, Tooltip("In seconds")] public float animationDuration = 1f;
     [HideInInspector] public bool playAnimationOnStart = false;
@@ -53,11 +59,11 @@ public class AMAAnimation_Move : MonoBehaviour
         Debug.Log("Test func called");
     }
 
-    public Curves GetCurveToUpdate() { return curve; }
+    public Vector3 GetCurrentPosition() { return transform.position; }
 }
 
 [CustomEditor(typeof(AMAAnimation_Move))]
-public class AMAAnimationMoveEditor : AMAComponentEditor
+class AMAAnimationMoveEditor : AMAComponentEditor
 {
     SerializedProperty axisToAnimateProp;
     SerializedProperty addFunctionOnStartProp, startFunctionProp;
@@ -66,6 +72,7 @@ public class AMAAnimationMoveEditor : AMAComponentEditor
     Texture banner;
     string bannerPath = "AMA_AnimationComponentBanner";
 
+    #region Editor
     void OnEnable()
     {
         // Link serialized properties to their names in the target class
@@ -84,12 +91,6 @@ public class AMAAnimationMoveEditor : AMAComponentEditor
         banner = (Texture)Resources.Load(bannerPath, typeof(Texture));
     }
 
-    void CurveChange(Curves _curve)
-    {
-        AMAAnimation_Move script = (AMAAnimation_Move)target; // uh
-        script.curve = _curve;
-    }
-
     public override void OnInspectorGUI()
     {
         AMAAnimation_Move script = (AMAAnimation_Move)target;
@@ -100,30 +101,10 @@ public class AMAAnimationMoveEditor : AMAComponentEditor
         #region Main Settings
         EditorGUILayout.PropertyField(axisToAnimateProp, new GUIContent("Axis to animate"), true);
 
-        #region End value
-        EditorGUILayout.LabelField("End Value");
+        DisplayVector3("End value:", ref script.endValue, script.axisToAnimate, script);
 
-        EditorGUILayout.BeginHorizontal();
-        GUILayout.Space(EditorGUIUtility.labelWidth); // Align to right
-        float fieldWidth = (EditorGUIUtility.currentViewWidth - EditorGUIUtility.labelWidth) / 3f - 6;
-
-        // Toggle X
-        GUI.enabled = script.axisToAnimate == Axis.All ? true : script.axisToAnimate == Axis.x ? true : false;
-        script.endValue.x = EditorGUILayout.FloatField(script.endValue.x, GUILayout.Width(fieldWidth));
-        GUI.enabled = true;
-
-        // Toggle Y
-        GUI.enabled = script.axisToAnimate == Axis.All ? true : script.axisToAnimate == Axis.y ? true : false;
-        script.endValue.y = EditorGUILayout.FloatField(script.endValue.y, GUILayout.Width(fieldWidth));
-        GUI.enabled = true;
-
-        // Toggle Z
-        GUI.enabled = script.axisToAnimate == Axis.All ? true : script.axisToAnimate == Axis.z ? true : false;
-        script.endValue.z = EditorGUILayout.FloatField(script.endValue.z, GUILayout.Width(fieldWidth));
-        GUI.enabled = true;
-
-        EditorGUILayout.EndHorizontal();
-        #endregion
+        script.animationDuration = EditorGUILayout.FloatField("Anim. Duration", script.animationDuration);
+        script.playAnimationOnStart = EditorGUILayout.Toggle("Play anim. on Start()", script.playAnimationOnStart);
         #endregion
 
         #region SerializedProperties
@@ -137,10 +118,10 @@ public class AMAAnimationMoveEditor : AMAComponentEditor
             AMACurveSelector.OnSelect += CurveChange;
         }
 
-        EditorGUILayout.PropertyField(addFunctionOnStartProp, new GUIContent("Add Function on Anim. Start"));
+        EditorGUILayout.PropertyField(addFunctionOnStartProp, new GUIContent("Add Func. on Anim. Start"));
         if (addFunctionOnStartProp.boolValue) EditorGUILayout.PropertyField(startFunctionProp, new GUIContent("Functions on Start"), true);
 
-        EditorGUILayout.PropertyField(addFunctionOnEndProp, new GUIContent("Add Function on Anim. End"));
+        EditorGUILayout.PropertyField(addFunctionOnEndProp, new GUIContent("Add Func. on Anim. End"));
         if (addFunctionOnEndProp.boolValue) EditorGUILayout.PropertyField(endFunctionProp, new GUIContent("Functions on End"), true);
 
         // Apply serialized changes
@@ -151,9 +132,56 @@ public class AMAAnimationMoveEditor : AMAComponentEditor
         script.addDelay = EditorGUILayout.Toggle("Add Delay to Anim.", script.addDelay);
         if (script.addDelay) script.delay = EditorGUILayout.FloatField("Delay", script.delay);
 
-        script.addFromValue = EditorGUILayout.Toggle("Change Anim. starting point", script.addFromValue);
-        if (script.addFromValue) script.fromValue = EditorGUILayout.Vector3Field("From Value", script.fromValue);
+        script.addFromValue = EditorGUILayout.Toggle("Change Anim. starting value", script.addFromValue);
+        if (script.addFromValue) DisplayVector3("Starting value:", ref script.fromValue, script.axisToAnimate, script);
         #endregion
         #endregion
     }
+    #endregion
+
+    #region Method
+    void CurveChange(Curves _curve)
+    {
+        AMAAnimation_Move script = (AMAAnimation_Move)target; // uh
+        script.curve = _curve;
+    }
+
+    void DisplayVector3(string _nameToDisplay, ref Vector3 _vector, AMA.Axis _axis, AMAAnimation_Move _script)
+    {
+        EditorGUILayout.LabelField(_nameToDisplay);
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Get Current Position"))
+        {
+            Vector3 currentPos = _script.GetCurrentPosition();
+
+            switch (_axis)
+            {
+                case Axis.All: _vector = currentPos; break;
+                case Axis.x: _vector.x = currentPos.x; break;
+                case Axis.y: _vector.y = currentPos.y; break;
+                case Axis.z: _vector.z = currentPos.z; break;
+            }
+        }
+
+        float fieldWidth = (EditorGUIUtility.currentViewWidth - EditorGUIUtility.labelWidth) / 3f - 6;
+
+        // Toggle X
+        GUI.enabled = _axis == AMA.Axis.All ? true : _axis == AMA.Axis.x ? true : false;
+        _vector.x = EditorGUILayout.FloatField(_vector.x, GUILayout.Width(fieldWidth));
+        GUI.enabled = true;
+
+        // Toggle Y
+        GUI.enabled = _axis == AMA.Axis.All ? true : _axis == AMA.Axis.y ? true : false;
+        _vector.y = EditorGUILayout.FloatField(_vector.y, GUILayout.Width(fieldWidth));
+        GUI.enabled = true;
+
+        // Toggle Z
+        GUI.enabled = _axis == AMA.Axis.All ? true : _axis == AMA.Axis.z ? true : false;
+        _vector.z = EditorGUILayout.FloatField(_vector.z, GUILayout.Width(fieldWidth));
+        GUI.enabled = true;
+
+        EditorGUILayout.EndHorizontal();
+    }
+    #endregion
 }
