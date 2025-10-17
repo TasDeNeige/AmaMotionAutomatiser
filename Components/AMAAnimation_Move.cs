@@ -11,11 +11,14 @@ using UnityEngine.Events;
 
 public class AMAAnimation_Move : MonoBehaviour
 {
+    public enum Space { World, Local };
+
     #region In inspector
     [Header("Main settings")]
     [HideInInspector] public AMA.Axis axisToAnimate = AMA.Axis.All;
     [HideInInspector] public Vector3 endValue = Vector3.one;
     [HideInInspector, Tooltip("In seconds")] public float animationDuration = 1f;
+    [HideInInspector] public Space space = Space.World;
     [HideInInspector] public bool playAnimationOnStart = false;
 
     [Header("Miscellaneous")]
@@ -31,7 +34,6 @@ public class AMAAnimation_Move : MonoBehaviour
     [HideInInspector][Tooltip("In seconds")] public float delay = 0f;
     #endregion
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         if (playAnimationOnStart) PlayAnimation();
@@ -40,7 +42,11 @@ public class AMAAnimation_Move : MonoBehaviour
     public void PlayAnimation()
     {
         // Create animation
-        AMAMain.MA<Vector3> newMA = transform.AMAmove(axisToAnimate, endValue, animationDuration);
+        AMAMain.MA<Vector3> newMA;
+
+        // Depending on space
+        if (space == Space.Local) newMA = transform.AMAlocalMove(axisToAnimate, endValue, animationDuration);
+        else newMA = transform.AMAmove(axisToAnimate, endValue, animationDuration);
 
         // Add curves 
         if (curve != Curves.Linear) { if (curve == Curves.CUSTOM) newMA.SetCurve(customCurve); else newMA.SetCurve(curve); }
@@ -54,11 +60,6 @@ public class AMAAnimation_Move : MonoBehaviour
         if (addDelay) newMA.SetDelay(delay);
     }
 
-    public void TestFunc()
-    {
-        Debug.Log("Test func called");
-    }
-
     public Vector3 GetCurrentPosition() { return transform.position; }
 }
 
@@ -66,6 +67,7 @@ public class AMAAnimation_Move : MonoBehaviour
 class AMAAnimationMoveEditor : AMAComponentEditor
 {
     SerializedProperty axisToAnimateProp;
+    SerializedProperty spaceProp;
     SerializedProperty addFunctionOnStartProp, startFunctionProp;
     SerializedProperty addFunctionOnEndProp, endFunctionProp;
     SerializedProperty useCustomCurveProp, customCurveProp;
@@ -77,6 +79,7 @@ class AMAAnimationMoveEditor : AMAComponentEditor
     {
         // Link serialized properties to their names in the target class
         axisToAnimateProp = serializedObject.FindProperty("axisToAnimate");
+        spaceProp = serializedObject.FindProperty("space");
 
         useCustomCurveProp = serializedObject.FindProperty("curve");
         customCurveProp = serializedObject.FindProperty("customCurve");
@@ -100,23 +103,25 @@ class AMAAnimationMoveEditor : AMAComponentEditor
         #region Components drawing
         #region Main Settings
         EditorGUILayout.PropertyField(axisToAnimateProp, new GUIContent("Axis to animate"), true);
-
         DisplayVector3("End value:", ref script.endValue, script.axisToAnimate, script);
-
         script.animationDuration = EditorGUILayout.FloatField("Anim. Duration", script.animationDuration);
+        EditorGUILayout.PropertyField(spaceProp, new GUIContent("Space"), true);
         script.playAnimationOnStart = EditorGUILayout.Toggle("Play anim. on Start()", script.playAnimationOnStart);
         #endregion
 
         #region SerializedProperties
+        EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PropertyField(useCustomCurveProp, new GUIContent("Curve"));
-        if (useCustomCurveProp.intValue == (int)Curves.CUSTOM) EditorGUILayout.PropertyField(customCurveProp, new GUIContent("Custom curve"), true);
 
         // Curve selection button
+        EditorGUILayout.Space();
         if (GUILayout.Button("Select curve"))
         {
             AMACurveSelector.OpenCurveSelectionWindow();
             AMACurveSelector.OnSelect += CurveChange;
         }
+        EditorGUILayout.EndHorizontal();
+        if (useCustomCurveProp.intValue == (int)Curves.CUSTOM) EditorGUILayout.PropertyField(customCurveProp, new GUIContent("Custom curve"), true);
 
         EditorGUILayout.PropertyField(addFunctionOnStartProp, new GUIContent("Add Func. on Anim. Start"));
         if (addFunctionOnStartProp.boolValue) EditorGUILayout.PropertyField(startFunctionProp, new GUIContent("Functions on Start"), true);
