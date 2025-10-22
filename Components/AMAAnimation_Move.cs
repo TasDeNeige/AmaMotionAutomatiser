@@ -19,6 +19,8 @@ public class AMAAnimation_Move : MonoBehaviour
     [HideInInspector] public Vector3 endValue = Vector3.one;
     [HideInInspector, Tooltip("In seconds")] public float animationDuration = 1f;
     [HideInInspector] public Space space = Space.World;
+    [HideInInspector] public bool addCustomTransform = false;
+    [HideInInspector] public Transform customTransform;
     [HideInInspector] public bool playAnimationOnStart = false;
 
     [Header("Miscellaneous")]
@@ -45,8 +47,8 @@ public class AMAAnimation_Move : MonoBehaviour
         AMAMain.MA<Vector3> newMA;
 
         // Depending on space
-        if (space == Space.Local) newMA = transform.AMAlocalMove(axisToAnimate, endValue, animationDuration);
-        else newMA = transform.AMAmove(axisToAnimate, endValue, animationDuration);
+        if (space == Space.Local) newMA = (addCustomTransform ? customTransform : transform).AMAlocalMove(axisToAnimate, endValue, animationDuration);
+        else newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration);
 
         // Add curves 
         if (curve != Curves.Linear) { if (curve == Curves.CUSTOM) newMA.SetCurve(customCurve); else newMA.SetCurve(curve); }
@@ -68,6 +70,7 @@ class AMAAnimationMoveEditor : AMAComponentEditor
 {
     SerializedProperty axisToAnimateProp;
     SerializedProperty spaceProp;
+    SerializedProperty customTransformProp;
     SerializedProperty addFunctionOnStartProp, startFunctionProp;
     SerializedProperty addFunctionOnEndProp, endFunctionProp;
     SerializedProperty useCustomCurveProp, customCurveProp;
@@ -80,6 +83,7 @@ class AMAAnimationMoveEditor : AMAComponentEditor
         // Link serialized properties to their names in the target class
         axisToAnimateProp = serializedObject.FindProperty("axisToAnimate");
         spaceProp = serializedObject.FindProperty("space");
+        customTransformProp = serializedObject.FindProperty("customTransform");
 
         useCustomCurveProp = serializedObject.FindProperty("curve");
         customCurveProp = serializedObject.FindProperty("customCurve");
@@ -107,6 +111,8 @@ class AMAAnimationMoveEditor : AMAComponentEditor
         script.animationDuration = EditorGUILayout.FloatField("Anim. Duration", script.animationDuration);
         EditorGUILayout.PropertyField(spaceProp, new GUIContent("Space"), true);
         script.playAnimationOnStart = EditorGUILayout.Toggle("Play anim. on Start()", script.playAnimationOnStart);
+        script.addCustomTransform = EditorGUILayout.Toggle("Use another transform", script.addCustomTransform);
+        if (script.addCustomTransform) EditorGUILayout.PropertyField(customTransformProp, new GUIContent("Custom transform"), true);
         #endregion
 
         #region SerializedProperties
