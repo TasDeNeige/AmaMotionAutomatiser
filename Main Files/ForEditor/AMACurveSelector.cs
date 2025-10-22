@@ -44,7 +44,7 @@ public class AMACurveSelector : EditorWindow
             previews[i] = Resources.Load<Texture2D>($"CurvesPreview/{allCurves[i]}");
         }
 
-        #region Buttons Display
+        #region Styles
         // Set up button style
         buttonStyle = new GUIStyle(GUI.skin.button)
         {

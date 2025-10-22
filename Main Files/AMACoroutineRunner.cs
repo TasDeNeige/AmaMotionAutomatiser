@@ -95,7 +95,7 @@ namespace AMA
     }
 
     [CustomEditor(typeof(AMACoroutineRunner))]
-    class AMACoroutineRunnerEditor : AMAComponentEditor
+    class AMACoroutineRunnerEditor : AMAComponentEditor<bool>
     {
         public override void OnInspectorGUI()
         {

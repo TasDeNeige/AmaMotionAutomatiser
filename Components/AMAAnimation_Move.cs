@@ -7,9 +7,8 @@
 using AMA;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Events;
 
-public class AMAAnimation_Move : MonoBehaviour
+public class AMAAnimation_Move : AMABasicComponent<Vector3>
 {
     public enum Space { World, Local };
 
@@ -24,16 +23,8 @@ public class AMAAnimation_Move : MonoBehaviour
     [HideInInspector] public bool playAnimationOnStart = false;
 
     [Header("Miscellaneous")]
-    [HideInInspector] public AMA.Curves curve = Curves.Linear;
-    [HideInInspector] public AnimationCurve customCurve;
-    [HideInInspector] public bool addFunctionOnStart;
-    [HideInInspector] public UnityEvent startFunction;
-    [HideInInspector] public bool addFunctionOnEnd;
-    [HideInInspector] public UnityEvent endFunction;
     [HideInInspector] public bool addFromValue;
     [HideInInspector] public Vector3 fromValue = Vector3.zero;
-    [HideInInspector] public bool addDelay;
-    [HideInInspector][Tooltip("In seconds")] public float delay = 0f;
     #endregion
 
     void Start()
@@ -50,30 +41,21 @@ public class AMAAnimation_Move : MonoBehaviour
         if (space == Space.Local) newMA = (addCustomTransform ? customTransform : transform).AMAlocalMove(axisToAnimate, endValue, animationDuration);
         else newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration);
 
-        // Add curves 
-        if (curve != Curves.Linear) { if (curve == Curves.CUSTOM) newMA.SetCurve(customCurve); else newMA.SetCurve(curve); }
-        // Func On Start
-        if (addFunctionOnStart) newMA.OnStart(startFunction.Invoke);
-        // Func On End
-        if (addFunctionOnEnd) newMA.OnEnd(endFunction.Invoke);
+        AddMisc(ref newMA);
         // From Value
         if (addFromValue) newMA.From(fromValue);
-        // Add Delay
-        if (addDelay) newMA.SetDelay(delay);
     }
 
     public Vector3 GetCurrentPosition() { return transform.position; }
 }
 
 [CustomEditor(typeof(AMAAnimation_Move))]
-class AMAAnimationMoveEditor : AMAComponentEditor
+class AMAAnimationMoveEditor : AMAComponentEditor<Vector3>
 {
     SerializedProperty axisToAnimateProp;
     SerializedProperty spaceProp;
     SerializedProperty customTransformProp;
-    SerializedProperty addFunctionOnStartProp, startFunctionProp;
-    SerializedProperty addFunctionOnEndProp, endFunctionProp;
-    SerializedProperty useCustomCurveProp, customCurveProp;
+
     Texture banner;
     string bannerPath = "AMA_AnimationComponentBanner";
 
@@ -85,14 +67,7 @@ class AMAAnimationMoveEditor : AMAComponentEditor
         spaceProp = serializedObject.FindProperty("space");
         customTransformProp = serializedObject.FindProperty("customTransform");
 
-        useCustomCurveProp = serializedObject.FindProperty("curve");
-        customCurveProp = serializedObject.FindProperty("customCurve");
-
-        addFunctionOnStartProp = serializedObject.FindProperty("addFunctionOnStart");
-        startFunctionProp = serializedObject.FindProperty("startFunction");
-
-        addFunctionOnEndProp = serializedObject.FindProperty("addFunctionOnEnd");
-        endFunctionProp = serializedObject.FindProperty("endFunction");
+        SetUpOnEnable(serializedObject);
 
         // Load banner
         banner = (Texture)Resources.Load(bannerPath, typeof(Texture));
@@ -102,97 +77,40 @@ class AMAAnimationMoveEditor : AMAComponentEditor
     {
         AMAAnimation_Move script = (AMAAnimation_Move)target;
 
-        ComponentSetUp(serializedObject, banner);
+        SetUpOnInspector(serializedObject, banner);
 
         #region Components drawing
         #region Main Settings
+        // Axis
         EditorGUILayout.PropertyField(axisToAnimateProp, new GUIContent("Axis to animate"), true);
+        
+        // End value
         DisplayVector3("End value:", ref script.endValue, script.axisToAnimate, script);
+        
+        // Anim duration
         script.animationDuration = EditorGUILayout.FloatField("Anim. Duration", script.animationDuration);
+       
+        // Space
         EditorGUILayout.PropertyField(spaceProp, new GUIContent("Space"), true);
+        
+        // Play anim on start
         script.playAnimationOnStart = EditorGUILayout.Toggle("Play anim. on Start()", script.playAnimationOnStart);
-        script.addCustomTransform = EditorGUILayout.Toggle("Use another transform", script.addCustomTransform);
-        if (script.addCustomTransform) EditorGUILayout.PropertyField(customTransformProp, new GUIContent("Custom transform"), true);
+        
+        // Custom transform
+        script.addCustomTransform = EditorGUILayout.Toggle("Use another Transform", script.addCustomTransform);
+        if (script.addCustomTransform) EditorGUILayout.PropertyField(customTransformProp, new GUIContent("Custom Transform"), true);
         #endregion
 
-        #region SerializedProperties
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.PropertyField(useCustomCurveProp, new GUIContent("Curve"));
-
-        // Curve selection button
-        EditorGUILayout.Space();
-        if (GUILayout.Button("Select curve"))
-        {
-            AMACurveSelector.OpenCurveSelectionWindow();
-            AMACurveSelector.OnSelect += CurveChange;
-        }
-        EditorGUILayout.EndHorizontal();
-        if (useCustomCurveProp.intValue == (int)Curves.CUSTOM) EditorGUILayout.PropertyField(customCurveProp, new GUIContent("Custom curve"), true);
-
-        EditorGUILayout.PropertyField(addFunctionOnStartProp, new GUIContent("Add Func. on Anim. Start"));
-        if (addFunctionOnStartProp.boolValue) EditorGUILayout.PropertyField(startFunctionProp, new GUIContent("Functions on Start"), true);
-
-        EditorGUILayout.PropertyField(addFunctionOnEndProp, new GUIContent("Add Func. on Anim. End"));
-        if (addFunctionOnEndProp.boolValue) EditorGUILayout.PropertyField(endFunctionProp, new GUIContent("Functions on End"), true);
-
-        // Apply serialized changes
-        serializedObject.ApplyModifiedProperties();
-        #endregion
-
-        #region Manually controlled fields
-        script.addDelay = EditorGUILayout.Toggle("Add Delay to Anim.", script.addDelay);
-        if (script.addDelay) script.delay = EditorGUILayout.FloatField("Delay", script.delay);
+        #region Misc Settings
+        DrawMisc(serializedObject, script);
 
         script.addFromValue = EditorGUILayout.Toggle("Change Anim. starting value", script.addFromValue);
         if (script.addFromValue) DisplayVector3("Starting value:", ref script.fromValue, script.axisToAnimate, script);
         #endregion
+
+        // Apply serialized changes
+        serializedObject.ApplyModifiedProperties();
         #endregion
-    }
-    #endregion
-
-    #region Method
-    void CurveChange(Curves _curve)
-    {
-        AMAAnimation_Move script = (AMAAnimation_Move)target; // uh
-        script.curve = _curve;
-    }
-
-    void DisplayVector3(string _nameToDisplay, ref Vector3 _vector, AMA.Axis _axis, AMAAnimation_Move _script)
-    {
-        EditorGUILayout.LabelField(_nameToDisplay);
-
-        EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("Get Current Position"))
-        {
-            Vector3 currentPos = _script.GetCurrentPosition();
-
-            switch (_axis)
-            {
-                case Axis.All: _vector = currentPos; break;
-                case Axis.x: _vector.x = currentPos.x; break;
-                case Axis.y: _vector.y = currentPos.y; break;
-                case Axis.z: _vector.z = currentPos.z; break;
-            }
-        }
-
-        float fieldWidth = (EditorGUIUtility.currentViewWidth - EditorGUIUtility.labelWidth) / 3f - 6;
-
-        // Toggle X
-        GUI.enabled = _axis == AMA.Axis.All ? true : _axis == AMA.Axis.x ? true : false;
-        _vector.x = EditorGUILayout.FloatField(_vector.x, GUILayout.Width(fieldWidth));
-        GUI.enabled = true;
-
-        // Toggle Y
-        GUI.enabled = _axis == AMA.Axis.All ? true : _axis == AMA.Axis.y ? true : false;
-        _vector.y = EditorGUILayout.FloatField(_vector.y, GUILayout.Width(fieldWidth));
-        GUI.enabled = true;
-
-        // Toggle Z
-        GUI.enabled = _axis == AMA.Axis.All ? true : _axis == AMA.Axis.z ? true : false;
-        _vector.z = EditorGUILayout.FloatField(_vector.z, GUILayout.Width(fieldWidth));
-        GUI.enabled = true;
-
-        EditorGUILayout.EndHorizontal();
     }
     #endregion
 }
