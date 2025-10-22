@@ -50,7 +50,16 @@ public class AMAAnimation_Move : AMABasicComponent<Vector3>
         if (addFromValue) newMA.From(fromValue);
     }
 
-    public Vector3 GetCurrentPosition() { return transform.position; }
+    public Vector3 GetCurrentPosition()
+    {
+        // Depending on space
+        switch (space)
+        {
+            case Space.World: return transform.position; break;
+            case Space.Local: return transform.localPosition; break;
+            default: return transform.position; break;
+        }
+    }
 }
 
 [CustomEditor(typeof(AMAAnimation_Move))]
