@@ -1,6 +1,6 @@
 //
 // • Ama Motion Automatiser
-// • [ Animation Move Component ]
+// • [ Animation UI Move Component ]
 // • By Amaryne Bréand
 //
 
@@ -8,9 +8,10 @@ using AMA;
 using UnityEditor;
 using UnityEngine;
 
-public class AMAAnimation_Move : AMABasicComponent<Vector3>
+public class AMAAnimation_Move_UI : AMABasicComponent<Vector3>
 {
-    public enum Space { World, Local };
+    public enum Space { World, Local, AnchoredPos, AnchoredPos3D };
+    RectTransform rectTransform;
 
     #region In inspector
     [Header("Main settings")]
@@ -18,14 +19,16 @@ public class AMAAnimation_Move : AMABasicComponent<Vector3>
     [HideInInspector] public Vector3 endValue = Vector3.one;
     [HideInInspector, Tooltip("In seconds")] public float animationDuration = 1f;
     [HideInInspector] public Space space = Space.World;
-    [HideInInspector] public bool addCustomTransform = false;
-    [HideInInspector] public Transform customTransform;
+    [HideInInspector] public bool addCustomRectTransform = false;
+    [HideInInspector] public RectTransform customRectTransform;
     [HideInInspector] public bool playAnimationOnStart = false;
 
     [Header("Miscellaneous")]
     [HideInInspector] public bool addFromValue;
     [HideInInspector] public Vector3 fromValue = Vector3.zero;
     #endregion
+
+    private void OnEnable() { rectTransform = GetComponent<RectTransform>(); }
 
     void Start()
     {
@@ -40,9 +43,11 @@ public class AMAAnimation_Move : AMABasicComponent<Vector3>
         // Depending on space
         switch(space)
         {
-            case Space.World: newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration); break;
-            case Space.Local: newMA = (addCustomTransform ? customTransform : transform).AMAlocalMove(axisToAnimate, endValue, animationDuration); break;
-            default: newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration); break;
+            case Space.World: newMA = (addCustomRectTransform ? customRectTransform : rectTransform).AMAmove(axisToAnimate, endValue, animationDuration); break;
+            case Space.Local: newMA = (addCustomRectTransform ? customRectTransform : rectTransform).AMAlocalMove(axisToAnimate, endValue, animationDuration); break;
+            case Space.AnchoredPos: newMA = (addCustomRectTransform ? customRectTransform : rectTransform).AMAanchoredPosMove(axisToAnimate, endValue, animationDuration); break;
+            case Space.AnchoredPos3D: newMA = (addCustomRectTransform ? customRectTransform : rectTransform).AMAanchoredPos3dMove(axisToAnimate, endValue, animationDuration); break;
+            default: newMA = (addCustomRectTransform ? customRectTransform : rectTransform).AMAmove(axisToAnimate, endValue, animationDuration); break;
         }
 
         AddMisc(ref newMA);
@@ -52,19 +57,24 @@ public class AMAAnimation_Move : AMABasicComponent<Vector3>
 
     public Vector3 GetCurrentPosition()
     {
+        // Get RectTransform
+        if (rectTransform == null) rectTransform = GetComponent<RectTransform>();
+
         // Depending on space
         switch (space)
         {
-            case Space.World: return transform.position;
-            case Space.Local: return transform.localPosition;
-            default: return transform.position;
+            case Space.World: return rectTransform.position;
+            case Space.Local: return rectTransform.localPosition;
+            case Space.AnchoredPos: return rectTransform.anchoredPosition;
+            case Space.AnchoredPos3D: return rectTransform.anchoredPosition3D;
+            default: return rectTransform.position;
         }
     }
 }
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(AMAAnimation_Move))]
-class AMAAnimationMoveEditor : AMAComponentEditor<Vector3>
+[CustomEditor(typeof(AMAAnimation_Move_UI))]
+class AMAAnimationMoveUiEditor : AMAComponentEditor<Vector3>
 {
     SerializedProperty axisToAnimateProp;
     SerializedProperty spaceProp;
@@ -79,7 +89,7 @@ class AMAAnimationMoveEditor : AMAComponentEditor<Vector3>
         // Link serialized properties to their names in the target class
         axisToAnimateProp = serializedObject.FindProperty("axisToAnimate");
         spaceProp = serializedObject.FindProperty("space");
-        customTransformProp = serializedObject.FindProperty("customTransform");
+        customTransformProp = serializedObject.FindProperty("customRectTransform");
 
         SetUpOnEnable(serializedObject);
 
@@ -89,7 +99,7 @@ class AMAAnimationMoveEditor : AMAComponentEditor<Vector3>
 
     public override void OnInspectorGUI()
     {
-        AMAAnimation_Move script = (AMAAnimation_Move)target;
+        AMAAnimation_Move_UI script = (AMAAnimation_Move_UI)target;
 
         SetUpOnInspector(serializedObject, banner);
 
@@ -99,7 +109,7 @@ class AMAAnimationMoveEditor : AMAComponentEditor<Vector3>
         EditorGUILayout.PropertyField(axisToAnimateProp, new GUIContent("Axis to animate"), true);
 
         // Start value
-        script.addFromValue = EditorGUILayout.Toggle("Change Start value", script.addFromValue);
+        script.addFromValue = EditorGUILayout.Toggle("Change Anim. starting value", script.addFromValue);
         DisplayVector3("Starting value:", ref script.fromValue, script.axisToAnimate, script, script.addFromValue);
 
         // End value
@@ -115,11 +125,13 @@ class AMAAnimationMoveEditor : AMAComponentEditor<Vector3>
         script.playAnimationOnStart = EditorGUILayout.Toggle("Play anim. on Start()", script.playAnimationOnStart);
         
         // Custom transform
-        script.addCustomTransform = EditorGUILayout.Toggle("Use another Transform", script.addCustomTransform);
-        if (script.addCustomTransform) EditorGUILayout.PropertyField(customTransformProp, new GUIContent("Custom Transform"), true);
+        script.addCustomRectTransform = EditorGUILayout.Toggle("Use another RectTransform", script.addCustomRectTransform);
+        if (script.addCustomRectTransform) EditorGUILayout.PropertyField(customTransformProp, new GUIContent("Custom RectTransform"), true);
         #endregion
 
+        #region Misc Settings
         DrawMisc(serializedObject, script);
+        #endregion
 
         // Apply serialized changes
         serializedObject.ApplyModifiedProperties();
@@ -127,8 +139,7 @@ class AMAAnimationMoveEditor : AMAComponentEditor<Vector3>
     }
 
     #region Tools
-    // Display Vector3 with fields greyed out according to selected axis
-    void DisplayVector3(string _nameToDisplay, ref Vector3 _vector, AMA.Axis _axis, AMAAnimation_Move _script, bool _enable = true)
+    void DisplayVector3(string _nameToDisplay, ref Vector3 _vector, AMA.Axis _axis, AMAAnimation_Move_UI _script, bool _enable = true)
     {
         GUI.enabled = _enable;
         EditorGUILayout.LabelField(_nameToDisplay);

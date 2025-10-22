@@ -8,16 +8,13 @@ using AMA;
 using UnityEditor;
 using UnityEngine;
 
-public class AMAAnimation_Move : AMABasicComponent<Vector3>
+public class AMAAnimation_Scale : AMABasicComponent<Vector3>
 {
-    public enum Space { World, Local };
-
     #region In inspector
     [Header("Main settings")]
     [HideInInspector] public AMA.Axis axisToAnimate = AMA.Axis.All;
     [HideInInspector] public Vector3 endValue = Vector3.one;
     [HideInInspector, Tooltip("In seconds")] public float animationDuration = 1f;
-    [HideInInspector] public Space space = Space.World;
     [HideInInspector] public bool addCustomTransform = false;
     [HideInInspector] public Transform customTransform;
     [HideInInspector] public bool playAnimationOnStart = false;
@@ -36,38 +33,24 @@ public class AMAAnimation_Move : AMABasicComponent<Vector3>
     {
         // Create animation
         AMAMain.MA<Vector3> newMA;
-
-        // Depending on space
-        switch(space)
-        {
-            case Space.World: newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration); break;
-            case Space.Local: newMA = (addCustomTransform ? customTransform : transform).AMAlocalMove(axisToAnimate, endValue, animationDuration); break;
-            default: newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration); break;
-        }
+        newMA = (addCustomTransform ? customTransform : transform).AMAscale(axisToAnimate, endValue, animationDuration);
 
         AddMisc(ref newMA);
         // From Value
         if (addFromValue) newMA.From(fromValue);
     }
 
-    public Vector3 GetCurrentPosition()
+    public Vector3 GetCurrentScale()
     {
-        // Depending on space
-        switch (space)
-        {
-            case Space.World: return transform.position;
-            case Space.Local: return transform.localPosition;
-            default: return transform.position;
-        }
+        return transform.localScale;
     }
 }
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(AMAAnimation_Move))]
-class AMAAnimationMoveEditor : AMAComponentEditor<Vector3>
+[CustomEditor(typeof(AMAAnimation_Scale))]
+class AMAAnimationScaleEditor : AMAComponentEditor<Vector3>
 {
     SerializedProperty axisToAnimateProp;
-    SerializedProperty spaceProp;
     SerializedProperty customTransformProp;
 
     Texture banner;
@@ -78,7 +61,6 @@ class AMAAnimationMoveEditor : AMAComponentEditor<Vector3>
     {
         // Link serialized properties to their names in the target class
         axisToAnimateProp = serializedObject.FindProperty("axisToAnimate");
-        spaceProp = serializedObject.FindProperty("space");
         customTransformProp = serializedObject.FindProperty("customTransform");
 
         SetUpOnEnable(serializedObject);
@@ -89,7 +71,7 @@ class AMAAnimationMoveEditor : AMAComponentEditor<Vector3>
 
     public override void OnInspectorGUI()
     {
-        AMAAnimation_Move script = (AMAAnimation_Move)target;
+        AMAAnimation_Scale script = (AMAAnimation_Scale)target;
 
         SetUpOnInspector(serializedObject, banner);
 
@@ -99,7 +81,7 @@ class AMAAnimationMoveEditor : AMAComponentEditor<Vector3>
         EditorGUILayout.PropertyField(axisToAnimateProp, new GUIContent("Axis to animate"), true);
 
         // Start value
-        script.addFromValue = EditorGUILayout.Toggle("Change Start value", script.addFromValue);
+        script.addFromValue = EditorGUILayout.Toggle("Change Anim. starting value", script.addFromValue);
         DisplayVector3("Starting value:", ref script.fromValue, script.axisToAnimate, script, script.addFromValue);
 
         // End value
@@ -108,9 +90,6 @@ class AMAAnimationMoveEditor : AMAComponentEditor<Vector3>
         // Anim duration
         script.animationDuration = EditorGUILayout.FloatField("Anim. Duration", script.animationDuration);
        
-        // Space
-        EditorGUILayout.PropertyField(spaceProp, new GUIContent("Space"), true);
-        
         // Play anim on start
         script.playAnimationOnStart = EditorGUILayout.Toggle("Play anim. on Start()", script.playAnimationOnStart);
         
@@ -119,7 +98,9 @@ class AMAAnimationMoveEditor : AMAComponentEditor<Vector3>
         if (script.addCustomTransform) EditorGUILayout.PropertyField(customTransformProp, new GUIContent("Custom Transform"), true);
         #endregion
 
+        #region Misc Settings
         DrawMisc(serializedObject, script);
+        #endregion
 
         // Apply serialized changes
         serializedObject.ApplyModifiedProperties();
@@ -128,7 +109,7 @@ class AMAAnimationMoveEditor : AMAComponentEditor<Vector3>
 
     #region Tools
     // Display Vector3 with fields greyed out according to selected axis
-    void DisplayVector3(string _nameToDisplay, ref Vector3 _vector, AMA.Axis _axis, AMAAnimation_Move _script, bool _enable = true)
+    void DisplayVector3(string _nameToDisplay, ref Vector3 _vector, AMA.Axis _axis, AMAAnimation_Scale _script, bool _enable = true)
     {
         GUI.enabled = _enable;
         EditorGUILayout.LabelField(_nameToDisplay);
@@ -136,7 +117,7 @@ class AMAAnimationMoveEditor : AMAComponentEditor<Vector3>
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Get Current Position"))
         {
-            Vector3 currentPos = _script.GetCurrentPosition();
+            Vector3 currentPos = _script.GetCurrentScale();
 
             switch (_axis)
             {

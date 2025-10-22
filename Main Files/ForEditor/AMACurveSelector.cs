@@ -9,6 +9,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
+#if UNITY_EDITOR
 public class AMACurveSelector : EditorWindow
 {
     const int buttonPerRow = 4;
@@ -147,3 +148,4 @@ public class AMACurveSelector : EditorWindow
         GetWindow<AMACurveSelector>().Close();
     }
 }
+#endif

@@ -24,17 +24,18 @@ namespace AMA
 
         public void AddMisc(ref AMAMain.MA<T> _ma)
         {
+            // Add Delay
+            if (addDelay) _ma.SetDelay(delay);
             // Add curves 
             if (curve != Curves.Linear) { if (curve == Curves.CUSTOM) _ma.SetCurve(customCurve); else _ma.SetCurve(curve); }
             // Func On Start
             if (addFunctionOnStart) _ma.OnStart(startFunction.Invoke);
             // Func On End
             if (addFunctionOnEnd) _ma.OnEnd(endFunction.Invoke);
-            // Add Delay
-            if (addDelay) _ma.SetDelay(delay);
         }
     }
 
+#if UNITY_EDITOR
     public class AMAComponentEditor<T> : Editor
     {
         public SerializedProperty addFunctionOnStartProp, startFunctionProp;
@@ -100,6 +101,10 @@ namespace AMA
             if (useCustomCurveProp.intValue == (int)Curves.CUSTOM) EditorGUILayout.PropertyField(customCurveProp, new GUIContent("Custom curve"), true);
             #endregion
 
+            // Delay
+            _script.addDelay = EditorGUILayout.Toggle("Add Delay to Anim.", _script.addDelay);
+            if (_script.addDelay) _script.delay = EditorGUILayout.FloatField("Delay", _script.delay);
+
             // Func on Start
             EditorGUILayout.PropertyField(addFunctionOnStartProp, new GUIContent("Add Func. on Anim. Start"));
             if (addFunctionOnStartProp.boolValue) EditorGUILayout.PropertyField(startFunctionProp, new GUIContent("Functions on Start"), true);
@@ -107,10 +112,6 @@ namespace AMA
             // Func on End
             EditorGUILayout.PropertyField(addFunctionOnEndProp, new GUIContent("Add Func. on Anim. End"));
             if (addFunctionOnEndProp.boolValue) EditorGUILayout.PropertyField(endFunctionProp, new GUIContent("Functions on End"), true);
-
-            // Delay
-            _script.addDelay = EditorGUILayout.Toggle("Add Delay to Anim.", _script.addDelay);
-            if (_script.addDelay) _script.delay = EditorGUILayout.FloatField("Delay", _script.delay);
         }
 
         #region Tools
@@ -119,45 +120,6 @@ namespace AMA
         {
             AMABasicComponent<T> script = (AMABasicComponent<T>)target;
             script.curve = _curve;
-        }
-
-        // Display Vector3 with fields greyed out according to selected axis
-        public void DisplayVector3(string _nameToDisplay, ref Vector3 _vector, AMA.Axis _axis, AMAAnimation_Move _script)
-        {
-            EditorGUILayout.LabelField(_nameToDisplay);
-
-            EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Get Current Position"))
-            {
-                Vector3 currentPos = _script.GetCurrentPosition();
-
-                switch (_axis)
-                {
-                    case Axis.All: _vector = currentPos; break;
-                    case Axis.x: _vector.x = currentPos.x; break;
-                    case Axis.y: _vector.y = currentPos.y; break;
-                    case Axis.z: _vector.z = currentPos.z; break;
-                }
-            }
-
-            float fieldWidth = (EditorGUIUtility.currentViewWidth - EditorGUIUtility.labelWidth) / 3f - 6;
-
-            // Toggle X
-            GUI.enabled = _axis == AMA.Axis.All ? true : _axis == AMA.Axis.x ? true : false;
-            _vector.x = EditorGUILayout.FloatField(_vector.x, GUILayout.Width(fieldWidth));
-            GUI.enabled = true;
-
-            // Toggle Y
-            GUI.enabled = _axis == AMA.Axis.All ? true : _axis == AMA.Axis.y ? true : false;
-            _vector.y = EditorGUILayout.FloatField(_vector.y, GUILayout.Width(fieldWidth));
-            GUI.enabled = true;
-
-            // Toggle Z
-            GUI.enabled = _axis == AMA.Axis.All ? true : _axis == AMA.Axis.z ? true : false;
-            _vector.z = EditorGUILayout.FloatField(_vector.z, GUILayout.Width(fieldWidth));
-            GUI.enabled = true;
-
-            EditorGUILayout.EndHorizontal();
         }
         #endregion
     }
@@ -187,4 +149,5 @@ namespace AMA
             serializedObject.ApplyModifiedProperties();
         }
     }
+#endif
 }

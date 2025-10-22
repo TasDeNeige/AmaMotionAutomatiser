@@ -94,6 +94,7 @@ namespace AMA
         #endregion
     }
 
+#if UNITY_EDITOR
     [CustomEditor(typeof(AMACoroutineRunner))]
     class AMACoroutineRunnerEditor : AMAComponentEditor<bool>
     {
@@ -103,5 +104,5 @@ namespace AMA
             GUILayout.Label("Please do not manually add this script to a component.");
         }
     }
-
+#endif
 }
