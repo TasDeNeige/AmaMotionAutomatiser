@@ -38,8 +38,12 @@ public class AMAAnimation_Move : AMABasicComponent<Vector3>
         AMAMain.MA<Vector3> newMA;
 
         // Depending on space
-        if (space == Space.Local) newMA = (addCustomTransform ? customTransform : transform).AMAlocalMove(axisToAnimate, endValue, animationDuration);
-        else newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration);
+        switch(space)
+        {
+            case Space.World: newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration); break;
+            case Space.Local: newMA = (addCustomTransform ? customTransform : transform).AMAlocalMove(axisToAnimate, endValue, animationDuration); break;
+            default: newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration); break;
+        }
 
         AddMisc(ref newMA);
         // From Value
