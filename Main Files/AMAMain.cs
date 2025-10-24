@@ -251,6 +251,9 @@ namespace AMA
         #region Destructor
         public static void INTERNAL_Destroy<T>(this MA<T> _ma)
         {
+            // Prevent accessing MA if it's not accessible anymore
+            if (!_ma.GetAvailability()) return;
+
             AMACoroutineRunner.Instance.INTERNAL_DeleteCoroutine(_ma.unityObject, _ma.coroutine);
 
             _ma.coroutine = null;
