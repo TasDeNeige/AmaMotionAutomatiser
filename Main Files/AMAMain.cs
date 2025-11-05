@@ -19,7 +19,7 @@ namespace AMA
     public static class AMAMain
     {
         private static bool debug = false;
-        private static string debugAlertString = $"<b><color=#00C7AC>AMA • </color><color=#F5715D>Debug • </color></b> ";
+        public static string debugAlertString = $"<b><color=#00C7AC>AMA • </color><color=#F5715D>Debug • </color></b> ";
         public static void ToggleDebug(bool _bool) => debug = _bool;
 
         #region Main class
