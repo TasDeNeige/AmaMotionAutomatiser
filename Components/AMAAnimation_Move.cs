@@ -8,7 +8,7 @@ using AMA;
 using UnityEditor;
 using UnityEngine;
 
-public class AMAAnimation_Move : AMABasicComponent<Vector3>
+public class AMAAnimation_Move : AMABasicComponent
 {
     public enum Space { World, Local };
 

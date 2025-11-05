@@ -1,6 +1,6 @@
 //
 // • Ama Motion Automatiser
-// • [ Animation Move Component ]
+// • [ Animation Scale Component ]
 // • By Amaryne Bréand
 //
 
@@ -8,7 +8,7 @@ using AMA;
 using UnityEditor;
 using UnityEngine;
 
-public class AMAAnimation_Scale : AMABasicComponent<Vector3>
+public class AMAAnimation_Scale : AMABasicComponent
 {
     #region In inspector
     [Header("Main settings")]

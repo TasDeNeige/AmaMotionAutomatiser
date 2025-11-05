@@ -11,7 +11,7 @@ using UnityEngine.Events;
 
 namespace AMA
 {
-    public class AMABasicComponent<T> : MonoBehaviour
+    public class AMABasicComponent : MonoBehaviour
     {
         [HideInInspector] public AMA.Curves curve = Curves.Linear;
         [HideInInspector] public AnimationCurve customCurve;
@@ -22,7 +22,7 @@ namespace AMA
         [HideInInspector] public bool addDelay;
         [HideInInspector][Tooltip("In seconds")] public float delay = 0f;
 
-        public void AddMisc(ref AMAMain.MA<T> _ma)
+        public void AddMisc<T>(ref AMAMain.MA<T> _ma)
         {
             // Add Delay
             if (addDelay) _ma.SetDelay(delay);
@@ -81,7 +81,7 @@ namespace AMA
         /// </summary>
         /// <param name="_serializedObject"></param>
         /// <param name="_script"></param>
-        public void DrawMisc(SerializedObject _serializedObject, AMABasicComponent<T> _script)
+        public void DrawMisc(SerializedObject _serializedObject, AMABasicComponent _script)
         {
             EditorGUILayout.Space();
             GUILayout.Label("Miscellaneous", EditorStyles.boldLabel);
@@ -89,7 +89,11 @@ namespace AMA
             // Curve
             #region Curve related
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PropertyField(useCustomCurveProp, new GUIContent("Curve"));
+            if (EditorGUILayout.PropertyField(useCustomCurveProp, new GUIContent("Curve")))
+            {
+                AMACurveSelector.OpenCurveSelectionWindow();
+                AMACurveSelector.OnSelect += CurveChange;
+            }
 
             // Curve selection button
             if (GUILayout.Button("Select curve"))
@@ -118,7 +122,7 @@ namespace AMA
         // Used for Curve Selection window
         void CurveChange(Curves _curve)
         {
-            AMABasicComponent<T> script = (AMABasicComponent<T>)target;
+            AMABasicComponent script = (AMABasicComponent)target;
             script.curve = _curve;
         }
         #endregion

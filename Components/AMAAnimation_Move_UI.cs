@@ -8,7 +8,7 @@ using AMA;
 using UnityEditor;
 using UnityEngine;
 
-public class AMAAnimation_Move_UI : AMABasicComponent<Vector3>
+public class AMAAnimation_Move_UI : AMABasicComponent
 {
     public enum Space { World, Local, AnchoredPos, AnchoredPos3D };
     RectTransform rectTransform;
