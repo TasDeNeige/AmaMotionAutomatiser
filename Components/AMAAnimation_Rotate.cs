@@ -10,6 +10,7 @@ using UnityEngine;
 
 public class AMAAnimation_Rotate : AMABasicComponent
 {
+    public enum Space { World, Local };
     public enum Type { Quaternion, Euler };
 
     #region In inspector
@@ -18,6 +19,7 @@ public class AMAAnimation_Rotate : AMABasicComponent
     [HideInInspector] public Quaternion endValueQuat = Quaternion.identity;
     [HideInInspector] public Vector3 endValueVec = Vector3.one;
     [HideInInspector, Tooltip("In seconds")] public float animationDuration = 1f;
+    [HideInInspector] public Space space = Space.World;
     [HideInInspector] public Type type = Type.Quaternion;
     [HideInInspector] public bool addCustomTransform = false;
     [HideInInspector] public Transform customTransform;
@@ -36,45 +38,105 @@ public class AMAAnimation_Rotate : AMABasicComponent
 
     public void PlayAnimation()
     {
-        // Depending on space
+        // Depending on type
         switch(type)
         {
+            // Quaternion
             case Type.Quaternion:
                 // Create animation
                 AMAMain.MA<Quaternion> newMA1;
 
-                // Set up animation
-                newMA1 = (addCustomTransform ? customTransform : transform).AMArotate(axisToAnimate, endValueQuat, animationDuration);
-                AddMisc(ref newMA1);
+                // Depending on space
+                switch (space)
+                {
+                    // World
+                    case Space.World:
+                        newMA1 = (addCustomTransform ? customTransform : transform).AMArotate(axisToAnimate, endValueQuat, animationDuration);
+                        AddMisc(ref newMA1);
+                        if (addFromValue) newMA1.From(fromValueQuat);
+                        break;
 
-                // From Value
-                if (addFromValue) newMA1.From(fromValueQuat);
+                    // Local
+                    case Space.Local:
+                        newMA1 = (addCustomTransform ? customTransform : transform).AMAlocalRotate(axisToAnimate, endValueQuat, animationDuration);
+                        AddMisc(ref newMA1);
+                        if (addFromValue) newMA1.From(fromValueQuat);
+                        break;
+
+                    default:
+                        newMA1 = (addCustomTransform ? customTransform : transform).AMArotate(axisToAnimate, endValueQuat, animationDuration);
+                        AddMisc(ref newMA1);
+                        if (addFromValue) newMA1.From(fromValueQuat);
+                        break;
+                }
                 break;
                 
+            // Euler
             case Type.Euler:
-                // Create Utilitary class
-
                 // Create animation
                 AMAMain.MA<Vector3> newMA2;
 
-                // Set up animation
-                newMA2 = (addCustomTransform ? customTransform : transform).AMArotateEuler(axisToAnimate, endValueVec, animationDuration);
-                AddMisc(ref newMA2);
+                // Depending on space
+                switch (space)
+                {
+                    // World
+                    case Space.World:
+                        // Set up animation
+                        newMA2 = (addCustomTransform ? customTransform : transform).AMArotateEuler(axisToAnimate, endValueVec, animationDuration);
+                        AddMisc(ref newMA2);
 
-                // From Value
-                if (addFromValue) newMA2.From(fromValueVec);
+                        // From Value
+                        if (addFromValue) newMA2.From(fromValueVec);
+                        break;
+
+                    // Local
+                    case Space.Local:
+                        // Set up animation
+                        newMA2 = (addCustomTransform ? customTransform : transform).AMAlocalRotateEuler(axisToAnimate, endValueVec, animationDuration);
+                        AddMisc(ref newMA2);
+
+                        // From Value
+                        if (addFromValue) newMA2.From(fromValueVec);
+                        break;
+
+                    default:
+                        // Set up animation
+                        newMA2 = (addCustomTransform ? customTransform : transform).AMArotateEuler(axisToAnimate, endValueVec, animationDuration);
+                        AddMisc(ref newMA2);
+
+                        // From Value
+                        if (addFromValue) newMA2.From(fromValueVec);
+                        break;
+                }
                 break;
 
             default:
                 // Create animation
                 AMAMain.MA<Quaternion> newMA3;
 
-                // Set up animation
-                newMA3 = (addCustomTransform ? customTransform : transform).AMArotate(axisToAnimate, endValueQuat, animationDuration);
-                AddMisc(ref newMA3);
+                // Depending on space
+                switch (space)
+                {
+                    // World
+                    case Space.World:
+                        newMA3 = (addCustomTransform ? customTransform : transform).AMArotate(axisToAnimate, endValueQuat, animationDuration);
+                        AddMisc(ref newMA3);
+                        if (addFromValue) newMA3.From(fromValueQuat);
+                        break;
 
-                // From Value
-                if (addFromValue) newMA3.From(fromValueQuat);
+                    // Local
+                    case Space.Local:
+                        newMA3 = (addCustomTransform ? customTransform : transform).AMAlocalRotate(axisToAnimate, endValueQuat, animationDuration);
+                        AddMisc(ref newMA3);
+                        if (addFromValue) newMA3.From(fromValueQuat);
+                        break;
+
+                    default:
+                        newMA3 = (addCustomTransform ? customTransform : transform).AMArotate(axisToAnimate, endValueQuat, animationDuration);
+                        AddMisc(ref newMA3);
+                        if (addFromValue) newMA3.From(fromValueQuat);
+                        break;
+                }
                 break;
         }
     }
@@ -88,6 +150,7 @@ public class AMAAnimation_Rotate : AMABasicComponent
 class AMAAnimationRotateEditor : AMAComponentEditor<Quaternion>
 {
     SerializedProperty axisToAnimateProp;
+    SerializedProperty spaceProp;
     SerializedProperty typeProp;
     SerializedProperty customTransformProp;
 
@@ -99,6 +162,7 @@ class AMAAnimationRotateEditor : AMAComponentEditor<Quaternion>
     {
         // Link serialized properties to their names in the target class
         axisToAnimateProp = serializedObject.FindProperty("axisToAnimate");
+        spaceProp = serializedObject.FindProperty("space");
         typeProp = serializedObject.FindProperty("type");
         customTransformProp = serializedObject.FindProperty("customTransform");
         
@@ -152,9 +216,12 @@ class AMAAnimationRotateEditor : AMAComponentEditor<Quaternion>
         
         // Anim duration
         script.animationDuration = EditorGUILayout.FloatField("Anim. Duration", script.animationDuration);
-       
+
         // Space
-        EditorGUILayout.PropertyField(typeProp, new GUIContent("Space"), true);
+        EditorGUILayout.PropertyField(spaceProp, new GUIContent("Space"), true);
+
+        // Type
+        EditorGUILayout.PropertyField(typeProp, new GUIContent("Type"), true);
         
         // Play anim on start
         script.playAnimationOnStart = EditorGUILayout.Toggle("Play anim. on Start()", script.playAnimationOnStart);

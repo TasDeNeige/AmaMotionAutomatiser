@@ -141,6 +141,7 @@ namespace AMA
     #endregion
 
     #region Rotate
+    #region World
     #region Quaternion
     public class MARotateQuaternionTransform : MA<Quaternion>
     {
@@ -158,9 +159,34 @@ namespace AMA
         public Transform transform;
 
         public override bool GetAvailability() => !(transform == null);
-        public override Vector3 GetModifiedValue() => transform.rotation.eulerAngles;
-        public override void SetModifiedValue(Vector3 _newValue) => transform.rotation = Quaternion.Euler(_newValue);
+        public override Vector3 GetModifiedValue() => transform.eulerAngles;
+        public override void SetModifiedValue(Vector3 _newValue) => transform.eulerAngles = _newValue;
     }
+    #endregion
+
+    #region Local
+    #region Quaternion
+    public class MALocalRotateQuaternionTransform : MA<Quaternion>
+    {
+        public Transform transform;
+
+        public override bool GetAvailability() => !(transform == null);
+        public override Quaternion GetModifiedValue() => transform.localRotation;
+        public override void SetModifiedValue(Quaternion _newValue) => transform.localRotation = _newValue;
+    }
+    #endregion
+
+    #region Euler Angles
+    public class MALocalRotateEulerTransform : MA<Vector3>
+    {
+        public Transform transform;
+
+        public override bool GetAvailability() => !(transform == null);
+        public override Vector3 GetModifiedValue() => transform.localEulerAngles;
+        public override void SetModifiedValue(Vector3 _newValue) => transform.localEulerAngles = _newValue;
+    }
+    #endregion
+    #endregion
     #endregion
     #endregion
 }
