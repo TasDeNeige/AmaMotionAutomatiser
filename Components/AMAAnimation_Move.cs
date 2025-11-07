@@ -34,6 +34,13 @@ public class AMAAnimation_Move : AMABasicComponent
 
     public void PlayAnimation()
     {
+        // Prevent bugs with no custom transform given
+        if (addCustomTransform && customTransform == null)
+        {
+            Debug.LogWarning(AMAMain.debugAlertString + "Custom Transform was activated, but no transform was given in " + transform.name + ". Please add one in the component or thanks to a call to the 'AssignCustomTransform' function before the 'PlayAnimation'.");
+            return;
+        }
+
         // Create animation
         AMAMain.MA<Vector3> newMA;
 
@@ -60,6 +67,8 @@ public class AMAAnimation_Move : AMABasicComponent
             default: return transform.position;
         }
     }
+
+    public void AssignCustomTransform(Transform _customTransform) { customTransform = _customTransform; }
 }
 
 #if UNITY_EDITOR

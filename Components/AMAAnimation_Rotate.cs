@@ -38,8 +38,15 @@ public class AMAAnimation_Rotate : AMABasicComponent
 
     public void PlayAnimation()
     {
+        // Prevent bugs with no custom transform given
+        if (addCustomTransform && customTransform == null)
+        {
+            Debug.LogWarning(AMAMain.debugAlertString + "Custom Transform was activated, but no transform was given in " + transform.name + ". Please add one in the component or thanks to a call to the 'AssignCustomTransform' function before the 'PlayAnimation'.");
+            return;
+        }
+
         // Depending on type
-        switch(type)
+        switch (type)
         {
             // Quaternion
             case Type.Quaternion:
@@ -143,6 +150,8 @@ public class AMAAnimation_Rotate : AMABasicComponent
 
     public Quaternion GetCurrentQuaternionRotation() { return transform.rotation; }
     public Vector3 GetCurrentEulerRotation() { return transform.eulerAngles; }
+
+    public void AssignCustomTransform(Transform _customTransform) { customTransform = _customTransform; }
 }
 
 #if UNITY_EDITOR

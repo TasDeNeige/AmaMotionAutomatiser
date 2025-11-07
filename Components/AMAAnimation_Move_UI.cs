@@ -37,6 +37,13 @@ public class AMAAnimation_Move_UI : AMABasicComponent
 
     public void PlayAnimation()
     {
+        // Prevent bugs with no custom transform given
+        if (addCustomRectTransform && customRectTransform == null)
+        {
+            Debug.LogWarning(AMAMain.debugAlertString + "Custom RectTransform was activated, but no recttransform was given in " + transform.name + ". Please add one in the component or thanks to a call to the 'AssignCustomRectTransform' function before the 'PlayAnimation'.");
+            return;
+        }
+
         // Create animation
         AMAMain.MA<Vector3> newMA;
 
@@ -70,6 +77,8 @@ public class AMAAnimation_Move_UI : AMABasicComponent
             default: return rectTransform.position;
         }
     }
+
+    public void AssignCustomRectTransform(RectTransform _customRectTransform) { customRectTransform = _customRectTransform; }
 }
 
 #if UNITY_EDITOR

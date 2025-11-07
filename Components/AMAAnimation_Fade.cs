@@ -37,6 +37,36 @@ public class AMAAnimation_Fade : AMABasicComponent
 
     public void PlayAnimation()
     {
+        // Prevent bugs with no custom ColorComponent was given
+        switch(colorComponent)
+        {
+            case ColorComponent.Material:
+                if (addCustomMaterial && customMaterial == null)
+                {
+                    Debug.LogWarning(AMAMain.debugAlertString + "Custom Material was activated, but no material was given in " + transform.name + ". Please add one in the component or thanks to a call to the 'AssignCustomMaterial' function before the 'PlayAnimation'.");
+                    return;
+                }
+                break;
+
+            case ColorComponent.UIImage:
+                if (addCustomUIImage && customUIImage == null)
+                {
+                    Debug.LogWarning(AMAMain.debugAlertString + "Custom UI Image was activated, but no UI image was given in " + transform.name + ". Please add one in the component or thanks to a call to the 'AssignCustomUIImage' function before the 'PlayAnimation'.");
+                    return;
+                }
+                break;
+
+            case ColorComponent.TMP_Text:
+                if (addCustomTMP_Text && customTMP_Text == null)
+                {
+                    Debug.LogWarning(AMAMain.debugAlertString + "Custom TMP_Text was activated, but no TMP_Text was given in " + transform.name + ". Please add one in the component or thanks to a call to the 'AssignCustomTMP_Text' function before the 'PlayAnimation'.");
+                    return;
+                }
+                break;
+            
+            default: break;
+        }
+
         // Create animation
         AMAMain.MA<Color> newMA;
 
@@ -141,6 +171,10 @@ public class AMAAnimation_Fade : AMABasicComponent
                 return Color.white;
         }
     }
+
+    public void AssignCustomMaterial(Material _customMaterial) { customMaterial = _customMaterial; }
+    public void AssignCustomUIImage(UnityEngine.UI.Image _uiImage) { customUIImage = _uiImage; }
+    public void AssignCustomTMP_Text(TMPro.TMP_Text _tmpText) { customTMP_Text = _tmpText; }
 }
 
 #if UNITY_EDITOR
