@@ -189,4 +189,17 @@ namespace AMA
     #endregion
     #endregion
     #endregion
+
+    #region Shake
+    public class MAShake : MA<Vector3>
+    {
+        public Transform transform;
+        float shakeRadius;
+
+        public float ShakeRadius { get => shakeRadius; set => shakeRadius = value; }
+        public override bool GetAvailability() => !(transform == null);
+        public override Vector3 GetModifiedValue() => transform.position;
+        public override void SetModifiedValue(Vector3 _newValue) => transform.position = _newValue;
+    }
+    #endregion
 }
