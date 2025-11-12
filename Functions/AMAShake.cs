@@ -19,10 +19,11 @@ namespace AMA
         /// Move Game Object to a specific position.
         /// </summary>
         /// <param name="_selectedAxis">Axis on which to apply motion</param>
-        /// <param name="_endPos">Final position</param>
+        /// <param name="_shakeRadius">Radius in which the transform can be shaken.</param>
         /// <param name="_duration">Time taken to move to given position</param>
+        /// <param name="_delayBetweenShakes">Add a delay between each shake. Defaulted to "0.0f"</param>
         /// <param name="_snapBackToStartPos">Snaps object to end position once motion is finished. Defaulted to "True"</param>
-        public static MA<Vector3> AMAshake(this Transform _transform, Axis _selectedAxis, float _shakeRadius, float _duration, bool _snapBackToStartPos = true)
+        public static MA<Vector3> AMAshake(this Transform _transform, Axis _selectedAxis, float _shakeRadius, float _duration, float _delayBetweenShakes = 0.0f, bool _snapBackToStartPos = true)
         {
             // Set up MA
             MAShake _ma = new MAShake();
@@ -34,6 +35,7 @@ namespace AMA
             _ma.duration = _duration;
             _ma.snapToEndValue = _snapBackToStartPos;
             _ma.SetCurve(Curves.Constant);
+            _ma.DelayBetweenShakes = _delayBetweenShakes;
 
             // Apply MA
             _ma.coroutine = _ma.Shake();

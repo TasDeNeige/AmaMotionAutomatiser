@@ -195,8 +195,11 @@ namespace AMA
     {
         public Transform transform;
         float shakeRadius;
+        float delayBetweenShakes = 0f;
 
         public float ShakeRadius { get => shakeRadius; set => shakeRadius = value; }
+        public float DelayBetweenShakes { get => delayBetweenShakes; set => delayBetweenShakes = value; }
+
         public override bool GetAvailability() => !(transform == null);
         public override Vector3 GetModifiedValue() => transform.position;
         public override void SetModifiedValue(Vector3 _newValue) => transform.position = _newValue;

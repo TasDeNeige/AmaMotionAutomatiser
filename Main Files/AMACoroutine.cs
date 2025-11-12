@@ -4,8 +4,9 @@
 // • By Amaryne Bréand
 //
 
-using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
+using UnityEngine;
 using static AMA.AMAMain;
 
 namespace AMA
@@ -116,10 +117,10 @@ namespace AMA
 
             // Set up calculations
             UnityEngine.Vector3 initialPosition = _ma.startValue;
-            //T targetPosition = _ma.endValue;
             UnityEngine.Vector3 externalOffset = _ma.ZeroValue(); // Tracks external movement
             bool hasWentThroughFirstFrame = false;
             float elapsedTime = 0f;
+            float lastShakeTimestamp = Time.realtimeSinceStartup;
 
             // While time is cooling down
             while (elapsedTime < _ma.duration)
@@ -137,7 +138,7 @@ namespace AMA
                     }
                 }
 
-                elapsedTime += Time.deltaTime;
+                elapsedTime += Time.realtimeSinceStartup - lastShakeTimestamp;
 
                 float easedTime = 0;
 
@@ -162,6 +163,25 @@ namespace AMA
 
                 // Track any external movement since the last frame
                 externalOffset = _ma.GetExternalOffset(shakePosition, externalOffset);
+
+                // Retrieve time
+                lastShakeTimestamp = Time.realtimeSinceStartup;
+
+                // Add delay between each shakes
+                if (_ma.DelayBetweenShakes != 0.0f)
+                {
+                    Debug.Log(elapsedTime + _ma.DelayBetweenShakes + " > " + _ma.duration);
+
+                    // Ensure that no useless wait time is added if MA finishes before next shake
+                    if (elapsedTime + _ma.DelayBetweenShakes > _ma.duration)
+                    {
+                        elapsedTime = _ma.duration;
+                    }
+                    else
+                    {
+                        yield return new WaitForSeconds(_ma.DelayBetweenShakes);
+                    }
+                }
 
                 yield return null;
             }
