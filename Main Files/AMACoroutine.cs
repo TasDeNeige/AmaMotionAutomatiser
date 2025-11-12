@@ -158,7 +158,7 @@ namespace AMA
 
                 // Change shake position
                 UnityEngine.Vector3 shakePosition = (Random.insideUnitSphere * interpolatedRadius);
-                _ma.SetModifiedValue(_ma.startValue + shakePosition );
+                _ma.SetModifiedValue(_ma.ApplyAxisMask(_ma.selectedAxis, _ma.startValue + shakePosition ));
 
                 // Track any external movement since the last frame
                 externalOffset = _ma.GetExternalOffset(shakePosition, externalOffset);
