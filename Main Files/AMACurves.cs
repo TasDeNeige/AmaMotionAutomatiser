@@ -17,6 +17,7 @@ namespace AMA
     public enum Curves
     {
         Linear,
+        Constant,
         Sine_In,
         Sine_Out,
         Sine_InOut,
@@ -72,6 +73,16 @@ namespace AMA
         public static float Linear(float currentTime, float startValue, float endValue, float duration)
         {
             return endValue * currentTime / duration + startValue;
+        }
+        #endregion
+
+        #region Constant
+        /// <summary>
+        /// "Easing" function returning only the end value.
+        /// </summary>
+        public static float Constant(float currentTime, float startValue, float endValue, float duration)
+        {
+            return endValue;
         }
         #endregion
 
@@ -547,6 +558,7 @@ namespace AMA
             switch (_curve)
             {
                 case Curves.Linear: return Linear;
+                case Curves.Constant: return Constant;
                 case Curves.Sine_In: return SineEaseIn;
                 case Curves.Sine_Out: return SineEaseOut;
                 case Curves.Sine_InOut: return SineEaseInOut;

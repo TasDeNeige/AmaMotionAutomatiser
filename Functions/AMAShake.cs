@@ -33,6 +33,7 @@ namespace AMA
             _ma.ShakeRadius = _shakeRadius;
             _ma.duration = _duration;
             _ma.snapToEndValue = _snapBackToStartPos;
+            _ma.SetCurve(Curves.Constant);
 
             // Apply MA
             _ma.coroutine = _ma.Shake();
