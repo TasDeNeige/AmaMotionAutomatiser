@@ -71,7 +71,7 @@ public class AMACurveSelector : EditorWindow
         GUILayout.Space(10);
 
         // Set up buttons
-        int startIndex = 1;
+        int startIndex = 2;
         int endIndex = nbCurves - 2;
         int visibleCount = endIndex - startIndex + 1; // Nb buttons to draw
         int rows = Mathf.CeilToInt(visibleCount / (float)buttonPerRow);
@@ -82,6 +82,7 @@ public class AMACurveSelector : EditorWindow
         #region First row
         EditorGUILayout.BeginHorizontal();
         DrawButton(allCurves[0]); // Draw Linear curve
+        DrawButton(allCurves[1]); // Draw Constant curve
         GUILayout.FlexibleSpace();
         DrawButton(allCurves[nbCurves - 1]); // Draw Custom curve
         EditorGUILayout.EndHorizontal();
