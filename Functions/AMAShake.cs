@@ -15,6 +15,7 @@ namespace AMA
         #region Shake
         // ------------------------------------------ [ PUBLIC FUNCTION ] ------------------------------------------ //
 
+        // Used with float
         /// <summary>
         /// Move Game Object to a specific position.
         /// </summary>

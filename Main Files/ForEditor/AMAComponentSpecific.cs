@@ -27,7 +27,7 @@ namespace AMA
             // Add Delay
             if (addDelay) _ma.SetDelay(delay);
             // Add curves 
-            if (curve != Curves.Linear) { if (curve == Curves.CUSTOM) _ma.SetCurve(customCurve); else _ma.SetCurve(curve); }
+            if (curve == Curves.CUSTOM) _ma.SetCurve(customCurve); else _ma.SetCurve(curve);
             // Func On Start
             if (addFunctionOnStart) _ma.OnStart(startFunction.Invoke);
             // Func On End
