@@ -171,8 +171,6 @@ namespace AMA
                 // Add delay between each shakes
                 if (_ma.DelayBetweenShakes > 0.0f) // If there is a delay
                 {
-                    Debug.Log(elapsedTime + _ma.DelayBetweenShakes + " > " + _ma.duration);
-
                     // Ensure that no useless wait time is added if MA finishes before next shake
                     if (elapsedTime + _ma.DelayBetweenShakes > _ma.duration)
                     {
