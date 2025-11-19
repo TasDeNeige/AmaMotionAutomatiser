@@ -140,7 +140,6 @@ namespace AMA
                 }
 
                 elapsedTime = lastShakeTimestamp - startTimeStamp;
-                Debug.Log("Elapsed: " + elapsedTime);
 
                 float easedTime = 0;
 
@@ -177,8 +176,6 @@ namespace AMA
                     // Ensure that no useless wait time is added if MA finishes before next shake
                     if (elapsedTime + _ma.DelayBetweenShakes > _ma.duration)
                     {
-                        Debug.Log("Wait for " + (_ma.duration - elapsedTime));
-                        Debug.Log("Calcul: " + (elapsedTime + (_ma.duration - elapsedTime)));
                         yield return new WaitForSeconds(_ma.duration - elapsedTime);
                     }
                     else
