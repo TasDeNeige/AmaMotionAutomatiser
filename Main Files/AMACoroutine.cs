@@ -120,10 +120,11 @@ namespace AMA
             UnityEngine.Vector3 externalOffset = _ma.ZeroValue(); // Tracks external movement
             bool hasWentThroughFirstFrame = false;
             float elapsedTime = 0f;
-            float lastShakeTimestamp = Time.realtimeSinceStartup;
+            float lastShakeTimestamp = Time.time;
+            float startTimeStamp = Time.time;
 
             // While time is cooling down
-            while (elapsedTime < _ma.duration)
+            while (elapsedTime <= _ma.duration)
             {
                 // Ensure object is still accessible (otherwise get out of coroutine)
                 if (!_ma.GetAvailability()) yield break;
@@ -138,7 +139,8 @@ namespace AMA
                     }
                 }
 
-                elapsedTime += Time.realtimeSinceStartup - lastShakeTimestamp;
+                elapsedTime = lastShakeTimestamp - startTimeStamp;
+                Debug.Log("Elapsed: " + elapsedTime);
 
                 float easedTime = 0;
 
@@ -159,23 +161,25 @@ namespace AMA
 
                 // Change shake position
                 UnityEngine.Vector3 shakePosition = (Random.insideUnitSphere * interpolatedRadius);
-                _ma.SetModifiedValue(_ma.ApplyAxisMask(_ma.selectedAxis, _ma.startValue + shakePosition ));
+                _ma.SetModifiedValue(_ma.ApplyAxisMask(_ma.selectedAxis, _ma.startValue + shakePosition));
 
                 // Track any external movement since the last frame
                 externalOffset = _ma.GetExternalOffset(shakePosition, externalOffset);
 
                 // Retrieve time
-                lastShakeTimestamp = Time.realtimeSinceStartup;
+                lastShakeTimestamp = Time.time;
 
                 // Add delay between each shakes
-                if (_ma.DelayBetweenShakes != 0.0f)
+                if (_ma.DelayBetweenShakes > 0.0f) // If there is a delay
                 {
                     Debug.Log(elapsedTime + _ma.DelayBetweenShakes + " > " + _ma.duration);
 
                     // Ensure that no useless wait time is added if MA finishes before next shake
                     if (elapsedTime + _ma.DelayBetweenShakes > _ma.duration)
                     {
-                        elapsedTime = _ma.duration;
+                        Debug.Log("Wait for " + (_ma.duration - elapsedTime));
+                        Debug.Log("Calcul: " + (elapsedTime + (_ma.duration - elapsedTime)));
+                        yield return new WaitForSeconds(_ma.duration - elapsedTime);
                     }
                     else
                     {
