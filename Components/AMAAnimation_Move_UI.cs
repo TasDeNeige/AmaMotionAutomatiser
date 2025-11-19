@@ -50,11 +50,11 @@ public class AMAAnimation_Move_UI : AMABasicComponent
         // Depending on space
         switch(space)
         {
-            case Space.World: newMA = (addCustomRectTransform ? customRectTransform : rectTransform).AMAmove(axisToAnimate, endValue, animationDuration); break;
-            case Space.Local: newMA = (addCustomRectTransform ? customRectTransform : rectTransform).AMAlocalMove(axisToAnimate, endValue, animationDuration); break;
-            case Space.AnchoredPos: newMA = (addCustomRectTransform ? customRectTransform : rectTransform).AMAanchoredPosMove(axisToAnimate, endValue, animationDuration); break;
-            case Space.AnchoredPos3D: newMA = (addCustomRectTransform ? customRectTransform : rectTransform).AMAanchoredPos3dMove(axisToAnimate, endValue, animationDuration); break;
-            default: newMA = (addCustomRectTransform ? customRectTransform : rectTransform).AMAmove(axisToAnimate, endValue, animationDuration); break;
+            case Space.World: newMA = (addCustomRectTransform ? customRectTransform : rectTransform).AMAmove(axisToAnimate, endValue, animationDuration, snapToEndValue); break;
+            case Space.Local: newMA = (addCustomRectTransform ? customRectTransform : rectTransform).AMAlocalMove(axisToAnimate, endValue, animationDuration, snapToEndValue); break;
+            case Space.AnchoredPos: newMA = (addCustomRectTransform ? customRectTransform : rectTransform).AMAanchoredPosMove(axisToAnimate, endValue, animationDuration, snapToEndValue); break;
+            case Space.AnchoredPos3D: newMA = (addCustomRectTransform ? customRectTransform : rectTransform).AMAanchoredPos3dMove(axisToAnimate, endValue, animationDuration, snapToEndValue); break;
+            default: newMA = (addCustomRectTransform ? customRectTransform : rectTransform).AMAmove(axisToAnimate, endValue, animationDuration, snapToEndValue); break;
         }
 
         AddMisc(ref newMA);

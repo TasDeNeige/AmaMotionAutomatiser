@@ -58,20 +58,20 @@ public class AMAAnimation_Rotate : AMABasicComponent
                 {
                     // World
                     case Space.World:
-                        newMA1 = (addCustomTransform ? customTransform : transform).AMArotate(axisToAnimate, endValueQuat, animationDuration);
+                        newMA1 = (addCustomTransform ? customTransform : transform).AMArotate(axisToAnimate, endValueQuat, animationDuration, snapToEndValue);
                         AddMisc(ref newMA1);
                         if (addFromValue) newMA1.From(fromValueQuat);
                         break;
 
                     // Local
                     case Space.Local:
-                        newMA1 = (addCustomTransform ? customTransform : transform).AMAlocalRotate(axisToAnimate, endValueQuat, animationDuration);
+                        newMA1 = (addCustomTransform ? customTransform : transform).AMAlocalRotate(axisToAnimate, endValueQuat, animationDuration, snapToEndValue);
                         AddMisc(ref newMA1);
                         if (addFromValue) newMA1.From(fromValueQuat);
                         break;
 
                     default:
-                        newMA1 = (addCustomTransform ? customTransform : transform).AMArotate(axisToAnimate, endValueQuat, animationDuration);
+                        newMA1 = (addCustomTransform ? customTransform : transform).AMArotate(axisToAnimate, endValueQuat, animationDuration, snapToEndValue);
                         AddMisc(ref newMA1);
                         if (addFromValue) newMA1.From(fromValueQuat);
                         break;
@@ -89,7 +89,7 @@ public class AMAAnimation_Rotate : AMABasicComponent
                     // World
                     case Space.World:
                         // Set up animation
-                        newMA2 = (addCustomTransform ? customTransform : transform).AMArotateEuler(axisToAnimate, endValueVec, animationDuration);
+                        newMA2 = (addCustomTransform ? customTransform : transform).AMArotateEuler(axisToAnimate, endValueVec, animationDuration, snapToEndValue);
                         AddMisc(ref newMA2);
 
                         // From Value
@@ -99,7 +99,7 @@ public class AMAAnimation_Rotate : AMABasicComponent
                     // Local
                     case Space.Local:
                         // Set up animation
-                        newMA2 = (addCustomTransform ? customTransform : transform).AMAlocalRotateEuler(axisToAnimate, endValueVec, animationDuration);
+                        newMA2 = (addCustomTransform ? customTransform : transform).AMAlocalRotateEuler(axisToAnimate, endValueVec, animationDuration, snapToEndValue);
                         AddMisc(ref newMA2);
 
                         // From Value
@@ -108,7 +108,7 @@ public class AMAAnimation_Rotate : AMABasicComponent
 
                     default:
                         // Set up animation
-                        newMA2 = (addCustomTransform ? customTransform : transform).AMArotateEuler(axisToAnimate, endValueVec, animationDuration);
+                        newMA2 = (addCustomTransform ? customTransform : transform).AMArotateEuler(axisToAnimate, endValueVec, animationDuration, snapToEndValue);
                         AddMisc(ref newMA2);
 
                         // From Value
@@ -126,20 +126,20 @@ public class AMAAnimation_Rotate : AMABasicComponent
                 {
                     // World
                     case Space.World:
-                        newMA3 = (addCustomTransform ? customTransform : transform).AMArotate(axisToAnimate, endValueQuat, animationDuration);
+                        newMA3 = (addCustomTransform ? customTransform : transform).AMArotate(axisToAnimate, endValueQuat, animationDuration, snapToEndValue);
                         AddMisc(ref newMA3);
                         if (addFromValue) newMA3.From(fromValueQuat);
                         break;
 
                     // Local
                     case Space.Local:
-                        newMA3 = (addCustomTransform ? customTransform : transform).AMAlocalRotate(axisToAnimate, endValueQuat, animationDuration);
+                        newMA3 = (addCustomTransform ? customTransform : transform).AMAlocalRotate(axisToAnimate, endValueQuat, animationDuration, snapToEndValue);
                         AddMisc(ref newMA3);
                         if (addFromValue) newMA3.From(fromValueQuat);
                         break;
 
                     default:
-                        newMA3 = (addCustomTransform ? customTransform : transform).AMArotate(axisToAnimate, endValueQuat, animationDuration);
+                        newMA3 = (addCustomTransform ? customTransform : transform).AMArotate(axisToAnimate, endValueQuat, animationDuration, snapToEndValue);
                         AddMisc(ref newMA3);
                         if (addFromValue) newMA3.From(fromValueQuat);
                         break;

@@ -47,9 +47,9 @@ public class AMAAnimation_Move : AMABasicComponent
         // Depending on space
         switch(space)
         {
-            case Space.World: newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration); break;
-            case Space.Local: newMA = (addCustomTransform ? customTransform : transform).AMAlocalMove(axisToAnimate, endValue, animationDuration); break;
-            default: newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration); break;
+            case Space.World: newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration, snapToEndValue); break;
+            case Space.Local: newMA = (addCustomTransform ? customTransform : transform).AMAlocalMove(axisToAnimate, endValue, animationDuration, snapToEndValue); break;
+            default: newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration, snapToEndValue); break;
         }
 
         AddMisc(ref newMA);

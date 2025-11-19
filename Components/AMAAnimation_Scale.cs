@@ -40,7 +40,7 @@ public class AMAAnimation_Scale : AMABasicComponent
 
         // Create animation
         AMAMain.MA<Vector3> newMA;
-        newMA = (addCustomTransform ? customTransform : transform).AMAscale(axisToAnimate, endValue, animationDuration);
+        newMA = (addCustomTransform ? customTransform : transform).AMAscale(axisToAnimate, endValue, animationDuration, snapToEndValue);
 
         AddMisc(ref newMA);
         // From Value

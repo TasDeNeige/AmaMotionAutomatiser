@@ -93,7 +93,7 @@ public class AMAAnimation_Fade : AMABasicComponent
                     }
                 }
                 
-                newMA = materialToAnimate.AMAfade(endValue, animationDuration);
+                newMA = materialToAnimate.AMAfade(endValue, animationDuration, snapToEndValue);
                 break;
 
             // UI Image
@@ -116,7 +116,7 @@ public class AMAAnimation_Fade : AMABasicComponent
                     }
                 }
 
-                newMA = imageToAnimate.AMAfade(endValue, animationDuration);
+                newMA = imageToAnimate.AMAfade(endValue, animationDuration, snapToEndValue);
                 break;
 
             // TMP Text
@@ -139,7 +139,7 @@ public class AMAAnimation_Fade : AMABasicComponent
                     }
                 }
 
-                newMA = textToAnimate.AMAfade(endValue, animationDuration);
+                newMA = textToAnimate.AMAfade(endValue, animationDuration, snapToEndValue);
                 break;
 
             default:

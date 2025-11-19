@@ -15,6 +15,7 @@ namespace AMA
     {
         [HideInInspector] public AMA.Curves curve = Curves.Linear;
         [HideInInspector] public AnimationCurve customCurve;
+        [HideInInspector] public bool snapToEndValue = true;
         [HideInInspector] public bool addFunctionOnStart;
         [HideInInspector] public UnityEvent startFunction;
         [HideInInspector] public bool addFunctionOnEnd;
@@ -104,6 +105,9 @@ namespace AMA
             EditorGUILayout.EndHorizontal();
             if (useCustomCurveProp.intValue == (int)Curves.CUSTOM) EditorGUILayout.PropertyField(customCurveProp, new GUIContent("Custom curve"), true);
             #endregion
+
+            // Snap to end value
+            _script.snapToEndValue = EditorGUILayout.Toggle("Snap to End Value", _script.snapToEndValue);
 
             // Delay
             _script.addDelay = EditorGUILayout.Toggle("Add Delay to Anim.", _script.addDelay);

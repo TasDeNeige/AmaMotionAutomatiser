@@ -44,7 +44,7 @@ public class AMAAnimation_Shake : AMABasicComponent
 
         // Create animation
         AMAMain.MA<Vector3> newMA;
-        newMA = (addCustomTransform ? customTransform : transform).AMAshake(axisToAnimate, shakeRadius, animationDuration, delayBetweenShakes);
+        newMA = (addCustomTransform ? customTransform : transform).AMAshake(axisToAnimate, shakeRadius, animationDuration, delayBetweenShakes, snapToEndValue);
 
         AddMisc(ref newMA);
     }
