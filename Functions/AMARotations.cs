@@ -149,7 +149,7 @@ namespace AMA
             _ma.unityObject = _transform;
             _ma.transform = _transform;
             _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.transform.rotation;
+            _ma.startValue = _ma.transform.localRotation;
             _ma.endValue = new Quaternion(_endRotation, _endRotation, _endRotation, _endRotation);
             _ma.duration = _duration;
             _ma.snapToEndValue = _snapToEndValue;
@@ -177,7 +177,7 @@ namespace AMA
             _ma.unityObject = _transform;
             _ma.transform = _transform;
             _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.transform.rotation;
+            _ma.startValue = _ma.transform.localRotation;
             _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, _endRotation);
             _ma.duration = _duration;
             _ma.snapToEndValue = _snapToEndValue;
@@ -207,7 +207,7 @@ namespace AMA
             _ma.unityObject = _transform;
             _ma.transform = _transform;
             _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.transform.rotation.eulerAngles;
+            _ma.startValue = _ma.transform.localRotation.eulerAngles;
             _ma.endValue = new Vector3(_endRotation, _endRotation, _endRotation);
             _ma.duration = _duration;
             _ma.snapToEndValue = _snapToEndValue;
@@ -235,7 +235,7 @@ namespace AMA
             _ma.unityObject = _transform;
             _ma.transform = _transform;
             _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.transform.rotation.eulerAngles;
+            _ma.startValue = _ma.transform.localRotation.eulerAngles;
             _ma.endValue = _endRotation;
             _ma.duration = _duration;
             _ma.snapToEndValue = _snapToEndValue;
