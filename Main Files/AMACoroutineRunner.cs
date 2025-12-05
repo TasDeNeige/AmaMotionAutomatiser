@@ -82,6 +82,21 @@ namespace AMA
             ongoingCoroutines.Remove(_object);
         }
 
+        // Stop All Coroutines (from user input)
+        public void INTERNAL_StopAll()
+        {
+            // Stop all
+            foreach (object key in ongoingCoroutines.Keys)
+            {
+                for (int i = 0; i < ongoingCoroutines[key].Count; i++)
+                {
+                    StopCoroutine(ongoingCoroutines[key][i]);
+                }
+
+                ongoingCoroutines.Remove(key);
+            }
+        }
+
         // Delete Coroutine from dict (e.g. used when MA is destroyed)
         public void INTERNAL_DeleteCoroutine(object _object, IEnumerator _coroutine)
         {
