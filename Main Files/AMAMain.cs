@@ -1,7 +1,7 @@
 //
-// • Ama Motion Automatiser
-// • [ Main file ]
-// • By Amaryne Bréand
+// â€¢ Ama Motion Automatiser
+// â€¢ [ Main file ]
+// â€¢ By Amaryne BrÃ©and
 //
 
 using UnityEngine;
@@ -19,9 +19,9 @@ namespace AMA
     public static class AMAMain
     {
         private static bool debug = false;
-        public static string debugAlertString = $"<b><color=#00C7AC>AMA • </color><color=#F5715D>Debug • </color></b> ";
+        public static string debugAlertString = $"<b><color=#00C7AC>AMA â€¢ </color><color=#F5715D>Debug â€¢ </color></b> ";
         public static void ToggleDebug(bool _bool) => debug = _bool;
-        public static void StopAllCoroutines() => AMACoroutineRunner.Instance.StopAllCoroutines();
+        public static void StopAllCoroutines() => AMACoroutineRunner.Instance.INTERNAL_StopAll();
 
         #region Main class
         abstract public class MA<T>
