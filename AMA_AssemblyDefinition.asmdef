@@ -1,0 +1,6 @@
+{
+  "name": "AMA_AssemblyDefinition",
+  "references": [
+    "Unity.TextMeshPro"
+  ]
+}
