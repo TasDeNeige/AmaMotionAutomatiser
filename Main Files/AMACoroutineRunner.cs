@@ -97,6 +97,7 @@ namespace AMA
             }
         }
 
+
         // Delete Coroutine from dict (e.g. used when MA is destroyed)
         public void INTERNAL_DeleteCoroutine(object _object, IEnumerator _coroutine)
         {

@@ -5,7 +5,6 @@
 //
 
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using static AMA.AMAMain;
 
@@ -96,6 +95,12 @@ namespace AMA
             _ma.INTERNAL_Destroy();
         } // ok goodnight
 
+
+
+
+
+
+
         // Shake Coroutine
         public static IEnumerator Shake(this MAShake _ma)
         {
@@ -118,6 +123,8 @@ namespace AMA
             // Set up calculations
             UnityEngine.Vector3 initialPosition = _ma.startValue;
             UnityEngine.Vector3 externalOffset = _ma.ZeroValue(); // Tracks external movement
+            Vector3 externalFinalPosition = _ma.ZeroValue();
+            Vector3 lastShake = _ma.ZeroValue();
             bool hasWentThroughFirstFrame = false;
             float elapsedTime = 0f;
             float lastShakeTimestamp = Time.time;
@@ -158,12 +165,15 @@ namespace AMA
                 // Calculate interpolated radius
                 float interpolatedRadius = Mathf.Lerp(0.0f, _ma.ShakeRadius, easedTime);
 
+
+                // Replace transform to correctly track external offset (without considering added shake)
+                _ma.SetModifiedValue(_ma.ValueAccordingToAxis(_ma.selectedAxis,  (_ma.GetModifiedValue() - lastShake), externalOffset));
+                externalOffset = _ma.GetExternalOffset(_ma.transform.position, externalOffset);
+                
                 // Change shake position
                 UnityEngine.Vector3 shakePosition = (Random.insideUnitSphere * interpolatedRadius);
-                _ma.SetModifiedValue(_ma.ApplyAxisMask(_ma.selectedAxis, _ma.startValue + shakePosition));
-
-                // Track any external movement since the last frame
-                externalOffset = _ma.GetExternalOffset(shakePosition, externalOffset);
+                _ma.SetModifiedValue(_ma.ValueAccordingToAxis(_ma.selectedAxis,  (_ma.GetModifiedValue())+ shakePosition, externalOffset));
+                lastShake = shakePosition;
 
                 // Retrieve time
                 lastShakeTimestamp = Time.time;
@@ -189,7 +199,7 @@ namespace AMA
             if (!_ma.GetAvailability()) yield break;
 
             // Ensures that object comes back to place
-            if (_ma.snapToEndValue) _ma.SetModifiedValue(_ma.ApplyAxisMask(_ma.selectedAxis, _ma.startValue));
+            if (_ma.snapToEndValue) _ma.SetModifiedValue(_ma.ApplyAxisMask(_ma.selectedAxis, _ma.transform.position - lastShake));
 
             // Execute function when MA has finished its journey (if there is one)
             if (_ma.onCompleteFunc != null) { _ma.onCompleteFunc(); }

@@ -21,7 +21,7 @@ namespace AMA
         private static bool debug = false;
         public static string debugAlertString = $"<b><color=#00C7AC>AMA • </color><color=#F5715D>Debug • </color></b> ";
         public static void ToggleDebug(bool _bool) => debug = _bool;
-        public static void StopAllCoroutines() => AMACoroutineRunner.Instance.INTERNAL_StopAll();
+        public static void StopAllCoroutines() => AMACoroutineRunner.Instance.StopAllCoroutines();
 
         #region Main class
         abstract public class MA<T>
@@ -36,12 +36,10 @@ namespace AMA
             public T endValue;
 
             // Miscellaneous
-            public bool hasFromValue = false;
-            public bool isActive;
-            public bool isStopNeeded;
-            public bool snapToEndValue;
             public Axis selectedAxis;
             public float duration;
+            public bool hasFromValue = false;
+            public bool snapToEndValue;
             public float delay;
             public CurveDelegate curveDelegate = AMACurves.GetCurveFunction(Curves.Linear);
             public AnimationCurve animationCurve = null;
@@ -60,7 +58,6 @@ namespace AMA
                 duration = _duration;
                 delay = _delay;
                 snapToEndValue = _snapToEnd;
-                isActive = true;
 
                 curveDelegate = AMACurves.GetCurveFunction(Curves.Linear);
                 animationCurve = null;
@@ -262,7 +259,6 @@ namespace AMA
             _ma.startValue = default;
             _ma.endValue = default;
             _ma.hasFromValue = default;
-            _ma.isActive = false;
             _ma.snapToEndValue = false;
             _ma.duration = 0;
             _ma.delay = 0;
