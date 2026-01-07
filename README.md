@@ -4,6 +4,10 @@
 
 *A simple way to animate object motions in Unity. Heavily inspired by the [DoTween API](https://dotween.demigiant.com).*
 
+# [Download (Unity Package)](https://raw.github.com/TasDeNeige/AmaMotionAutomatiser/main/AmaMotionAutomatiser.unitypackage)
+*This version was made for Unity 6*
+<br>
+
 # Guide Overview
 ### Introduction
 - [Install](#Introduction-Install)
