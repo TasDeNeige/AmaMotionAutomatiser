@@ -4,8 +4,10 @@
 // • By Amaryne Bréand
 //
 
+using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static AMA.AMAMain;
 
 namespace AMA
@@ -16,7 +18,7 @@ namespace AMA
     {
         public Transform transform;
 
-        public override bool GetAvailability() => !(transform == null);
+        public override bool GetAvailability() => TestObjAvailability(transform);
         public override Vector3 GetModifiedValue() => transform.position;
         public override void SetModifiedValue(Vector3 _newValue) => transform.position = _newValue;
     }
@@ -25,7 +27,7 @@ namespace AMA
     {
         public Transform transform;
 
-        public override bool GetAvailability() => !(transform == null);
+        public override bool GetAvailability() => TestObjAvailability(transform);
         public override Vector3 GetModifiedValue() => transform.localPosition;
         public override void SetModifiedValue(Vector3 _newValue) => transform.localPosition = _newValue;
     }
@@ -36,7 +38,7 @@ namespace AMA
     {
         public RectTransform rectTransform;
 
-        public override bool GetAvailability() => !(rectTransform == null);
+        public override bool GetAvailability() => TestObjAvailability(rectTransform);
         public override Vector3 GetModifiedValue() => rectTransform.position;
         public override void SetModifiedValue(Vector3 _newValue) => rectTransform.position = _newValue;
     }
@@ -45,7 +47,7 @@ namespace AMA
     {
         public RectTransform rectTransform;
 
-        public override bool GetAvailability() => !(rectTransform == null);
+        public override bool GetAvailability() => TestObjAvailability(rectTransform);
         public override Vector3 GetModifiedValue() => rectTransform.localPosition;
         public override void SetModifiedValue(Vector3 _newValue) => rectTransform.localPosition = _newValue;
     }
@@ -54,7 +56,7 @@ namespace AMA
     {
         public RectTransform rectTransform;
 
-        public override bool GetAvailability() => !(rectTransform == null);
+        public override bool GetAvailability() => TestObjAvailability(rectTransform);
         public override Vector3 GetModifiedValue() => rectTransform.anchoredPosition;
         public override void SetModifiedValue(Vector3 _newValue) => rectTransform.anchoredPosition = _newValue;
     }
@@ -63,7 +65,7 @@ namespace AMA
     {
         public RectTransform rectTransform;
 
-        public override bool GetAvailability() => !(rectTransform == null);
+        public override bool GetAvailability() => TestObjAvailability(rectTransform);
         public override Vector3 GetModifiedValue() => rectTransform.anchoredPosition3D;
         public override void SetModifiedValue(Vector3 _newValue) => rectTransform.anchoredPosition3D = _newValue;
     }
@@ -76,7 +78,7 @@ namespace AMA
     {
         public Transform transform;
 
-        public override bool GetAvailability() => !(transform == null);
+        public override bool GetAvailability() => TestObjAvailability(transform);
         public override Vector3 GetModifiedValue() => transform.localScale;
         public override void SetModifiedValue(Vector3 _newValue) => transform.localScale = _newValue;
     }
@@ -87,7 +89,7 @@ namespace AMA
     {
         public RectTransform rectTransform;
 
-        public override bool GetAvailability() => !(rectTransform == null);
+        public override bool GetAvailability() => TestObjAvailability(rectTransform);
         public override Vector3 GetModifiedValue() => rectTransform.localScale;
         public override void SetModifiedValue(Vector3 _newValue) => rectTransform.localScale = _newValue;
     }
@@ -100,7 +102,7 @@ namespace AMA
     {
         public Material material;
 
-        public override bool GetAvailability() => !(material == null);
+        public override bool GetAvailability() => TestObjAvailability(material);
         public override Color GetModifiedValue() => material.color;
         public override void SetModifiedValue(Color _newValue) => material.color = _newValue;
     }
@@ -111,18 +113,18 @@ namespace AMA
     {
         public UnityEngine.UI.Image image;
 
-        public override bool GetAvailability() => !(image == null);
+        public override bool GetAvailability() => TestObjAvailability(image);
         public override Color GetModifiedValue() => image.color;
         public override void SetModifiedValue(Color _newValue) => image.color = _newValue;
     }
     #endregion
 
-    #region Image
+    #region TmpText
     public class MAFadeTmpText : MA<Color>
     {
         public TMP_Text text;
 
-        public override bool GetAvailability() => !(text == null);
+        public override bool GetAvailability() => TestObjAvailability(text);
         public override Color GetModifiedValue() => text.color;
         public override void SetModifiedValue(Color _newValue) => text.color = _newValue;
     }
@@ -133,7 +135,7 @@ namespace AMA
     {
         public Color color;
 
-        public override bool GetAvailability() => !(color == null);
+        public override bool GetAvailability() => TestObjAvailability(color);
         public override Color GetModifiedValue() => color;
         public override void SetModifiedValue(Color _newValue) => color = _newValue;
     }
@@ -147,7 +149,7 @@ namespace AMA
     {
         public Transform transform;
 
-        public override bool GetAvailability() => !(transform == null);
+        public override bool GetAvailability() => TestObjAvailability(transform);
         public override Quaternion GetModifiedValue() => transform.rotation;
         public override void SetModifiedValue(Quaternion _newValue) => transform.rotation = _newValue;
     }
@@ -158,7 +160,7 @@ namespace AMA
     {
         public Transform transform;
 
-        public override bool GetAvailability() => !(transform == null);
+        public override bool GetAvailability() => TestObjAvailability(transform);
         public override Vector3 GetModifiedValue() => transform.eulerAngles;
         public override void SetModifiedValue(Vector3 _newValue) => transform.eulerAngles = _newValue;
     }
@@ -170,7 +172,7 @@ namespace AMA
     {
         public Transform transform;
 
-        public override bool GetAvailability() => !(transform == null);
+        public override bool GetAvailability() => TestObjAvailability(transform);
         public override Quaternion GetModifiedValue() => transform.localRotation;
         public override void SetModifiedValue(Quaternion _newValue) => transform.localRotation = _newValue;
     }
@@ -181,7 +183,7 @@ namespace AMA
     {
         public Transform transform;
 
-        public override bool GetAvailability() => !(transform == null);
+        public override bool GetAvailability() => TestObjAvailability(transform);
         public override Vector3 GetModifiedValue() => transform.localEulerAngles;
         public override void SetModifiedValue(Vector3 _newValue) => transform.localEulerAngles = _newValue;
     }
@@ -200,7 +202,7 @@ namespace AMA
         public float ShakeRadius { get => shakeRadius; set => shakeRadius = value; }
         public float DelayBetweenShakes { get => delayBetweenShakes; set => delayBetweenShakes = value; }
 
-        public override bool GetAvailability() => !(transform == null);
+        public override bool GetAvailability() => TestObjAvailability(transform);
         public override Vector3 GetModifiedValue() => transform.position;
         public override void SetModifiedValue(Vector3 _newValue) => transform.position = _newValue;
     }

@@ -117,6 +117,7 @@ namespace AMA
                 }
             }
 
+            // Change value only on selected axis
             public T ApplyAxisMask(Axis selectedAxis, T changedValue)
             {
                 // Vector 3
@@ -159,6 +160,7 @@ namespace AMA
                 return changedValue;
             }
 
+            // Get value + offset according to axis
             public T ValueAccordingToAxis(Axis selectedAxis, T value, T offset)
             {
                 // Vector 3
@@ -242,6 +244,15 @@ namespace AMA
                 return ZeroValue();
             }
 
+            public bool TestObjAvailability(object _object)
+            {
+                bool availability;
+
+                try { availability = !(_object == null); }
+                catch { return false; }
+
+                return availability;
+            }
             #endregion
         }
         #endregion
