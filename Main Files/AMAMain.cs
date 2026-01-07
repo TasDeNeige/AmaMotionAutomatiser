@@ -20,8 +20,8 @@ namespace AMA
     {
         private static bool debug = false;
         public static string debugAlertString = $"<b><color=#00C7AC>AMA • </color><color=#F5715D>Debug • </color></b> ";
+        public static void StopAll() => AMACoroutineRunner.Instance.INTERNAL_StopAll();
         public static void ToggleDebug(bool _bool) => debug = _bool;
-        public static void StopAllCoroutines() => AMACoroutineRunner.Instance.INTERNAL_StopAll();
 
         #region Main class
         abstract public class MA<T>

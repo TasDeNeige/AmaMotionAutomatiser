@@ -92,9 +92,9 @@ namespace AMA
                 {
                     StopCoroutine(ongoingCoroutines[key][i]);
                 }
-
-                ongoingCoroutines.Remove(key);
             }
+
+            ongoingCoroutines.Clear();
         }
 
 
