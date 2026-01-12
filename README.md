@@ -4,6 +4,7 @@
 
 *A simple way to animate object motions in Unity. Heavily inspired by the [DoTween API](https://dotween.demigiant.com).*
 
+<a name="Download"></a>
 # [Download (Unity Package)](https://raw.github.com/TasDeNeige/AmaMotionAutomatiser/main/AmaMotionAutomatiser.unitypackage)
 *This version was made for Unity 6*
 <br>
@@ -11,8 +12,8 @@
 # Guide Overview
 ### Introduction
 - [Install](#Introduction-Install)
-- [How to use](#Introduction-HowToUse)
 - [General Knowledge](#Introduction-GeneralKnowledge)
+- [How to use](#Introduction-HowToUse)
 
 ### Animations
 - [Move](#Animations-Move)
@@ -37,8 +38,19 @@
 # Introduction
 <a name="Introduction-Install"></a>
 ## Install
-In order to install the Ama Motion Automatiser to one of your project, please download the package available on this Github page.
-Dropping it in your project should be enough to start using the AMA.
+In order to install the Ama Motion Automatiser to one of your project, please [download the package](#Download) available on this Github page.<br>
+Dropping it in your Unity project should be enough to start using the AMA.
+
+<a name="Introduction-GeneralKnowledge"></a>
+## General Knowledge
+AMA functions usually follow this pattern:<br>
+```cs
+transform.AMAmove(Axis.x,  // aka '_selectedAxis' -> Axis to animate on
+                  1f,      // aka '_endPos' -> Final position
+                  2f);     // aka '_duration' -> Animation duration
+```
+<br>
+Features can be added to an animation. For more informations, please check the Miscellaneous section.
 
 <a name="Introduction-HowToUse"></a>
 ## How to use
@@ -78,16 +90,8 @@ Every feature is available on the animation's component.<br>
 > [!WARNING]
 > Make sure to use the right component for your animation needs. For example, some components work only with a `RectTransform`. 
 
-<a name="Introduction-GeneralKnowledge"></a>
-## General Knowledge
-AMA functions usually follow this pattern:<br>
-```cs
-transform.AMAmove(Axis.x,  // aka '_selectedAxis' -> Axis to animate on
-                  1f,      // aka '_endPos' -> Final position
-                  2f);     // aka '_duration' -> Animation duration
-```
-<br>
-Features can be added to an animation. For more informations, please check the Miscellaneous section.
+
+
 
 
 
@@ -100,6 +104,9 @@ Features can be added to an animation. For more informations, please check the M
 # Animations
 <a name="Animations-Move"></a>
 ## Move  
+
+![AMAMove_Showcase](https://github.com/user-attachments/assets/e2a8dce1-2da9-44fa-9727-75f2bb1b6fd6)
+
 `AMAmove` is used to move an object via its `transform`'s position.<br><br>
 ***Code usage:***<br>
 Multiple versions are available, depending on your needs:<br>
@@ -111,8 +118,8 @@ Multiple versions are available, depending on your needs:<br>
 *Example:*
 ```cs
 transform.AMAmove(Axis.x,  // aka '_selectedAxis' -> Axis to animate on | AMA.Axis
-                1f,      // aka '_endRotation' -> Final position | float or Vector3
-                2f);     // aka '_duration' -> Animation duration | float
+                  1f,      // aka '_endPos' -> Final position | float or Vector3
+                  2f);     // aka '_duration' -> Animation duration | float
 ```
 > [!TIP]
 > In code, the `_endPos` parameter can be either a `float` or a `Vector3`!<br>
@@ -124,6 +131,9 @@ transform.AMAmove(Axis.x,  // aka '_selectedAxis' -> Axis to animate on | AMA.Ax
 <br><br>
 <a name="Animations-MoveUI"></a>
 ## Move UI
+
+![AMAMoveUI_Showcase](https://github.com/user-attachments/assets/2254383e-1118-4b42-baaa-3de71a8cf360)
+
 `AMAmove` is used to move an object via its `rectTransform`'s position.<br><br>
 ***Code usage:***<br>
 Multiple versions are available, depending on your needs:<br>
@@ -137,8 +147,8 @@ Multiple versions are available, depending on your needs:<br>
 *Example:*
 ```cs
 GetComponent<RectTransform>().anchoredPosition(Axis.x,  // aka '_selectedAxis' -> Axis to animate on | AMA.Axis
-                                             1f,      // aka '_endRotation' -> Final position | float or Vector3
-                                             2f);     // aka '_duration' -> Animation duration | float
+                                               1f,      // aka '_endPos' -> Final position | float or Vector3
+                                               2f);     // aka '_duration' -> Animation duration | float
 ```
 > [!TIP]
 > In code, the `_endPos` parameter can be either a `float` or a `Vector3`!<br>
@@ -149,6 +159,9 @@ GetComponent<RectTransform>().anchoredPosition(Axis.x,  // aka '_selectedAxis' -
 <br><br>
 <a name="Animations-Rotate"></a>
 ## Rotate
+
+![AMARotate_Showcase](https://github.com/user-attachments/assets/d8397270-7029-4a2b-8598-c5129d607677)
+
 `AMArotate` is used to rotate an object via its `transform`'s rotation.<br><br>
 ***Code usage:***<br>
 Multiple versions are available, depending on your needs:<br>
@@ -174,11 +187,16 @@ transform.AMArotate(Axis.x,  // aka '_selectedAxis' -> Axis to animate on | AMA.
 <br><br>
 <a name="Animations-Scale"></a>
 ## Scale
+
+![AMAScale_Showcase](https://github.com/user-attachments/assets/1bcc63ae-a907-497b-b5c5-2a36153847b7)
+
 `AMAscale` is used to scale an object via its `transform`'s scale.<br><br>
 ***Code usage:***<br>
 *Example:*
 ```cs
-transform.AMAscale(Axis.x, 1f, 2f);
+transform.AMAscale(Axis.x,  // aka '_selectedAxis' -> Axis to animate on | AMA.Axis
+                   1f,      // aka '_endScale' -> Final scale | float or Vector3
+                   2f);     // aka '_duration' -> Animation duration | float
 ```
 > [!TIP]
 > In code, the `_endPos` parameter can be either a `float` or a `Vector3`!<br>
@@ -189,6 +207,9 @@ transform.AMAscale(Axis.x, 1f, 2f);
 <br><br>
 <a name="Animations-Fade"></a>
 ## Fade
+
+![AMAFade_Showcase](https://github.com/user-attachments/assets/923135d4-06ec-4fd2-bd91-ce5eb9d0510c)
+
 `AMAfade` is used to fade a component's color between two colors.<br>
 You can fade color on `UnityEngine.UI.Image`, `TMPro.TMP_Text` and `Material`.<br>
 Fading on **alpha only** is also possible thanks to the `AMAfadeAlpha` function.<br><br>
@@ -212,6 +233,9 @@ image.AMAfade(Color.red,  // aka '_endColor' -> Final color | UnityEngine.Color
 <br><br>
 <a name="Animations-Shake"></a>
 ## Shake
+
+![AMAShake_Showcase](https://github.com/user-attachments/assets/f06360b5-bc43-4c8e-a516-0b831fee4aa9)
+
 `AMAshake` is used to create a 'shake' effect on an object's `transform`'s position.<br>
 This function comes with two more parameters, such as the Shake Radius and the Delay Between Shakes.<br><br>
 
