@@ -146,9 +146,9 @@ Multiple versions are available, depending on your needs:<br>
 
 *Example:*
 ```cs
-GetComponent<RectTransform>().anchoredPosition(Axis.x,  // aka '_selectedAxis' -> Axis to animate on | AMA.Axis
-                                               1f,      // aka '_endPos' -> Final position | float or Vector3
-                                               2f);     // aka '_duration' -> Animation duration | float
+GetComponent<RectTransform>().AMAanchoredPosMove(Axis.x,  // aka '_selectedAxis' -> Axis to animate on | AMA.Axis
+                                                 1f,      // aka '_endPos' -> Final position | float or Vector3
+                                                 2f);     // aka '_duration' -> Animation duration | float
 ```
 > [!TIP]
 > In code, the `_endPos` parameter can be either a `float` or a `Vector3`!<br>
@@ -336,7 +336,7 @@ transform.AMAmove(Axis.x, 1f, 2f).From(Vector3.zero);
 ```
 > [!WARNING]
 > For now, the value to give to the `.From` method depends on the Animated Object's type.<br>
-> For `AMAmove`, it's a `Vector3`
+> e.g. for `AMAmove` it's a `Vector3`
 
 ***Version with component:***<br>
 <img width="428" height="424" alt="image" src="https://github.com/user-attachments/assets/1243ea2e-12be-4f34-8482-59ee09fe9f0d" />
