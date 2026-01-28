@@ -14,9 +14,10 @@ using Unity.Plastic.Newtonsoft.Json;
 public class AMA_Text : MonoBehaviour
 {
     #region Tag system
-    enum TagType { WAVY, FALLING_DOWN };
+    enum TagType { WAVY, FALLING_DOWN, SHAKE };
     const string wavyTag = "wavy";
     const string fallingDownTag = "falling_down";
+    const string shakeTag = "shake";
 
     struct TagInfo { public TagType tagType; public int startId; public int endId; }
     List<TagInfo> tags = new List<TagInfo>();
@@ -30,6 +31,12 @@ public class AMA_Text : MonoBehaviour
     [SerializeField] float displacementIntensity = 0.01f;
     [SerializeField] float waveIntensity = 10.0f;
 
+    // Shake related
+    bool hasShakeEffect = false;
+    List<float> shakeDisplacements = new List<float>();
+    int nbDisplacements = 20;
+
+    #region Monobehaviour
     private void Awake()
     {
         // Retrieve text component
@@ -43,29 +50,17 @@ public class AMA_Text : MonoBehaviour
             return;
         }
 
-        HandleTags();
+        ProcessTags();
     }
 
-    private void HandleTags()
+    private void Start()
     {
-        // Forced to get true Link count
-        textComponent.ForceMeshUpdate();
-
-        // Process each tag
-        for (int i = 0; i < textComponent.textInfo.linkCount; i++)
+        // Generate displacements
+        if (hasShakeEffect)
         {
-            TMP_LinkInfo link = textComponent.textInfo.linkInfo[i];
-
-            TagInfo newTag = new TagInfo();
-            newTag.startId = link.linkTextfirstCharacterIndex;
-            newTag.endId = newTag.startId + link.linkTextLength;
-
-            // If link is one of our tag
-            switch (link.GetLinkID())
+            for (int i = 0; i < nbDisplacements; i++)
             {
-                case wavyTag: newTag.tagType = TagType.WAVY; tags.Add(newTag); break;
-                case fallingDownTag: newTag.tagType = TagType.FALLING_DOWN; tags.Add(newTag); break;
-                default: /* Not one of our tags */ break;
+                shakeDisplacements.Add(Random.Range(-100f, 100f));
             }
         }
     }
@@ -101,7 +96,7 @@ public class AMA_Text : MonoBehaviour
                     Vector3 vertPos = verts[characterInfo.vertexIndex + currentVert];
 
                     // Animation code:
-                    switch(tags[currentTag].tagType)
+                    switch (tags[currentTag].tagType)
                     {
                         // Wavy text
                         case TagType.WAVY:
@@ -111,6 +106,18 @@ public class AMA_Text : MonoBehaviour
                         // Falling down text
                         case TagType.FALLING_DOWN:
                             verts[characterInfo.vertexIndex + currentVert] = vertPos + new Vector3(0, Mathf.Atan(-(Time.time * 2f + -vertPos.x * 0.01f)) * 10f, 0);
+                            break;
+
+                        case TagType.SHAKE:
+                            int displacementIdX = (currentChar + Time.frameCount) % nbDisplacements;
+                            int displacementIdY = (currentChar + (Time.frameCount * 2)) % nbDisplacements;
+                            float displacementX = shakeDisplacements[displacementIdX] * displacementIntensity;
+                            float displacementY = shakeDisplacements[displacementIdY] * displacementIntensity;
+
+                            // Displace each verts by according list's displacement
+                            verts[characterInfo.vertexIndex + currentVert] = vertPos + new Vector3(displacementX,
+                                                                                                                                                displacementY,
+                                                                                                                                                0);
                             break;
                     }
                 }
@@ -130,4 +137,32 @@ public class AMA_Text : MonoBehaviour
         }
         #endregion
     }
+    #endregion
+
+    #region Methods
+    private void ProcessTags()
+    {
+        // Mesh update forced to get true Link count
+        textComponent.ForceMeshUpdate();
+
+        // Process each tag
+        for (int i = 0; i < textComponent.textInfo.linkCount; i++)
+        {
+            TMP_LinkInfo link = textComponent.textInfo.linkInfo[i];
+
+            TagInfo newTag = new TagInfo();
+            newTag.startId = link.linkTextfirstCharacterIndex;
+            newTag.endId = newTag.startId + link.linkTextLength;
+
+            // If link is one of our tag
+            switch (link.GetLinkID())
+            {
+                case wavyTag: newTag.tagType = TagType.WAVY; tags.Add(newTag); break;
+                case fallingDownTag: newTag.tagType = TagType.FALLING_DOWN; tags.Add(newTag); break;
+                case shakeTag: newTag.tagType = TagType.SHAKE; tags.Add(newTag); hasShakeEffect = true; break;
+                default: /* Not one of our tags */ break;
+            }
+        }
+    }
+    #endregion
 }
