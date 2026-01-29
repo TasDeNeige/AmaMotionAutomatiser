@@ -31,10 +31,11 @@ public class AMA_Text : MonoBehaviour
     [SerializeField] float displacementIntensity = 0.01f;
     [SerializeField] float waveIntensity = 10.0f;
 
-    // Shake related
+    [Header("Shake related")]
+    [SerializeField] int nbDisplacements = 20;
+    [SerializeField, Min(1)] int frameDelay = 4;
     bool hasShakeEffect = false;
     List<float> shakeDisplacements = new List<float>();
-    int nbDisplacements = 20;
 
     #region Monobehaviour
     private void Awake()
@@ -99,26 +100,13 @@ public class AMA_Text : MonoBehaviour
                     switch (tags[currentTag].tagType)
                     {
                         // Wavy text
-                        case TagType.WAVY:
-                            verts[characterInfo.vertexIndex + currentVert] = vertPos + new Vector3(0, Mathf.Sin(-(Time.time * waveSpeed + -vertPos.x * displacementIntensity)) * waveIntensity, 0);
-                            break;
+                        case TagType.WAVY: verts[characterInfo.vertexIndex + currentVert] = WaveAnimation(vertPos); break;
 
                         // Falling down text
-                        case TagType.FALLING_DOWN:
-                            verts[characterInfo.vertexIndex + currentVert] = vertPos + new Vector3(0, Mathf.Atan(-(Time.time * 2f + -vertPos.x * 0.01f)) * 10f, 0);
-                            break;
+                        case TagType.FALLING_DOWN: verts[characterInfo.vertexIndex + currentVert] = FallDownAnimation(vertPos); break;
 
-                        case TagType.SHAKE:
-                            int displacementIdX = (currentChar + Time.frameCount) % nbDisplacements;
-                            int displacementIdY = (currentChar + (Time.frameCount * 2)) % nbDisplacements;
-                            float displacementX = shakeDisplacements[displacementIdX] * displacementIntensity;
-                            float displacementY = shakeDisplacements[displacementIdY] * displacementIntensity;
-
-                            // Displace each verts by according list's displacement
-                            verts[characterInfo.vertexIndex + currentVert] = vertPos + new Vector3(displacementX,
-                                                                                                                                                displacementY,
-                                                                                                                                                0);
-                            break;
+                        // Displace each verts by according list's displacement
+                        case TagType.SHAKE: verts[characterInfo.vertexIndex + currentVert] = ShakeAnimation(vertPos, currentChar); break;
                     }
                 }
             }
@@ -163,6 +151,29 @@ public class AMA_Text : MonoBehaviour
                 default: /* Not one of our tags */ break;
             }
         }
+    }
+
+    private Vector3 WaveAnimation(Vector3 _vertPos)
+    {
+         return _vertPos + new Vector3(0, Mathf.Sin(-(Time.time * waveSpeed + -_vertPos.x * displacementIntensity)) * waveIntensity, 0);
+    }
+
+    private Vector3 FallDownAnimation(Vector3 _vertPos)
+    {
+        return _vertPos + new Vector3(0, Mathf.Atan(-(Time.time * 2f + -_vertPos.x * 0.01f)) * 10f, 0);
+    }
+
+    private Vector3 ShakeAnimation(Vector3 _vertPos, int _currentChar)
+    {
+        // Delay between shakes
+        int frameId = Time.frameCount + (frameDelay - (Time.frameCount % frameDelay));
+
+        // Set up displacement
+        float displacementX = shakeDisplacements[(_currentChar + frameId) % nbDisplacements] * displacementIntensity;
+        float displacementY = shakeDisplacements[(_currentChar + (frameId * 2)) % nbDisplacements] * displacementIntensity;
+
+        // Displace each verts by according list's displacement
+        return  _vertPos + new Vector3(displacementX, displacementY, 0);
     }
     #endregion
 }
