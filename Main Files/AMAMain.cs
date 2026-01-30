@@ -7,7 +7,6 @@
 using UnityEngine;
 using System.Collections;
 using System;
-using TMPro;
 
 namespace AMA
 {
