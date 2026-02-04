@@ -5,11 +5,12 @@
 //
 
 using AMA;
-using static AMA.AMATextMain;
-using TMPro;
-using UnityEngine;
 using System.Collections.Generic;
 using System.Globalization;
+using TMPro;
+using UnityEditor;
+using UnityEngine;
+using static AMA.AMATextMain;
 
 public class AMA_TextAnimator : MonoBehaviour
 {
@@ -100,7 +101,7 @@ public class AMA_TextAnimator : MonoBehaviour
             TMP_LinkInfo link = textComponent.textInfo.linkInfo[i];
 
             // Split tag (to retrieve settings)
-            string[] decomposedTag = link.GetLinkID().Split(',');
+            string[] decomposedTag = link.GetLinkID().ToLower().Split(',');
 
             // If link is one of our tag
             switch (decomposedTag[0]) // '0' corresponds to the tag type (e.g. 'wavy' or 'shake)
@@ -116,13 +117,14 @@ public class AMA_TextAnimator : MonoBehaviour
                     {
                         string[] setting = decomposedTag[settingId].Split('=');
 
-                        switch(setting[0])
+                        switch (setting[0])
                         {
                             case "s": wavyWaveSpeed = float.Parse(setting[1], CultureInfo.InvariantCulture); break;
                             case "w": wavyWaveIntensity = float.Parse(setting[1], CultureInfo.InvariantCulture); break;
                             case "d": wavyDisplacementIntensity = float.Parse(setting[1], CultureInfo.InvariantCulture); break;
 
-                            default: Debug.LogWarning(AMAMain.debugAlertString + "Unrecognised \'" + setting[0] + "\' in tag 'wavy', " + transform.name
+                            default:
+                                Debug.LogWarning(AMAMain.debugAlertString + "Unrecognised setting \'" + setting[0] + "\' in tag 'wavy', " + transform.name
                                                                          + ".\nVerify there is no space before the setting type."); break;
                         }
                     }
@@ -136,6 +138,8 @@ public class AMA_TextAnimator : MonoBehaviour
                 // Fall Down
                 case fallDownTag:
                     float fallDownSpeed = float.MinValue;
+                    float fallDownDisplacementSpeed = float.MinValue;
+                    float fallDownHeight = float.MinValue;
 
                     // Retrieve info
                     for (int settingId = 1; settingId < decomposedTag.Length; settingId++)
@@ -145,16 +149,20 @@ public class AMA_TextAnimator : MonoBehaviour
                         switch (setting[0])
                         {
                             case "s": fallDownSpeed = float.Parse(setting[1], CultureInfo.InvariantCulture); break;
+                            case "d": fallDownDisplacementSpeed = float.Parse(setting[1], CultureInfo.InvariantCulture); break;
+                            case "h": fallDownHeight = float.Parse(setting[1], CultureInfo.InvariantCulture); break;
 
                             default:
-                                Debug.LogWarning(AMAMain.debugAlertString + "Unrecognised \'" + setting[0] + "\' in tag 'fall_down', " + transform.name
+                                Debug.LogWarning(AMAMain.debugAlertString + "Unrecognised setting \'" + setting[0] + "\' in tag 'fall_down', " + transform.name
                                                                          + ".\nVerify there is no space before the setting type."); break;
                         }
                     }
 
                     TextMA_FallDown newFallDownTag = new TextMA_FallDown(link.linkTextfirstCharacterIndex,
                                                                                             link.linkTextfirstCharacterIndex + link.linkTextLength,
-                                                                                            fallDownSpeed);
+                                                                                            fallDownSpeed,
+                                                                                            fallDownDisplacementSpeed,
+                                                                                            fallDownHeight);
                     tags.Add(newFallDownTag);
                     break;
 
@@ -192,4 +200,42 @@ public class AMA_TextAnimator : MonoBehaviour
         }
     }
     #endregion
+
+#if UNITY_EDITOR
+    ///  Cheat Sheet
+    [CustomEditor(typeof(AMA_TextAnimator))]
+
+    public class AMATextAnimatorEditor : Editor
+    {
+        bool isShown = false;
+        string headerLabel = "Tags cheat sheet";
+
+        public override void OnInspectorGUI()
+        {
+            serializedObject.DrawInspectorExcept("m_Script");
+            EditorGUILayout.Space();
+
+            // Fold out menu
+            isShown = EditorGUILayout.Foldout(isShown, headerLabel, true);
+            if (isShown)
+            {
+                // Wavy
+                EditorGUILayout.LabelField("Wavy", EditorStyles.boldLabel);
+                EditorGUILayout.HelpBox("S | Wave Speed\nW | Wave Intensity\nD | Displacement Intensity", MessageType.None);
+
+                EditorGUILayout.Space();
+
+                // Fall Down
+                EditorGUILayout.LabelField("Fall Down", EditorStyles.boldLabel);
+                EditorGUILayout.HelpBox("S | Fall Down Speed\nD | Displacement Speed\nH | Fall Height", MessageType.None);
+
+                EditorGUILayout.Space();
+
+                // Shake
+                EditorGUILayout.LabelField("Shake", EditorStyles.boldLabel);
+                EditorGUILayout.HelpBox("I | Displacement Intensity\nD | Frame delay\nN | Number of available displacements", MessageType.None);
+            }
+        }
+    }
+#endif
 }

@@ -72,7 +72,9 @@ namespace AMA
             // Method
             public override Vector3 Animate(Vector3 _vertPos, int _currentChar)
             {
-                return _vertPos + new Vector3(0, Mathf.Sin(-(Time.time * waveSpeed + -_vertPos.x * displacementIntensity)) * waveIntensity, 0);
+                return _vertPos + new Vector3(0,
+                                                                Mathf.Sin(-(Time.time * waveSpeed + -_vertPos.x * displacementIntensity)) * waveIntensity,
+                                                                0);
             }
         }
 
@@ -122,23 +124,29 @@ namespace AMA
         public class TextMA_FallDown : TextMA
         {
             // Values
-            float fallSpeed = 2f;
+            float fallSpeed = 10.0f;
+            float fallHeight = 100.0f;
+            float displacementSpeed = 0.01f;
 
             // Constructors
             public TextMA_FallDown() { }
-            public TextMA_FallDown(int _startId, int _endId, float _fallSpeed)
+            public TextMA_FallDown(int _startId, int _endId, float _fallSpeed, float _displacementSpeed, float _fallHeight)
             {
                 StartId = _startId;
                 EndId = _endId;
 
                 fallSpeed = _fallSpeed == float.MinValue ? fallSpeed : _fallSpeed;
+                displacementSpeed = _displacementSpeed == float.MinValue ? displacementSpeed : _displacementSpeed;
+                fallHeight = _fallHeight == float.MinValue ? fallHeight : _fallHeight;
             }
 
             // Method
             public override Vector3 Animate(Vector3 _vertPos, int _currentChar)
             {
-                return _vertPos + new Vector3(0, Mathf.Atan(-(Time.time * fallSpeed + -_vertPos.x * 0.01f)) * 10.0f, 0);
-            }
+                return _vertPos + new Vector3(0,
+                                                                -(Mathf.Atan(Time.time * fallSpeed + -_vertPos.x * displacementSpeed) / Mathf.PI * 2 * fallHeight) + fallHeight,
+                                                                0);
+             }
         }
         #endregion
     }

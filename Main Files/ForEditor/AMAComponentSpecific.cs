@@ -65,6 +65,7 @@ namespace AMA
         /// <param name="_serializedObject"></param>
         public void SetUpOnInspector(SerializedObject _serializedObject, UnityEngine.Texture banner = null)
         {
+            // Prevent drawing "Script" option
             _serializedObject.DrawInspectorExcept("m_Script");
 
             // Draw banner
