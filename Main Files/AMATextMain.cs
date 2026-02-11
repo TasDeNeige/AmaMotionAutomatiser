@@ -5,21 +5,25 @@
 //
 
 using System.Collections.Generic;
+using System.Globalization;
+using TMPro;
+using UnityEditor.TerrainTools;
 using UnityEngine;
 
 namespace AMA
 {
     public static class AMATextMain
     {
-        public enum TagType { WAVY, FALLING_DOWN, SHAKE };
+        public enum TagType { WAVY, FALL_DOWN, SHAKE, RAINBOW };
         public const string wavyTag = "wavy";
         public const string fallDownTag = "fall_down";
         public const string shakeTag = "shake";
+        public const string rainbowTag = "rainbow";
 
         #region Main class
         abstract public class TextMA
         {
-            TagType tagType;
+            protected TagType tagType;
 
             // Values
             int startId;
@@ -58,7 +62,7 @@ namespace AMA
             float displacementIntensity = 0.01f;
 
             // Constructors
-            public TextMA_Wavy() { }
+            public TextMA_Wavy() { tagType = TagType.WAVY; }
             public TextMA_Wavy(int _startId, int _endId, float _waveSpeed, float _waveIntensity, float _displacementIntensity)
             {
                 StartId = _startId;
@@ -88,9 +92,11 @@ namespace AMA
             List<float> shakeDisplacements = new List<float>();
 
             // Constructors
-            public TextMA_Shake() { }
+            public TextMA_Shake() { tagType = TagType.SHAKE; }
             public TextMA_Shake(int _startId, int _endId, float _displacementIntensity, int _frameDelay, int _nbDisplacements)
             {
+                tagType = TagType.SHAKE;
+
                 StartId = _startId;
                 EndId = _endId;
 
@@ -129,9 +135,11 @@ namespace AMA
             float displacementSpeed = 0.01f;
 
             // Constructors
-            public TextMA_FallDown() { }
+            public TextMA_FallDown() { tagType = TagType.FALL_DOWN; }
             public TextMA_FallDown(int _startId, int _endId, float _fallSpeed, float _displacementSpeed, float _fallHeight)
             {
+                tagType = TagType.FALL_DOWN;
+
                 StartId = _startId;
                 EndId = _endId;
 
@@ -147,6 +155,52 @@ namespace AMA
                                                                 -(Mathf.Atan(Time.time * fallSpeed + -_vertPos.x * displacementSpeed) / Mathf.PI * 2 * fallHeight) + fallHeight,
                                                                 0);
              }
+        }
+
+        // Rainbow
+        public class TextMA_Rainbow : TextMA
+        {
+            // Values
+            float hueSpeed = 10.0f;
+            float hueDisparity = 10.0f;
+
+            // Elements
+            TMP_Text textComponent;
+            Color32[] newVertexColors;
+
+            // Constructors
+            public TextMA_Rainbow() { tagType = TagType.RAINBOW; }
+            public TextMA_Rainbow(int _startId, int _endId, TMP_Text _textComponent, float _hueSpeed, float _hueDisparity)
+            {
+                tagType = TagType.RAINBOW;
+
+                StartId = _startId;
+                EndId = _endId;
+                textComponent = _textComponent;
+
+                hueSpeed = _hueSpeed == float.MinValue ? hueSpeed : _hueSpeed;
+                hueDisparity = _hueDisparity == float.MinValue ? hueDisparity : _hueDisparity;
+            }
+
+            // Method
+            public override Vector3 Animate(Vector3 _vertPos, int _currentChar)
+            {
+                Debug.LogWarning("Rainbow effect's animation function is 'RainbowAnimation()'. Please do not use 'Animate()'.");
+                return Vector3.zero;
+            }
+
+            public void RainbowAnimation(int _vertIndex, int _currentChar)
+            {
+                newVertexColors = textComponent.textInfo.meshInfo[textComponent.textInfo.characterInfo[_currentChar].materialReferenceIndex].colors32;
+
+                int vertColorId = (4 * (_currentChar - StartId)) + _vertIndex;
+                Debug.Log("Char: " + _currentChar + " | Vert: " + _vertIndex + " = " + vertColorId);
+
+                newVertexColors[vertColorId] = new Color32((byte)Random.Range(0, 255), (byte)Random.Range(0, 255), (byte)Random.Range(0, 255), 255);
+
+                // New function which pushes (all) updated vertex data to the appropriate meshes when using either the Mesh Renderer or CanvasRenderer
+                textComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
+            }
         }
         #endregion
     }

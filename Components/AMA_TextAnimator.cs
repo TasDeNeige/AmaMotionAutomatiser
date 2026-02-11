@@ -50,6 +50,8 @@ public class AMA_TextAnimator : MonoBehaviour
         // Go through each tag
         for (int currentTag = 0; currentTag < tags.Count; currentTag++)
         {
+            int skippedChar = 0;
+
             // Go through each character
             for (int currentChar = tags[currentTag].StartId;
                 currentChar < (tags[currentTag].EndId < textInfo.characterCount ? tags[currentTag].EndId : textInfo.characterCount);
@@ -58,7 +60,11 @@ public class AMA_TextAnimator : MonoBehaviour
                 TMP_CharacterInfo characterInfo = textInfo.characterInfo[currentChar];
 
                 // Skip invisible characters
-                if (skipInvisibleCharacters && !characterInfo.isVisible) { continue; }
+                if (skipInvisibleCharacters && !characterInfo.isVisible)
+                {
+                    skippedChar++;
+                    continue;
+                }
 
                 Vector3[] verts = textInfo.meshInfo[characterInfo.materialReferenceIndex].vertices;
 
@@ -69,7 +75,15 @@ public class AMA_TextAnimator : MonoBehaviour
                     Vector3 vertPos = verts[characterInfo.vertexIndex + currentVert];
 
                     // Animate
-                    verts[characterInfo.vertexIndex + currentVert] = tags[currentTag].Animate(vertPos, currentChar);
+                    if (tags[currentTag].TagType == TagType.RAINBOW)
+                    {
+                        TextMA_Rainbow test = (TextMA_Rainbow)tags[currentTag];
+                        test.RainbowAnimation(currentVert, currentChar - skippedChar);
+                    }
+                    else
+                    {
+                        verts[characterInfo.vertexIndex + currentVert] = tags[currentTag].Animate(vertPos, currentChar);
+                    }
                 }
             }
         }
@@ -193,6 +207,34 @@ public class AMA_TextAnimator : MonoBehaviour
                                                                                                         link.linkTextfirstCharacterIndex + link.linkTextLength,
                                                                                                         shakeDisplacementIntensity, shakeFrameDelay, shakeNbDisplacements);
                     tags.Add(newShakeTag);
+                    break;
+
+                // Rainbow
+                case rainbowTag:
+                    float rainbowHueSpeed = float.MinValue;
+                    float rainbowHueDisparity = float.MinValue;
+
+                    // Retrieve info
+                    for (int settingId = 1; settingId < decomposedTag.Length; settingId++)
+                    {
+                        string[] setting = decomposedTag[settingId].Split('=');
+
+                        switch (setting[0])
+                        {
+                            case "s": rainbowHueSpeed = float.Parse(setting[1], CultureInfo.InvariantCulture); break;
+                            case "d": rainbowHueDisparity = float.Parse(setting[1], CultureInfo.InvariantCulture); break;
+
+                            default:
+                                Debug.LogWarning(AMAMain.debugAlertString + "Unrecognised \'" + setting[0] + "\' in tag 'rainbow', " + transform.name
+                                                                         + ".\nVerify there is no space before the setting type."); break;
+                        }
+                    }
+
+                    TextMA_Rainbow newRainbowTag = new TextMA_Rainbow(link.linkTextfirstCharacterIndex,
+                                                                                                                    link.linkTextfirstCharacterIndex + link.linkTextLength,
+                                                                                                                    textComponent,
+                                                                                                                    rainbowHueSpeed, rainbowHueDisparity);
+                    tags.Add(newRainbowTag);
                     break;
 
                 default: /* Not one of our tags */ break;
