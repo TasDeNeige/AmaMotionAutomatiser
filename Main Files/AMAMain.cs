@@ -246,10 +246,16 @@ namespace AMA
 
             public bool TestObjAvailability(object _object)
             {
-                bool availability;
+                bool availability = false;
 
-                try { availability = !(_object == null); }
-                catch { return false; }
+                try
+                {
+                    availability = !(_object.Equals(null));
+                }
+                catch
+                {
+                    return false;
+                }
 
                 return availability;
             }
