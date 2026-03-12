@@ -4,9 +4,11 @@
 // • By Amaryne Bréand
 //
 
-using UnityEngine;
-using System.Collections;
 using System;
+using System.Collections;
+using TMPro;
+using UnityEngine;
+using static AMA.AMAMain;
 
 namespace AMA
 {
@@ -43,6 +45,11 @@ namespace AMA
             public CurveDelegate curveDelegate = AMACurves.GetCurveFunction(Curves.Linear);
             public AnimationCurve animationCurve = null;
 
+            // Animation needs
+            public T externalOffset; // Tracks external movement
+            public bool hasWentThroughFirstFrame;
+            public float elapsedTime;
+
             // Functions
             public MAfunction onStartFunc;
             public MAfunction onLateStartFunc;
@@ -58,6 +65,10 @@ namespace AMA
                 delay = _delay;
                 snapToEndValue = _snapToEnd;
 
+                externalOffset = ZeroValue();
+                hasWentThroughFirstFrame = false;
+                elapsedTime = 0f;
+
                 curveDelegate = AMACurves.GetCurveFunction(Curves.Linear);
                 animationCurve = null;
             }
@@ -69,6 +80,63 @@ namespace AMA
             public abstract bool GetAvailability();
             public abstract T GetModifiedValue();
             public abstract void SetModifiedValue(T _newValue);
+
+            public void ProcessAnimation(T _initialPosition, T _targetPosition, T _externalOffset, bool _hasWentThroughFirstFrame, float _elapsedTime, bool saveDatas = true)
+            {
+                // Call late start function
+                if (!_hasWentThroughFirstFrame)
+                {
+                    if (_elapsedTime > 0f)
+                    {
+                        _hasWentThroughFirstFrame = true;
+                        if (onLateStartFunc != null) { onLateStartFunc(); }
+                    }
+                }
+
+                _elapsedTime += Time.deltaTime;
+
+                float easedTime = 0;
+
+                // If selected curve is a custom one (a.k.a. uses Unity's Animation Curves)
+                if (animationCurve != null)
+                {
+                    float normalizedTime = Mathf.Clamp01(_elapsedTime / duration); // Get progression between 0 & 1
+                    easedTime = animationCurve.Evaluate(normalizedTime); // Apply animation curve
+                }
+                // If selected curve is a regular one
+                else
+                {
+                    easedTime = curveDelegate(_elapsedTime, 0, 1, duration);
+                }
+
+                // Calculate interpolated position
+                T interpolatedValue = Lerp(_initialPosition, _targetPosition, easedTime);
+
+                // Set position according to axis
+                SetModifiedValue(ValueAccordingToAxis(selectedAxis, interpolatedValue, _externalOffset));
+
+                // Track any external movement since the last frame
+                _externalOffset = GetExternalOffset(interpolatedValue, _externalOffset);
+
+                // Save datas
+                if (saveDatas)
+                {
+                    externalOffset = _externalOffset;
+                    hasWentThroughFirstFrame = _hasWentThroughFirstFrame;
+                    elapsedTime = _elapsedTime;
+                }
+            }
+
+            #region Tools
+            public bool TestObjAvailability(object _object)
+            {
+                bool availability;
+
+                try { availability = !(_object == null); }
+                catch { return false; }
+
+                return availability;
+            }
 
             // Generic interpolation
             public T Lerp(T startValue, T endValue, float t)
@@ -242,16 +310,7 @@ namespace AMA
                 Debug.LogError(debugAlertString + $"GetExternalOffset not implemented for type {typeof(T)}");
                 return ZeroValue();
             }
-
-            public bool TestObjAvailability(object _object)
-            {
-                bool availability;
-
-                try { availability = !(_object == null); }
-                catch { return false; }
-
-                return availability;
-            }
+            #endregion
             #endregion
         }
         #endregion

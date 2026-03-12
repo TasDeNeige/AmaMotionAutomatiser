@@ -21,6 +21,17 @@ namespace AMA
         public override bool GetAvailability() => TestObjAvailability(transform);
         public override Vector3 GetModifiedValue() => transform.position;
         public override void SetModifiedValue(Vector3 _newValue) => transform.position = _newValue;
+
+        public void SetUp(Transform _transform, Axis _selectedAxis, Vector3 _endPos, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _transform;
+            transform = _transform;
+            selectedAxis = _selectedAxis;
+            startValue = transform.position;
+            endValue = ApplyAxisMask(_selectedAxis, _endPos);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
     }
 
     public class MAMoveLocalTransform : MA<Vector3>

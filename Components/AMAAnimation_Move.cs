@@ -5,12 +5,15 @@
 //
 
 using AMA;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
+using static AMA.AMAMain;
 
 public class AMAAnimation_Move : AMABasicComponent
 {
     public enum Space { World, Local };
+    AMAMain.MA<Vector3> newMA;
 
     #region In inspector
     [Header("Main settings")]
@@ -41,9 +44,6 @@ public class AMAAnimation_Move : AMABasicComponent
             return;
         }
 
-        // Create animation
-        AMAMain.MA<Vector3> newMA;
-
         // Depending on space
         switch(space)
         {
@@ -53,6 +53,7 @@ public class AMAAnimation_Move : AMABasicComponent
         }
 
         AddMisc(ref newMA);
+
         // From Value
         if (addFromValue) newMA.From(fromValue);
     }
@@ -69,6 +70,25 @@ public class AMAAnimation_Move : AMABasicComponent
     }
 
     public void AssignCustomTransform(Transform _customTransform) { customTransform = _customTransform; }
+    public override void PreviewAnimationAtTime(float _time)
+    {
+        Debug.Log("Called");
+
+        // Depending on space
+        switch (space)
+        {
+            case Space.World:
+                MAMoveTransform newMAMoveTransform = new MAMoveTransform();
+
+                newMAMoveTransform.SetUp(transform, axisToAnimate, endValue, animationDuration, snapToEndValue);
+                if (curve == Curves.CUSTOM) newMAMoveTransform.SetCurve(customCurve); else newMAMoveTransform.SetCurve(curve);
+
+                newMAMoveTransform.ProcessAnimation(addFromValue ? fromValue : Vector3.zero, endValue, Vector3.zero, true, Mathf.LerpUnclamped(0, animationDuration, _time), false);
+                break;
+
+            default: newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration, snapToEndValue); break;
+        }
+    }
 }
 
 #if UNITY_EDITOR
@@ -101,6 +121,8 @@ class AMAAnimationMoveEditor : AMAComponentEditor<Vector3>
         AMAAnimation_Move script = (AMAAnimation_Move)target;
 
         SetUpOnInspector(serializedObject, banner);
+
+        DrawSliderPreview(serializedObject, script);
 
         #region Components drawing
         #region Main Settings

@@ -34,11 +34,19 @@ namespace AMA
             // Func On End
             if (addFunctionOnEnd) _ma.OnEnd(endFunction.Invoke);
         }
+
+        public virtual void PreviewAnimationAtTime(float _time)
+        {
+            Debug.LogWarning("Animation preview was not implemented for this object.");
+        }
     }
 
 #if UNITY_EDITOR
     public class AMAComponentEditor<T> : Editor
     {
+        bool isPreviewActivated = false;
+        public float previewTime = 0f;
+        Vector2 lastNewPreviewTime = Vector2.zero;
         public SerializedProperty addFunctionOnStartProp, startFunctionProp;
         public SerializedProperty addFunctionOnEndProp, endFunctionProp;
         public SerializedProperty useCustomCurveProp, customCurveProp;
@@ -79,10 +87,32 @@ namespace AMA
         }
 
         /// <summary>
+        /// Draws Animation preview with a slider
+        /// </summary>
+        public void DrawSliderPreview(SerializedObject _serializedObject, AMABasicComponent _script)
+        {
+            EditorGUILayout.Space();
+            GUILayout.Label("Animation preview", EditorStyles.boldLabel);
+
+            isPreviewActivated = EditorGUILayout.Toggle("Activate Preview", isPreviewActivated);
+            if (isPreviewActivated)
+            {
+                previewTime = EditorGUILayout.Slider(previewTime, 0f, 1f);
+                lastNewPreviewTime.x = previewTime;
+
+                // If preview time changed
+                if (lastNewPreviewTime.x != lastNewPreviewTime.y)
+                {
+                    _script.PreviewAnimationAtTime(previewTime);
+                    lastNewPreviewTime.y = previewTime;
+                }
+            }
+        }
+
+
+        /// <summary>
         /// Draws generic Miscellaneous settings. Needs to be called in OnInspectorGUI()
         /// </summary>
-        /// <param name="_serializedObject"></param>
-        /// <param name="_script"></param>
         public void DrawMisc(SerializedObject _serializedObject, AMABasicComponent _script)
         {
             EditorGUILayout.Space();
