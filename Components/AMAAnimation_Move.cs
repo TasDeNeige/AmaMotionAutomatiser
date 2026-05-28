@@ -13,6 +13,7 @@ public class AMAAnimation_Move : AMABasicComponent
 {
     public enum Space { World, Local };
     AMAMain.MA<Vector3> newMA;
+    Vector3 previewStartingValue;
 
     #region In inspector
     [Header("Main settings")]
@@ -28,8 +29,6 @@ public class AMAAnimation_Move : AMABasicComponent
     [HideInInspector] public bool addFromValue;
     [HideInInspector] public Vector3 fromValue = Vector3.zero;
     #endregion
-
-
 
     void Start()
     {
@@ -73,7 +72,7 @@ public class AMAAnimation_Move : AMABasicComponent
     public void AssignCustomTransform(Transform _customTransform) { customTransform = _customTransform; }
     public override void PreviewAnimationAtTime(float _time)
     {
-        Debug.Log("Called");
+        Debug.Log(_time);
 
         // Depending on space
         switch (space)
@@ -82,11 +81,33 @@ public class AMAAnimation_Move : AMABasicComponent
                 MAMoveTransform newMAMoveTransform = new MAMoveTransform();
                 /* Set up MA */ newMAMoveTransform.SetUp(addCustomTransform ? customTransform : transform, axisToAnimate, endValue, animationDuration, snapToEndValue);
                 /* Set Curve */ if (curve == Curves.CUSTOM) newMAMoveTransform.SetCurve(customCurve); else newMAMoveTransform.SetCurve(curve);
-                /* Process Anim */ newMAMoveTransform.ProcessAnimation(addFromValue ? fromValue : Vector3.zero, endValue, Vector3.zero, true, Mathf.LerpUnclamped(0, animationDuration, _time), false);
+                /* Process Anim */ newMAMoveTransform.ProcessAnimation(addFromValue ? fromValue : previewStartingValue, endValue, Vector3.zero, true, Mathf.LerpUnclamped(0, animationDuration, _time), false);
                 break;
 
             default:
                 newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration, snapToEndValue); break;
+        }
+    }
+
+    public override void SetPreviewStartingValue()
+    {
+        // Depending on space
+        switch (space)
+        {
+            case Space.World: previewStartingValue = transform.position; break;
+            case Space.Local: previewStartingValue = transform.localPosition; break;
+            default: previewStartingValue = transform.position; break;
+        }
+    }
+
+    public override void PlaceToStartingValue()
+    {       
+        // Depending on space
+        switch (space)
+        {
+            case Space.World: transform.position = previewStartingValue; break;
+            case Space.Local: transform.localPosition = previewStartingValue; break;
+            default: transform.position = previewStartingValue; break;
         }
     }
 }

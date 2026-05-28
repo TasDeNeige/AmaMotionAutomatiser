@@ -11,7 +11,7 @@ using UnityEngine.Events;
 
 namespace AMA
 {
-    public class AMABasicComponent : MonoBehaviour
+    public abstract class AMABasicComponent : MonoBehaviour
     {
         [HideInInspector] public AMA.Curves curve = Curves.Linear;
         [HideInInspector] public AnimationCurve customCurve;
@@ -22,6 +22,7 @@ namespace AMA
         [HideInInspector] public UnityEvent endFunction;
         [HideInInspector] public bool addDelay;
         [HideInInspector][Tooltip("In seconds")] public float delay = 0f;
+
 
         public void AddMisc<T>(ref AMAMain.MA<T> _ma)
         {
@@ -35,10 +36,15 @@ namespace AMA
             if (addFunctionOnEnd) _ma.OnEnd(endFunction.Invoke);
         }
 
-        public virtual void PreviewAnimationAtTime(float _time)
+        private void Awake()
         {
-            Debug.LogWarning("Animation preview was not implemented for this object.");
+            // Reset position
+            PreviewAnimationAtTime(0);
         }
+
+        public /*abstract*/ virtual void PreviewAnimationAtTime(float  _time) { }
+        public /*abstract*/ virtual void SetPreviewStartingValue() {}
+        public /*abstract*/ virtual void PlaceToStartingValue() { }
     }
 
 #if UNITY_EDITOR
@@ -97,11 +103,20 @@ namespace AMA
 
             isPreviewActivated = EditorGUILayout.Toggle("Activate Preview", isPreviewActivated);
             wasPreviewActivatedThisFrame.x = isPreviewActivated ? 1 : 0;
-            // If preview was toggled
+            // If preview was toggled this frame
             if (wasPreviewActivatedThisFrame.x != wasPreviewActivatedThisFrame.y)
             {
-                Debug.Log("Preview toggled");
-
+                if (isPreviewActivated)
+                {
+                    // Store preview value if anim was enabled
+                    _script.SetPreviewStartingValue();
+                    previewTime = 0f;
+                    //_script.PreviewAnimationAtTime(previewTime); 
+                }
+                else
+                {
+                    _script.PlaceToStartingValue();
+                }
                 wasPreviewActivatedThisFrame.y = isPreviewActivated ? 1 : 0;
             }
 
