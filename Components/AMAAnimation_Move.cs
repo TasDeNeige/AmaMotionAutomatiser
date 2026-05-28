@@ -5,7 +5,6 @@
 //
 
 using AMA;
-using TMPro;
 using UnityEditor;
 using UnityEngine;
 using static AMA.AMAMain;
@@ -29,6 +28,8 @@ public class AMAAnimation_Move : AMABasicComponent
     [HideInInspector] public bool addFromValue;
     [HideInInspector] public Vector3 fromValue = Vector3.zero;
     #endregion
+
+
 
     void Start()
     {
@@ -79,14 +80,13 @@ public class AMAAnimation_Move : AMABasicComponent
         {
             case Space.World:
                 MAMoveTransform newMAMoveTransform = new MAMoveTransform();
-
-                newMAMoveTransform.SetUp(transform, axisToAnimate, endValue, animationDuration, snapToEndValue);
-                if (curve == Curves.CUSTOM) newMAMoveTransform.SetCurve(customCurve); else newMAMoveTransform.SetCurve(curve);
-
-                newMAMoveTransform.ProcessAnimation(addFromValue ? fromValue : Vector3.zero, endValue, Vector3.zero, true, Mathf.LerpUnclamped(0, animationDuration, _time), false);
+                /* Set up MA */ newMAMoveTransform.SetUp(addCustomTransform ? customTransform : transform, axisToAnimate, endValue, animationDuration, snapToEndValue);
+                /* Set Curve */ if (curve == Curves.CUSTOM) newMAMoveTransform.SetCurve(customCurve); else newMAMoveTransform.SetCurve(curve);
+                /* Process Anim */ newMAMoveTransform.ProcessAnimation(addFromValue ? fromValue : Vector3.zero, endValue, Vector3.zero, true, Mathf.LerpUnclamped(0, animationDuration, _time), false);
                 break;
 
-            default: newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration, snapToEndValue); break;
+            default:
+                newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration, snapToEndValue); break;
         }
     }
 }

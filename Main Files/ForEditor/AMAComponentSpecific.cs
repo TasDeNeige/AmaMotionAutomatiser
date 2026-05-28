@@ -47,6 +47,7 @@ namespace AMA
         bool isPreviewActivated = false;
         public float previewTime = 0f;
         Vector2 lastNewPreviewTime = Vector2.zero;
+        Vector2Int wasPreviewActivatedThisFrame = Vector2Int.zero;
         public SerializedProperty addFunctionOnStartProp, startFunctionProp;
         public SerializedProperty addFunctionOnEndProp, endFunctionProp;
         public SerializedProperty useCustomCurveProp, customCurveProp;
@@ -95,6 +96,15 @@ namespace AMA
             GUILayout.Label("Animation preview", EditorStyles.boldLabel);
 
             isPreviewActivated = EditorGUILayout.Toggle("Activate Preview", isPreviewActivated);
+            wasPreviewActivatedThisFrame.x = isPreviewActivated ? 1 : 0;
+            // If preview was toggled
+            if (wasPreviewActivatedThisFrame.x != wasPreviewActivatedThisFrame.y)
+            {
+                Debug.Log("Preview toggled");
+
+                wasPreviewActivatedThisFrame.y = isPreviewActivated ? 1 : 0;
+            }
+
             if (isPreviewActivated)
             {
                 previewTime = EditorGUILayout.Slider(previewTime, 0f, 1f);
