@@ -23,7 +23,6 @@ namespace AMA
         [HideInInspector] public bool addDelay;
         [HideInInspector][Tooltip("In seconds")] public float delay = 0f;
 
-
         public void AddMisc<T>(ref AMAMain.MA<T> _ma)
         {
             // Add Delay

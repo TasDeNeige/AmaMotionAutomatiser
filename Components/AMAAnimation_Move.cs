@@ -72,11 +72,10 @@ public class AMAAnimation_Move : AMABasicComponent
     public void AssignCustomTransform(Transform _customTransform) { customTransform = _customTransform; }
     public override void PreviewAnimationAtTime(float _time)
     {
-        Debug.Log(_time);
-
         // Depending on space
         switch (space)
         {
+            default:
             case Space.World:
                 MAMoveTransform newMAMoveTransform = new MAMoveTransform();
                 /* Set up MA */ newMAMoveTransform.SetUp(addCustomTransform ? customTransform : transform, axisToAnimate, endValue, animationDuration, snapToEndValue);
@@ -84,8 +83,12 @@ public class AMAAnimation_Move : AMABasicComponent
                 /* Process Anim */ newMAMoveTransform.ProcessAnimation(addFromValue ? fromValue : previewStartingValue, endValue, Vector3.zero, true, Mathf.LerpUnclamped(0, animationDuration, _time), false);
                 break;
 
-            default:
-                newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration, snapToEndValue); break;
+            case Space.Local:
+                MAMoveLocalTransform newMAMoveLocalTransform = new MAMoveLocalTransform();
+                /* Set up MA */ newMAMoveLocalTransform.SetUp(addCustomTransform ? customTransform : transform, axisToAnimate, endValue, animationDuration, snapToEndValue);
+                /* Set Curve */ if (curve == Curves.CUSTOM) newMAMoveLocalTransform.SetCurve(customCurve); else newMAMoveLocalTransform.SetCurve(curve);
+                /* Process Anim */ newMAMoveLocalTransform.ProcessAnimation(addFromValue ? fromValue : previewStartingValue, endValue, Vector3.zero, true, Mathf.LerpUnclamped(0, animationDuration, _time), false);
+                break;
         }
     }
 
@@ -94,9 +97,9 @@ public class AMAAnimation_Move : AMABasicComponent
         // Depending on space
         switch (space)
         {
+            default:
             case Space.World: previewStartingValue = transform.position; break;
             case Space.Local: previewStartingValue = transform.localPosition; break;
-            default: previewStartingValue = transform.position; break;
         }
     }
 
@@ -105,9 +108,9 @@ public class AMAAnimation_Move : AMABasicComponent
         // Depending on space
         switch (space)
         {
+            default:
             case Space.World: transform.position = previewStartingValue; break;
             case Space.Local: transform.localPosition = previewStartingValue; break;
-            default: transform.position = previewStartingValue; break;
         }
     }
 }

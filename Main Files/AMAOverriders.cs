@@ -41,6 +41,17 @@ namespace AMA
         public override bool GetAvailability() => TestObjAvailability(transform);
         public override Vector3 GetModifiedValue() => transform.localPosition;
         public override void SetModifiedValue(Vector3 _newValue) => transform.localPosition = _newValue;
+
+        public void SetUp(Transform _transform, Axis _selectedAxis, Vector3 _endPos, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _transform;
+            transform = _transform;
+            selectedAxis = _selectedAxis;
+            startValue = transform.localPosition;
+            endValue = ApplyAxisMask(_selectedAxis, _endPos);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
     }
     #endregion
 
