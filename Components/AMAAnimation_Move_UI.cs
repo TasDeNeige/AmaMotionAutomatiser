@@ -7,11 +7,13 @@
 using AMA;
 using UnityEditor;
 using UnityEngine;
+using static AMA.AMAMain;
 
 public class AMAAnimation_Move_UI : AMABasicComponent
 {
     public enum Space { World, Local, AnchoredPos, AnchoredPos3D };
     RectTransform rectTransform;
+    Vector3 previewStartingValue;
 
     #region In inspector
     [Header("Main settings")]
@@ -40,7 +42,7 @@ public class AMAAnimation_Move_UI : AMABasicComponent
         // Prevent bugs with no custom transform given
         if (addCustomRectTransform && customRectTransform == null)
         {
-            Debug.LogWarning(AMAMain.debugAlertString + "Custom RectTransform was activated, but no recttransform was given in " + transform.name + ". Please add one in the component or thanks to a call to the 'AssignCustomRectTransform' function before the 'PlayAnimation'.");
+            Debug.LogWarning(AMAMain.debugAlertString + "Custom RectTransform was activated, but no recttransform was given in " + rectTransform.name + ". Please add one in the component or thanks to a call to the 'AssignCustomRectTransform' function before the 'PlayAnimation'.");
             return;
         }
 
@@ -58,6 +60,7 @@ public class AMAAnimation_Move_UI : AMABasicComponent
         }
 
         AddMisc(ref newMA);
+
         // From Value
         if (addFromValue) newMA.From(fromValue);
     }
@@ -79,6 +82,77 @@ public class AMAAnimation_Move_UI : AMABasicComponent
     }
 
     public void AssignCustomRectTransform(RectTransform _customRectTransform) { customRectTransform = _customRectTransform; }
+
+    public override void PreviewAnimationAtTime(float _time)
+    {
+        // Get RectTransform
+        if (rectTransform == null) rectTransform = GetComponent<RectTransform>();
+
+        // Depending on space
+        switch (space)
+        {
+            default:
+            case Space.World:
+                MAMoveRectTransform newMAMoveRectTransform = new MAMoveRectTransform();
+                /* Set up MA */ newMAMoveRectTransform.SetUp(addCustomRectTransform ? customRectTransform : rectTransform, axisToAnimate, endValue, animationDuration, snapToEndValue);
+                /* Set Curve */ if (curve == Curves.CUSTOM) newMAMoveRectTransform.SetCurve(customCurve); else newMAMoveRectTransform.SetCurve(curve);
+                /* Process Anim */ newMAMoveRectTransform.ProcessAnimation(addFromValue ? fromValue : previewStartingValue, endValue, Vector3.zero, true, Mathf.LerpUnclamped(0, animationDuration, _time), false);
+                break;
+
+            case Space.Local:
+                MAMoveLocalRectTransform newMAMoveLocalRectTransform = new MAMoveLocalRectTransform();
+                /* Set up MA */ newMAMoveLocalRectTransform.SetUp(addCustomRectTransform ? customRectTransform : rectTransform, axisToAnimate, endValue, animationDuration, snapToEndValue);
+                /* Set Curve */ if (curve == Curves.CUSTOM) newMAMoveLocalRectTransform.SetCurve(customCurve); else newMAMoveLocalRectTransform.SetCurve(curve);
+                /* Process Anim */ newMAMoveLocalRectTransform.ProcessAnimation(addFromValue ? fromValue : previewStartingValue, endValue, Vector3.zero, true, Mathf.LerpUnclamped(0, animationDuration, _time), false);
+                break;
+
+            case Space.AnchoredPos:
+                MAMoveAnchoredPositionRectTransform newMAMoveAnchoredPositionRectTransform = new MAMoveAnchoredPositionRectTransform();
+                /* Set up MA */ newMAMoveAnchoredPositionRectTransform.SetUp(addCustomRectTransform ? customRectTransform : rectTransform, axisToAnimate, endValue, animationDuration, snapToEndValue);
+                /* Set Curve */ if (curve == Curves.CUSTOM) newMAMoveAnchoredPositionRectTransform.SetCurve(customCurve); else newMAMoveAnchoredPositionRectTransform.SetCurve(curve);
+                /* Process Anim */ newMAMoveAnchoredPositionRectTransform.ProcessAnimation(addFromValue ? fromValue : previewStartingValue, endValue, Vector3.zero, true, Mathf.LerpUnclamped(0, animationDuration, _time), false);
+                break;
+
+            case Space.AnchoredPos3D:
+                MAMoveAnchoredPosition3DRectTransform newMAMoveAnchoredPosition3DRectTransform = new MAMoveAnchoredPosition3DRectTransform();
+                /* Set up MA */ newMAMoveAnchoredPosition3DRectTransform.SetUp(addCustomRectTransform ? customRectTransform : rectTransform, axisToAnimate, endValue, animationDuration, snapToEndValue);
+                /* Set Curve */ if (curve == Curves.CUSTOM) newMAMoveAnchoredPosition3DRectTransform.SetCurve(customCurve); else newMAMoveAnchoredPosition3DRectTransform.SetCurve(curve);
+                /* Process Anim */ newMAMoveAnchoredPosition3DRectTransform.ProcessAnimation(addFromValue ? fromValue : previewStartingValue, endValue, Vector3.zero, true, Mathf.LerpUnclamped(0, animationDuration, _time), false);
+                break;
+        }
+    }
+
+    public override void SetPreviewStartingValue()
+    {
+        // Get RectTransform
+        if (rectTransform == null) rectTransform = GetComponent<RectTransform>();
+
+        // Depending on space
+        switch (space)
+        {
+            default:
+            case Space.World: previewStartingValue = rectTransform.position; break;
+            case Space.Local: previewStartingValue = rectTransform.localPosition; break;
+            case Space.AnchoredPos: previewStartingValue = rectTransform.anchoredPosition; break;
+            case Space.AnchoredPos3D: previewStartingValue = rectTransform.anchoredPosition3D; break;
+        }
+    }
+
+    public override void PlaceToStartingValue()
+    {
+        // Get RectTransform
+        if (rectTransform == null) rectTransform = GetComponent<RectTransform>();
+
+        // Depending on space
+        switch (space)
+        {
+            default:
+            case Space.World: rectTransform.position = MA<Vector3>.ApplyAxisMask(axisToAnimate, previewStartingValue, rectTransform.position); break;
+            case Space.Local: rectTransform.localPosition = MA<Vector3>.ApplyAxisMask(axisToAnimate, previewStartingValue, rectTransform.localPosition); break;
+            case Space.AnchoredPos: rectTransform.anchoredPosition = MA<Vector3>.ApplyAxisMask(axisToAnimate, previewStartingValue, rectTransform.anchoredPosition); break;
+            case Space.AnchoredPos3D: rectTransform.anchoredPosition3D = MA<Vector3>.ApplyAxisMask(axisToAnimate, previewStartingValue, rectTransform.anchoredPosition3D); break;
+        }
+    }
 }
 
 #if UNITY_EDITOR
@@ -93,8 +167,10 @@ class AMAAnimationMoveUiEditor : AMAComponentEditor<Vector3>
     string bannerPath = "AMA_AnimationComponentBanner";
 
     #region Editor
-    void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
+
         // Link serialized properties to their names in the target class
         axisToAnimateProp = serializedObject.FindProperty("axisToAnimate");
         spaceProp = serializedObject.FindProperty("space");
@@ -111,6 +187,8 @@ class AMAAnimationMoveUiEditor : AMAComponentEditor<Vector3>
         AMAAnimation_Move_UI script = (AMAAnimation_Move_UI)target;
 
         SetUpOnInspector(serializedObject, banner);
+
+        DrawSliderPreview(serializedObject, script);
 
         #region Components drawing
         #region Main Settings

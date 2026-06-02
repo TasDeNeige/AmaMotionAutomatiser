@@ -66,8 +66,10 @@ class AMAAnimationScaleEditor : AMAComponentEditor<Vector3>
     string bannerPath = "AMA_AnimationComponentBanner";
 
     #region Editor
-    void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
+
         // Link serialized properties to their names in the target class
         axisToAnimateProp = serializedObject.FindProperty("axisToAnimate");
         customTransformProp = serializedObject.FindProperty("customTransform");

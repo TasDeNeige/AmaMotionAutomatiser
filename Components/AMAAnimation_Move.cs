@@ -112,7 +112,7 @@ public class AMAAnimation_Move : AMABasicComponent
         {
             default:
             case Space.World: transform.position = MA<Vector3>.ApplyAxisMask(axisToAnimate, previewStartingValue, transform.position); break;
-            case Space.Local: transform.localPosition = previewStartingValue; break;
+            case Space.Local: transform.localPosition = MA<Vector3>.ApplyAxisMask(axisToAnimate, previewStartingValue, transform.localPosition); break;
         }
     }
 }

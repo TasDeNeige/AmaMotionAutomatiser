@@ -190,8 +190,10 @@ class AMAAnimationFadeEditor : AMAComponentEditor<Color>
     string bannerPath = "AMA_AnimationComponentBanner";
 
     #region Editor
-    void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
+
         // Link serialized properties to their names in the target class
         colorComponentProp = serializedObject.FindProperty("colorComponent");
         customMaterialProp = serializedObject.FindProperty("customMaterial");
