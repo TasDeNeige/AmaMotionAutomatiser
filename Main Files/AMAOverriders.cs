@@ -4,10 +4,8 @@
 // • By Amaryne Bréand
 //
 
-using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
 using static AMA.AMAMain;
 
 namespace AMA
@@ -22,13 +20,26 @@ namespace AMA
         public override Vector3 GetModifiedValue() => transform.position;
         public override void SetModifiedValue(Vector3 _newValue) => transform.position = _newValue;
 
+        // Vector3
         public void SetUp(Transform _transform, Axis _selectedAxis, Vector3 _endPos, float _duration, bool _snapToEndValue = true)
         {
             unityObject = _transform;
             transform = _transform;
             selectedAxis = _selectedAxis;
             startValue = transform.position;
-            endValue = ApplyAxisMask(_selectedAxis, _endPos);
+            endValue = ApplyAxisMask(_selectedAxis, _endPos, transform.position);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
+
+        // Float
+        public void SetUp(Transform _transform, Axis _selectedAxis, float _endPos, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _transform;
+            transform = _transform;
+            selectedAxis = _selectedAxis;
+            startValue = transform.position;
+            endValue = ApplyAxisMask(_selectedAxis, new Vector3(_endPos, _endPos, _endPos), transform.position);
             duration = _duration;
             snapToEndValue = _snapToEndValue;
         }
@@ -42,13 +53,26 @@ namespace AMA
         public override Vector3 GetModifiedValue() => transform.localPosition;
         public override void SetModifiedValue(Vector3 _newValue) => transform.localPosition = _newValue;
 
+        // Vector3
         public void SetUp(Transform _transform, Axis _selectedAxis, Vector3 _endPos, float _duration, bool _snapToEndValue = true)
         {
             unityObject = _transform;
             transform = _transform;
             selectedAxis = _selectedAxis;
             startValue = transform.localPosition;
-            endValue = ApplyAxisMask(_selectedAxis, _endPos);
+            endValue = ApplyAxisMask(_selectedAxis, _endPos, transform.localPosition);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
+
+        // Float
+        public void SetUp(Transform _transform, Axis _selectedAxis, float _endPos, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _transform;
+            transform = _transform;
+            selectedAxis = _selectedAxis;
+            startValue = transform.localPosition;
+            endValue = ApplyAxisMask(_selectedAxis, new Vector3(_endPos, _endPos, _endPos), transform.localPosition);
             duration = _duration;
             snapToEndValue = _snapToEndValue;
         }
@@ -63,6 +87,30 @@ namespace AMA
         public override bool GetAvailability() => TestObjAvailability(rectTransform);
         public override Vector3 GetModifiedValue() => rectTransform.position;
         public override void SetModifiedValue(Vector3 _newValue) => rectTransform.position = _newValue;
+
+        // Vector3
+        public void SetUp(RectTransform _rectTransform, Axis _selectedAxis, Vector3 _endPos, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _rectTransform;
+            rectTransform = _rectTransform;
+            selectedAxis = _selectedAxis;
+            startValue = _rectTransform.position;
+            endValue = ApplyAxisMask(_selectedAxis, _endPos, _rectTransform.position);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
+
+        // Float
+        public void SetUp(RectTransform _rectTransform, Axis _selectedAxis, float _endPos, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _rectTransform;
+            rectTransform = _rectTransform;
+            selectedAxis = _selectedAxis;
+            startValue = _rectTransform.position;
+            endValue = ApplyAxisMask(_selectedAxis, new Vector3(_endPos, _endPos, _endPos), _rectTransform.position);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
     }
 
     public class MAMoveLocalRectTransform : MA<Vector3>
@@ -72,6 +120,30 @@ namespace AMA
         public override bool GetAvailability() => TestObjAvailability(rectTransform);
         public override Vector3 GetModifiedValue() => rectTransform.localPosition;
         public override void SetModifiedValue(Vector3 _newValue) => rectTransform.localPosition = _newValue;
+
+        // Vector3
+        public void SetUp(RectTransform _rectTransform, Axis _selectedAxis, Vector3 _endPos, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _rectTransform;
+            rectTransform = _rectTransform;
+            selectedAxis = _selectedAxis;
+            startValue = _rectTransform.localPosition;
+            endValue = ApplyAxisMask(_selectedAxis, _endPos, _rectTransform.localPosition);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
+
+        // Float
+        public void SetUp(RectTransform _rectTransform, Axis _selectedAxis, float _endPos, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _rectTransform;
+            rectTransform = _rectTransform;
+            selectedAxis = _selectedAxis;
+            startValue = _rectTransform.localPosition;
+            endValue = ApplyAxisMask(_selectedAxis, new Vector3(_endPos, _endPos, _endPos), _rectTransform.localPosition);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
     }
 
     public class MAMoveAnchoredPositionRectTransform : MA<Vector3>
@@ -81,6 +153,30 @@ namespace AMA
         public override bool GetAvailability() => TestObjAvailability(rectTransform);
         public override Vector3 GetModifiedValue() => rectTransform.anchoredPosition;
         public override void SetModifiedValue(Vector3 _newValue) => rectTransform.anchoredPosition = _newValue;
+
+        // Vector3
+        public void SetUp(RectTransform _rectTransform, Axis _selectedAxis, Vector3 _endPos, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _rectTransform;
+            rectTransform = _rectTransform;
+            selectedAxis = _selectedAxis;
+            startValue = _rectTransform.anchoredPosition;
+            endValue = ApplyAxisMask(_selectedAxis, _endPos, _rectTransform.anchoredPosition);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
+
+        // Float
+        public void SetUp(RectTransform _rectTransform, Axis _selectedAxis, float _endPos, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _rectTransform;
+            rectTransform = _rectTransform;
+            selectedAxis = _selectedAxis;
+            startValue = _rectTransform.anchoredPosition;
+            endValue = ApplyAxisMask(_selectedAxis, new Vector3(_endPos, _endPos, _endPos), _rectTransform.anchoredPosition);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
     }
 
     public class MAMoveAnchoredPosition3DRectTransform : MA<Vector3>
@@ -90,6 +186,30 @@ namespace AMA
         public override bool GetAvailability() => TestObjAvailability(rectTransform);
         public override Vector3 GetModifiedValue() => rectTransform.anchoredPosition3D;
         public override void SetModifiedValue(Vector3 _newValue) => rectTransform.anchoredPosition3D = _newValue;
+
+        // Vector3
+        public void SetUp(RectTransform _rectTransform, Axis _selectedAxis, Vector3 _endPos, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _rectTransform;
+            rectTransform = _rectTransform;
+            selectedAxis = _selectedAxis;
+            startValue = _rectTransform.anchoredPosition3D;
+            endValue = ApplyAxisMask(_selectedAxis, _endPos, _rectTransform.anchoredPosition3D);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
+
+        // Float
+        public void SetUp(RectTransform _rectTransform, Axis _selectedAxis, float _endPos, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _rectTransform;
+            rectTransform = _rectTransform;
+            selectedAxis = _selectedAxis;
+            startValue = _rectTransform.anchoredPosition3D;
+            endValue = ApplyAxisMask(_selectedAxis, new Vector3(_endPos, _endPos, _endPos), _rectTransform.anchoredPosition3D);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
     }
     #endregion
     #endregion
@@ -103,6 +223,30 @@ namespace AMA
         public override bool GetAvailability() => TestObjAvailability(transform);
         public override Vector3 GetModifiedValue() => transform.localScale;
         public override void SetModifiedValue(Vector3 _newValue) => transform.localScale = _newValue;
+
+        // Vector3
+        public void SetUp(Transform _transform, Axis _selectedAxis, Vector3 _endScale, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _transform;
+            transform = _transform;
+            selectedAxis = _selectedAxis;
+            startValue = transform.localScale;
+            endValue = ApplyAxisMask(_selectedAxis, _endScale, transform.localScale);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
+
+        // Float
+        public void SetUp(Transform _transform, Axis _selectedAxis, float _endScale, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _transform;
+            transform = _transform;
+            selectedAxis = _selectedAxis;
+            startValue = transform.localScale;
+            endValue = ApplyAxisMask(_selectedAxis, new Vector3(_endScale, _endScale, _endScale), transform.localScale);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
     }
     #endregion
 
@@ -114,6 +258,30 @@ namespace AMA
         public override bool GetAvailability() => TestObjAvailability(rectTransform);
         public override Vector3 GetModifiedValue() => rectTransform.localScale;
         public override void SetModifiedValue(Vector3 _newValue) => rectTransform.localScale = _newValue;
+
+        // Vector3
+        public void SetUp(RectTransform _transform, Axis _selectedAxis, Vector3 _endScale, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _transform;
+            rectTransform = _transform;
+            selectedAxis = _selectedAxis;
+            startValue = rectTransform.localScale;
+            endValue = ApplyAxisMask(_selectedAxis, _endScale, rectTransform.localScale);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
+
+        // Float
+        public void SetUp(RectTransform _transform, Axis _selectedAxis, float _endScale, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _transform;
+            rectTransform = _transform;
+            selectedAxis = _selectedAxis;
+            startValue = rectTransform.localScale;
+            endValue = ApplyAxisMask(_selectedAxis, new Vector3(_endScale, _endScale, _endScale), rectTransform.localScale);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
     }
     #endregion
     #endregion
@@ -174,6 +342,30 @@ namespace AMA
         public override bool GetAvailability() => TestObjAvailability(transform);
         public override Quaternion GetModifiedValue() => transform.rotation;
         public override void SetModifiedValue(Quaternion _newValue) => transform.rotation = _newValue;
+
+        // Quaternion
+        public void SetUp(Transform _transform, Axis _selectedAxis, Quaternion _endRotation, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _transform;
+            transform = _transform;
+            selectedAxis = _selectedAxis;
+            startValue = transform.rotation;
+            endValue = ApplyAxisMask(_selectedAxis, _endRotation, transform.rotation);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
+
+        // Float
+        public void SetUp(Transform _transform, Axis _selectedAxis, float _endRotation, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _transform;
+            transform = _transform;
+            selectedAxis = _selectedAxis;
+            startValue = transform.rotation;
+            endValue = ApplyAxisMask(_selectedAxis, new Quaternion(_endRotation, _endRotation, _endRotation, _endRotation), transform.rotation);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
     }
     #endregion
 
@@ -185,6 +377,30 @@ namespace AMA
         public override bool GetAvailability() => TestObjAvailability(transform);
         public override Vector3 GetModifiedValue() => transform.eulerAngles;
         public override void SetModifiedValue(Vector3 _newValue) => transform.eulerAngles = _newValue;
+
+        // Vector3
+        public void SetUp(Transform _transform, Axis _selectedAxis, Vector3 _endRotation, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _transform;
+            transform = _transform;
+            selectedAxis = _selectedAxis;
+            startValue = transform.rotation.eulerAngles;
+            endValue = ApplyAxisMask(_selectedAxis, _endRotation, transform.rotation.eulerAngles);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
+
+        // Float
+        public void SetUp(Transform _transform, Axis _selectedAxis, float _endRotation, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _transform;
+            transform = _transform;
+            selectedAxis = _selectedAxis;
+            startValue = transform.rotation.eulerAngles;
+            endValue = ApplyAxisMask(_selectedAxis, new Vector3(_endRotation, _endRotation, _endRotation), transform.rotation.eulerAngles);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
     }
     #endregion
 
@@ -197,6 +413,30 @@ namespace AMA
         public override bool GetAvailability() => TestObjAvailability(transform);
         public override Quaternion GetModifiedValue() => transform.localRotation;
         public override void SetModifiedValue(Quaternion _newValue) => transform.localRotation = _newValue;
+
+        // Quaternion
+        public void SetUp(Transform _transform, Axis _selectedAxis, Quaternion _endRotation, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _transform;
+            transform = _transform;
+            selectedAxis = _selectedAxis;
+            startValue = transform.localRotation;
+            endValue = ApplyAxisMask(_selectedAxis, _endRotation, transform.localRotation);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
+
+        // Float
+        public void SetUp(Transform _transform, Axis _selectedAxis, float _endRotation, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _transform;
+            transform = _transform;
+            selectedAxis = _selectedAxis;
+            startValue = transform.localRotation;
+            endValue = ApplyAxisMask(_selectedAxis, new Quaternion(_endRotation, _endRotation, _endRotation, _endRotation), transform.localRotation);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
     }
     #endregion
 
@@ -208,6 +448,30 @@ namespace AMA
         public override bool GetAvailability() => TestObjAvailability(transform);
         public override Vector3 GetModifiedValue() => transform.localEulerAngles;
         public override void SetModifiedValue(Vector3 _newValue) => transform.localEulerAngles = _newValue;
+
+        // Vector3
+        public void SetUp(Transform _transform, Axis _selectedAxis, Vector3 _endRotation, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _transform;
+            transform = _transform;
+            selectedAxis = _selectedAxis;
+            startValue = transform.localRotation.eulerAngles;
+            endValue = ApplyAxisMask(_selectedAxis, _endRotation, transform.localRotation.eulerAngles);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
+
+        // Float
+        public void SetUp(Transform _transform, Axis _selectedAxis, float _endRotation, float _duration, bool _snapToEndValue = true)
+        {
+            unityObject = _transform;
+            transform = _transform;
+            selectedAxis = _selectedAxis;
+            startValue = transform.localRotation.eulerAngles;
+            endValue = ApplyAxisMask(_selectedAxis, new Vector3(_endRotation, _endRotation, _endRotation), transform.localRotation.eulerAngles);
+            duration = _duration;
+            snapToEndValue = _snapToEndValue;
+        }
     }
     #endregion
     #endregion

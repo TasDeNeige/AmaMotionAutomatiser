@@ -27,13 +27,7 @@ namespace AMA
         {
             // Set up MA
             MAMoveTransform _ma = new MAMoveTransform();
-            _ma.unityObject = _transform;
-            _ma.transform = _transform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.transform.position;
-            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, new Vector3(_endPos, _endPos, _endPos));
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_transform, _selectedAxis, _endPos, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -81,13 +75,7 @@ namespace AMA
         {
             // Set up MA
             MAMoveLocalTransform _ma = new MAMoveLocalTransform();
-            _ma.unityObject = _transform;
-            _ma.transform = _transform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.transform.localPosition;
-            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, new Vector3(_endPos, _endPos, _endPos));
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_transform, _selectedAxis, _endPos, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -109,13 +97,7 @@ namespace AMA
         {
             // Set up MA
             MAMoveLocalTransform _ma = new MAMoveLocalTransform();
-            _ma.unityObject = _transform;
-            _ma.transform = _transform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.transform.localPosition;
-            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, _endPos);
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_transform, _selectedAxis, _endPos, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -143,13 +125,8 @@ namespace AMA
         {
             // Set up MA
             MAMoveRectTransform _ma = new MAMoveRectTransform();
-            _ma.unityObject = _rectTransform;
-            _ma.rectTransform = _rectTransform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.rectTransform.position;
-            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, new Vector3(_endPos, _endPos, _endPos));
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_rectTransform, _selectedAxis, _endPos, _duration, _snapToEndValue);
+
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -171,13 +148,7 @@ namespace AMA
         {
             // Set up MA
             MAMoveRectTransform _ma = new MAMoveRectTransform();
-            _ma.unityObject = _rectTransform;
-            _ma.rectTransform = _rectTransform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.rectTransform.position;
-            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, _endPos);
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_rectTransform, _selectedAxis, _endPos, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -203,13 +174,7 @@ namespace AMA
         {
             // Set up MA
             MAMoveLocalRectTransform _ma = new MAMoveLocalRectTransform();
-            _ma.unityObject = _rectTransform;
-            _ma.rectTransform = _rectTransform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.rectTransform.localPosition;
-            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, new Vector3(_endPos, _endPos, _endPos));
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_rectTransform, _selectedAxis, _endPos, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -231,13 +196,7 @@ namespace AMA
         {
             // Set up MA
             MAMoveLocalRectTransform _ma = new MAMoveLocalRectTransform();
-            _ma.unityObject = _rectTransform;
-            _ma.rectTransform = _rectTransform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.rectTransform.localPosition;
-            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, _endPos);
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_rectTransform, _selectedAxis, _endPos, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -263,13 +222,7 @@ namespace AMA
         {
             // Set up MA
             MAMoveAnchoredPositionRectTransform _ma = new MAMoveAnchoredPositionRectTransform();
-            _ma.unityObject = _rectTransform;
-            _ma.rectTransform = _rectTransform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.rectTransform.anchoredPosition;
-            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, new Vector3(_endPos, _endPos, _endPos));
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_rectTransform, _selectedAxis, _endPos, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -291,13 +244,7 @@ namespace AMA
         {
             // Set up MA
             MAMoveAnchoredPositionRectTransform _ma = new MAMoveAnchoredPositionRectTransform();
-            _ma.unityObject = _rectTransform;
-            _ma.rectTransform = _rectTransform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.rectTransform.anchoredPosition;
-            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, _endPos);
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_rectTransform, _selectedAxis, _endPos, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -323,13 +270,7 @@ namespace AMA
         {
             // Set up MA
             MAMoveAnchoredPosition3DRectTransform _ma = new MAMoveAnchoredPosition3DRectTransform();
-            _ma.unityObject = _rectTransform;
-            _ma.rectTransform = _rectTransform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.rectTransform.anchoredPosition3D;
-            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, new Vector3(_endPos, _endPos, _endPos));
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_rectTransform, _selectedAxis, _endPos, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -351,13 +292,7 @@ namespace AMA
         {
             // Set up MA
             MAMoveAnchoredPosition3DRectTransform _ma = new MAMoveAnchoredPosition3DRectTransform();
-            _ma.unityObject = _rectTransform;
-            _ma.rectTransform = _rectTransform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.rectTransform.anchoredPosition3D;
-            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, _endPos);
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_rectTransform, _selectedAxis, _endPos, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();

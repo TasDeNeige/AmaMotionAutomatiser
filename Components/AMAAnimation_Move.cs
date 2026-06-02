@@ -47,9 +47,9 @@ public class AMAAnimation_Move : AMABasicComponent
         // Depending on space
         switch(space)
         {
+            default:
             case Space.World: newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration, snapToEndValue); break;
             case Space.Local: newMA = (addCustomTransform ? customTransform : transform).AMAlocalMove(axisToAnimate, endValue, animationDuration, snapToEndValue); break;
-            default: newMA = (addCustomTransform ? customTransform : transform).AMAmove(axisToAnimate, endValue, animationDuration, snapToEndValue); break;
         }
 
         AddMisc(ref newMA);
@@ -63,9 +63,9 @@ public class AMAAnimation_Move : AMABasicComponent
         // Depending on space
         switch (space)
         {
+            default:
             case Space.World: return transform.position;
             case Space.Local: return transform.localPosition;
-            default: return transform.position;
         }
     }
 
@@ -101,15 +101,17 @@ public class AMAAnimation_Move : AMABasicComponent
             case Space.World: previewStartingValue = transform.position; break;
             case Space.Local: previewStartingValue = transform.localPosition; break;
         }
+
+        Debug.Log("Preview starting value set to " + previewStartingValue);
     }
 
     public override void PlaceToStartingValue()
-    {       
+    {
         // Depending on space
         switch (space)
         {
             default:
-            case Space.World: transform.position = previewStartingValue; break;
+            case Space.World: transform.position = MA<Vector3>.ApplyAxisMask(axisToAnimate, previewStartingValue, transform.position); break;
             case Space.Local: transform.localPosition = previewStartingValue; break;
         }
     }
@@ -127,14 +129,16 @@ class AMAAnimationMoveEditor : AMAComponentEditor<Vector3>
     string bannerPath = "AMA_AnimationComponentBanner";
 
     #region Editor
-    void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
+
         // Link serialized properties to their names in the target class
         axisToAnimateProp = serializedObject.FindProperty("axisToAnimate");
         spaceProp = serializedObject.FindProperty("space");
         customTransformProp = serializedObject.FindProperty("customTransform");
 
-        SetUpOnEnable(serializedObject);
+        SetUpOnEnable(serializedObject, (AMAAnimation_Move)target);
 
         // Load banner
         banner = (Texture)Resources.Load(bannerPath, typeof(Texture));

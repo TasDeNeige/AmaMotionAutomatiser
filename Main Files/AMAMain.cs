@@ -86,14 +86,12 @@ namespace AMA
                 // Call late start function
                 if (!_hasWentThroughFirstFrame)
                 {
-                    if (_elapsedTime > 0f)
+                    if (_elapsedTime -Time.deltaTime > 0f)
                     {
                         _hasWentThroughFirstFrame = true;
                         if (onLateStartFunc != null) { onLateStartFunc(); }
                     }
                 }
-
-                _elapsedTime += Time.deltaTime;
 
                 float easedTime = 0;
 
@@ -185,13 +183,13 @@ namespace AMA
             }
 
             // Change value only on selected axis
-            public T ApplyAxisMask(Axis selectedAxis, T changedValue)
+            public static T ApplyAxisMask(Axis selectedAxis, T changedValue, T unchangedValue)
             {
                 // Vector 3
                 if (typeof(T) == typeof(Vector3))
                 {
                     Vector3 _changedValue = (Vector3)(object)changedValue;
-                    Vector3 _unchangedValue = (Vector3)(object)GetModifiedValue();
+                    Vector3 _unchangedValue = (Vector3)(object)unchangedValue;
 
                     switch (selectedAxis)
                     {
@@ -212,7 +210,7 @@ namespace AMA
                 else if (typeof(T) == typeof(Quaternion))
                 {
                     Quaternion _changedValue = (Quaternion)(object)changedValue;
-                    Quaternion _unchangedValue = (Quaternion)(object)GetModifiedValue();
+                    Quaternion _unchangedValue = (Quaternion)(object)unchangedValue;
 
                     switch (selectedAxis)
                     {

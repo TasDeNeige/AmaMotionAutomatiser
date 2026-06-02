@@ -28,13 +28,7 @@ namespace AMA
         {
             // Set up MA
             MARotateQuaternionTransform _ma = new MARotateQuaternionTransform();
-            _ma.unityObject = _transform;
-            _ma.transform = _transform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.transform.rotation;
-            _ma.endValue = new Quaternion(_endRotation, _endRotation, _endRotation, _endRotation);
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_transform, _selectedAxis, _endRotation, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -56,13 +50,7 @@ namespace AMA
         {
             // Set up MA
             MARotateQuaternionTransform _ma = new MARotateQuaternionTransform();
-            _ma.unityObject = _transform;
-            _ma.transform = _transform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.transform.rotation;
-            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, _endRotation);
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_transform, _selectedAxis, _endRotation, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -86,13 +74,7 @@ namespace AMA
         {
             // Set up MA
             MARotateEulerTransform _ma = new MARotateEulerTransform();
-            _ma.unityObject = _transform;
-            _ma.transform = _transform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.transform.rotation.eulerAngles;
-            _ma.endValue = new Vector3(_endRotation, _endRotation, _endRotation);
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_transform, _selectedAxis, _endRotation, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -114,13 +96,7 @@ namespace AMA
         {
             // Set up MA
             MARotateEulerTransform _ma = new MARotateEulerTransform();
-            _ma.unityObject = _transform;
-            _ma.transform = _transform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.transform.rotation.eulerAngles;
-            _ma.endValue = _endRotation;
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_transform, _selectedAxis, _endRotation, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -146,13 +122,7 @@ namespace AMA
         {
             // Set up MA
             MALocalRotateQuaternionTransform _ma = new MALocalRotateQuaternionTransform();
-            _ma.unityObject = _transform;
-            _ma.transform = _transform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.transform.localRotation;
-            _ma.endValue = new Quaternion(_endRotation, _endRotation, _endRotation, _endRotation);
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_transform, _selectedAxis, _endRotation, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -174,13 +144,7 @@ namespace AMA
         {
             // Set up MA
             MALocalRotateQuaternionTransform _ma = new MALocalRotateQuaternionTransform();
-            _ma.unityObject = _transform;
-            _ma.transform = _transform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.transform.localRotation;
-            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, _endRotation);
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_transform, _selectedAxis, _endRotation, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -204,13 +168,7 @@ namespace AMA
         {
             // Set up MA
             MALocalRotateEulerTransform _ma = new MALocalRotateEulerTransform();
-            _ma.unityObject = _transform;
-            _ma.transform = _transform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.transform.localRotation.eulerAngles;
-            _ma.endValue = new Vector3(_endRotation, _endRotation, _endRotation);
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_transform, _selectedAxis, _endRotation, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -232,13 +190,7 @@ namespace AMA
         {
             // Set up MA
             MALocalRotateEulerTransform _ma = new MALocalRotateEulerTransform();
-            _ma.unityObject = _transform;
-            _ma.transform = _transform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.transform.localRotation.eulerAngles;
-            _ma.endValue = _endRotation;
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_transform, _selectedAxis, _endRotation, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();

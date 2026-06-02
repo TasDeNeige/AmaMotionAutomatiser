@@ -22,6 +22,7 @@ namespace AMA
         [HideInInspector] public UnityEvent endFunction;
         [HideInInspector] public bool addDelay;
         [HideInInspector][Tooltip("In seconds")] public float delay = 0f;
+        [HideInInspector] public bool isPreviewActivatedByEditor = false;
 
         public void AddMisc<T>(ref AMAMain.MA<T> _ma)
         {
@@ -35,12 +36,6 @@ namespace AMA
             if (addFunctionOnEnd) _ma.OnEnd(endFunction.Invoke);
         }
 
-        private void Awake()
-        {
-            // Reset position
-            PreviewAnimationAtTime(0);
-        }
-
         public /*abstract*/ virtual void PreviewAnimationAtTime(float  _time) { }
         public /*abstract*/ virtual void SetPreviewStartingValue() {}
         public /*abstract*/ virtual void PlaceToStartingValue() { }
@@ -49,6 +44,7 @@ namespace AMA
 #if UNITY_EDITOR
     public class AMAComponentEditor<T> : Editor
     {
+        AMABasicComponent amaScript;
         bool isPreviewActivated = false;
         public float previewTime = 0f;
         Vector2 lastNewPreviewTime = Vector2.zero;
@@ -56,12 +52,13 @@ namespace AMA
         public SerializedProperty addFunctionOnStartProp, startFunctionProp;
         public SerializedProperty addFunctionOnEndProp, endFunctionProp;
         public SerializedProperty useCustomCurveProp, customCurveProp;
+        //public SerializedProperty isPreviewActivatedProp;
 
         /// <summary>
         /// Sets up component. Needs to be called in OnEnable()
         /// </summary>
         /// <param name="_serializedObject"></param>
-        public void SetUpOnEnable(SerializedObject _serializedObject)
+        public void SetUpOnEnable(SerializedObject _serializedObject, AMABasicComponent _script = null)
         {
             useCustomCurveProp = _serializedObject.FindProperty("curve");
             customCurveProp = _serializedObject.FindProperty("customCurve");
@@ -71,6 +68,27 @@ namespace AMA
 
             addFunctionOnEndProp = _serializedObject.FindProperty("addFunctionOnEnd");
             endFunctionProp = _serializedObject.FindProperty("endFunction");
+
+            amaScript = _script;
+        }
+
+        protected virtual void OnEnable() { EditorApplication.playModeStateChanged += PlaceObjectOnModeStateChanged; }
+        protected virtual void OnDisable() { EditorApplication.playModeStateChanged -= PlaceObjectOnModeStateChanged; }
+
+        /// <summary>
+        /// Place object to its starting value before entering play mode
+        /// </summary>
+        /// <param name="PlayModeStateChange"></param>
+        private void PlaceObjectOnModeStateChanged(PlayModeStateChange state)
+        {
+            // Place object to starting value before entering play mode
+            if (state == PlayModeStateChange.ExitingEditMode)
+            {
+                if (amaScript != null)
+                {
+                    amaScript.PlaceToStartingValue();
+                }
+            }
         }
 
         /// <summary>
@@ -110,7 +128,6 @@ namespace AMA
                     // Store preview value if anim was enabled
                     _script.SetPreviewStartingValue();
                     previewTime = 0f;
-                    //_script.PreviewAnimationAtTime(previewTime); 
                 }
                 else
                 {
@@ -131,6 +148,8 @@ namespace AMA
                     lastNewPreviewTime.y = previewTime;
                 }
             }
+
+            _script.isPreviewActivatedByEditor = isPreviewActivated;
         }
 
 

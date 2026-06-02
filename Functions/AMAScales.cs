@@ -26,13 +26,7 @@ namespace AMA
         {
             // Set up MA
             MAScaleTransform _ma = new MAScaleTransform();
-            _ma.unityObject = _transform;
-            _ma.transform = _transform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.transform.localScale;
-            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, new Vector3(_endValue, _endValue, _endValue));
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_transform, _selectedAxis, _endValue, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -54,13 +48,7 @@ namespace AMA
         {
             // Set up MA
             MAScaleTransform _ma = new MAScaleTransform();
-            _ma.unityObject = _transform;
-            _ma.transform = _transform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.transform.localScale;
-            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, _endValue);
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_transform, _selectedAxis, _endValue, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -86,13 +74,7 @@ namespace AMA
         {
             // Set up MA
             MAScaleRectTransform _ma = new MAScaleRectTransform();
-            _ma.unityObject = _rectTransform;
-            _ma.rectTransform = _rectTransform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.rectTransform.localScale;
-            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, new Vector3(_endValue, _endValue, _endValue));
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_rectTransform, _selectedAxis, _endValue, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();
@@ -114,13 +96,7 @@ namespace AMA
         {
             // Set up MA
             MAScaleRectTransform _ma = new MAScaleRectTransform();
-            _ma.unityObject = _rectTransform;
-            _ma.rectTransform = _rectTransform;
-            _ma.selectedAxis = _selectedAxis;
-            _ma.startValue = _ma.rectTransform.localScale;
-            _ma.endValue = _ma.ApplyAxisMask(_selectedAxis, _endValue);
-            _ma.duration = _duration;
-            _ma.snapToEndValue = _snapToEndValue;
+            _ma.SetUp(_rectTransform, _selectedAxis, _endValue, _duration, _snapToEndValue);
 
             // Apply MA
             _ma.coroutine = _ma.MotionToEndValue();

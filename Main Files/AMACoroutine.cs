@@ -27,7 +27,7 @@ namespace AMA
             // Set MA to start value (if there is one)
             if (_ma.hasFromValue)
             {
-                _ma.SetModifiedValue(_ma.ApplyAxisMask(_ma.selectedAxis, _ma.fromValue));
+                _ma.SetModifiedValue(MA<T>.ApplyAxisMask(_ma.selectedAxis, _ma.fromValue, _ma.GetModifiedValue()));
                 _ma.startValue = _ma.fromValue;
             }
 
@@ -41,6 +41,7 @@ namespace AMA
                 // Ensure object is still accessible (otherwise get out of coroutine)
                 if (!_ma.GetAvailability()) yield break;
 
+                _ma.elapsedTime += Time.deltaTime;
                 _ma.ProcessAnimation(initialPosition, targetPosition, _ma.externalOffset, _ma.hasWentThroughFirstFrame, _ma.elapsedTime);
 
                 yield return null;
@@ -50,7 +51,7 @@ namespace AMA
             if (!_ma.GetAvailability()) yield break;
 
             // Ensures that object has reached its final position
-            if (_ma.snapToEndValue) _ma.SetModifiedValue(_ma.ApplyAxisMask(_ma.selectedAxis, targetPosition));
+            if (_ma.snapToEndValue) _ma.SetModifiedValue(MA<T>.ApplyAxisMask(_ma.selectedAxis, targetPosition, _ma.GetModifiedValue()));
 
             // Execute function when MA has finished its journey (if there is one)
             if (_ma.onCompleteFunc != null) { _ma.onCompleteFunc(); }
@@ -80,7 +81,7 @@ namespace AMA
             // Set MA to start value (if there is one)
             if (_ma.hasFromValue)
             {
-                _ma.SetModifiedValue(_ma.ApplyAxisMask(_ma.selectedAxis, _ma.fromValue));
+                _ma.SetModifiedValue(MA<Vector3>.ApplyAxisMask(_ma.selectedAxis, _ma.fromValue, _ma.GetModifiedValue()));
                 _ma.startValue = _ma.fromValue;
             }
 
@@ -163,7 +164,7 @@ namespace AMA
             if (!_ma.GetAvailability()) yield break;
 
             // Ensures that object comes back to place
-            if (_ma.snapToEndValue) _ma.SetModifiedValue(_ma.ApplyAxisMask(_ma.selectedAxis, _ma.transform.position - lastShake));
+            if (_ma.snapToEndValue) _ma.SetModifiedValue(MA<Vector3>.ApplyAxisMask(_ma.selectedAxis, _ma.transform.position - lastShake, _ma.GetModifiedValue()));
 
             // Execute function when MA has finished its journey (if there is one)
             if (_ma.onCompleteFunc != null) { _ma.onCompleteFunc(); }
