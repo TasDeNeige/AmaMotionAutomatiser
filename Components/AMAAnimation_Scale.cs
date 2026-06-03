@@ -64,6 +64,7 @@ class AMAAnimationScaleEditor : AMAComponentEditor<Vector3>
 
     Texture banner;
     string bannerPath = "AMA_AnimationComponentBanner";
+    const string wikiLink = "https://github.com/TasDeNeige/AmaMotionAutomatiser/wiki/Animations#Scale";
 
     #region Editor
     protected override void OnEnable()
@@ -84,7 +85,7 @@ class AMAAnimationScaleEditor : AMAComponentEditor<Vector3>
     {
         AMAAnimation_Scale script = (AMAAnimation_Scale)target;
 
-        SetUpOnInspector(serializedObject, banner);
+        SetUpOnInspector(serializedObject, banner, wikiLink);
 
         #region Components drawing
         #region Main Settings

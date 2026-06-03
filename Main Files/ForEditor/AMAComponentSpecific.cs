@@ -95,7 +95,7 @@ namespace AMA
         /// Sets up component. Needs to be called in OnInspectorGUI()
         /// </summary>
         /// <param name="_serializedObject"></param>
-        public void SetUpOnInspector(SerializedObject _serializedObject, UnityEngine.Texture banner = null)
+        public void SetUpOnInspector(SerializedObject _serializedObject, UnityEngine.Texture banner = null, string link = "EMPTY")
         {
             // Prevent drawing "Script" option
             _serializedObject.DrawInspectorExcept("m_Script");
@@ -106,7 +106,10 @@ namespace AMA
                 float imageWidth = EditorGUIUtility.currentViewWidth;
                 float imageHeight = imageWidth * banner.height / banner.width;
                 Rect rect = GUILayoutUtility.GetRect(imageWidth, imageHeight);
-                GUI.DrawTexture(rect, banner, ScaleMode.ScaleToFit);
+                if (GUI.Button(rect, banner))
+                {
+                    if (link != "EMPTY") Application.OpenURL(link);
+                }
             }
         }
 

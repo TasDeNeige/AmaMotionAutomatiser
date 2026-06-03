@@ -165,6 +165,7 @@ class AMAAnimationRotateEditor : AMAComponentEditor<Quaternion>
 
     Texture banner;
     string bannerPath = "AMA_AnimationComponentBanner";
+    const string wikiLink = "https://github.com/TasDeNeige/AmaMotionAutomatiser/wiki/Animations#Rotate";
 
     #region Editor
     protected override void OnEnable()
@@ -187,7 +188,7 @@ class AMAAnimationRotateEditor : AMAComponentEditor<Quaternion>
     {
         AMAAnimation_Rotate script = (AMAAnimation_Rotate)target;
 
-        SetUpOnInspector(serializedObject, banner);
+        SetUpOnInspector(serializedObject, banner, wikiLink);
 
         #region Components drawing
         #region Main Settings

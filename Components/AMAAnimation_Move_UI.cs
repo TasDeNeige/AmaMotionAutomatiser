@@ -165,6 +165,7 @@ class AMAAnimationMoveUiEditor : AMAComponentEditor<Vector3>
 
     Texture banner;
     string bannerPath = "AMA_AnimationComponentBanner";
+    const string wikiLink = "https://github.com/TasDeNeige/AmaMotionAutomatiser/wiki/Animations#Move-UI";
 
     #region Editor
     protected override void OnEnable()
@@ -186,7 +187,7 @@ class AMAAnimationMoveUiEditor : AMAComponentEditor<Vector3>
     {
         AMAAnimation_Move_UI script = (AMAAnimation_Move_UI)target;
 
-        SetUpOnInspector(serializedObject, banner);
+        SetUpOnInspector(serializedObject, banner, wikiLink);
 
         DrawSliderPreview(serializedObject, script);
 
